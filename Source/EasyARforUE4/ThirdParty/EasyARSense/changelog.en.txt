@@ -1,0 +1,2 @@
+EasyAR Sense
+Please read the release notes on EasyAR website for version update details, https://help.easyar.com/EasyAR%20Sense/v4/ReleaseNotes/ReleaseNotes.html
