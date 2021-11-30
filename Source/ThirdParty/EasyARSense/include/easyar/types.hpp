@@ -8601,7 +8601,8 @@ static void FunctorOfVoid_func(void * _state, /* OUT */ easyar_String * * _excep
         auto f = reinterpret_cast<std::function<void()> *>(_state);
         (*f)();
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
@@ -8718,7 +8719,8 @@ static void FunctorOfVoidFromOutputFrame_func(void * _state, easyar_OutputFrame 
         auto f = reinterpret_cast<std::function<void(std::shared_ptr<OutputFrame>)> *>(_state);
         (*f)(cpparg0);
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
@@ -8742,7 +8744,8 @@ static void FunctorOfVoidFromTargetAndBool_func(void * _state, easyar_Target * a
         auto f = reinterpret_cast<std::function<void(std::shared_ptr<Target>, bool)> *>(_state);
         (*f)(cpparg0, cpparg1);
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
@@ -8799,7 +8802,8 @@ static void FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString_func(v
         auto f = reinterpret_cast<std::function<void(CalibrationDownloadStatus, std::optional<std::string>)> *>(_state);
         (*f)(cpparg0, cpparg1);
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
@@ -8855,7 +8859,8 @@ static void FunctorOfVoidFromCloudRecognizationResult_func(void * _state, easyar
         auto f = reinterpret_cast<std::function<void(std::shared_ptr<CloudRecognizationResult>)> *>(_state);
         (*f)(cpparg0);
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
@@ -8906,7 +8911,8 @@ static void FunctorOfVoidFromInputFrame_func(void * _state, easyar_InputFrame * 
         auto f = reinterpret_cast<std::function<void(std::shared_ptr<InputFrame>)> *>(_state);
         (*f)(cpparg0);
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
@@ -8928,7 +8934,8 @@ static void FunctorOfVoidFromCameraState_func(void * _state, easyar_CameraState 
         auto f = reinterpret_cast<std::function<void(CameraState)> *>(_state);
         (*f)(cpparg0);
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
@@ -8952,7 +8959,8 @@ static void FunctorOfVoidFromPermissionStatusAndString_func(void * _state, easya
         auto f = reinterpret_cast<std::function<void(PermissionStatus, std::string)> *>(_state);
         (*f)(cpparg0, cpparg1);
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
@@ -8976,7 +8984,8 @@ static void FunctorOfVoidFromLogLevelAndString_func(void * _state, easyar_LogLev
         auto f = reinterpret_cast<std::function<void(LogLevel, std::string)> *>(_state);
         (*f)(cpparg0, cpparg1);
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
@@ -9000,7 +9009,8 @@ static void FunctorOfVoidFromRecordStatusAndString_func(void * _state, easyar_Re
         auto f = reinterpret_cast<std::function<void(RecordStatus, std::string)> *>(_state);
         (*f)(cpparg0, cpparg1);
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
@@ -9055,7 +9065,8 @@ static void FunctorOfVoidFromBool_func(void * _state, bool arg0, /* OUT */ easya
         auto f = reinterpret_cast<std::function<void(bool)> *>(_state);
         (*f)(cpparg0);
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
@@ -9081,7 +9092,8 @@ static void FunctorOfVoidFromBoolAndStringAndString_func(void * _state, bool arg
         auto f = reinterpret_cast<std::function<void(bool, std::string, std::string)> *>(_state);
         (*f)(cpparg0, cpparg1, cpparg2);
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
@@ -9105,7 +9117,8 @@ static void FunctorOfVoidFromBoolAndString_func(void * _state, bool arg0, easyar
         auto f = reinterpret_cast<std::function<void(bool, std::string)> *>(_state);
         (*f)(cpparg0, cpparg1);
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
@@ -9127,7 +9140,8 @@ static void FunctorOfVoidFromVideoStatus_func(void * _state, easyar_VideoStatus 
         auto f = reinterpret_cast<std::function<void(VideoStatus)> *>(_state);
         (*f)(cpparg0);
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
@@ -9150,7 +9164,8 @@ static void FunctorOfVoidFromFeedbackFrame_func(void * _state, easyar_FeedbackFr
         auto f = reinterpret_cast<std::function<void(std::shared_ptr<FeedbackFrame>)> *>(_state);
         (*f)(cpparg0);
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
@@ -9180,7 +9195,8 @@ static void FunctorOfOutputFrameFromListOfOutputFrame_func(void * _state, easyar
         easyar_OutputFrame__retain(_return_value_c_, &_return_value_c_);
         *Return = _return_value_c_;
     } catch (std::exception & ex) {
-        auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
         easyar_String_from_utf8_begin(message.c_str(), _exception);
     }
 }
