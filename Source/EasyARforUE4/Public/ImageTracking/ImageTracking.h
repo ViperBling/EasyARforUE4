@@ -6,7 +6,7 @@
 #include "ImageTracking.generated.h"
 
 UCLASS()
-class AImageTracker : public AActor
+class EASYARFORUE4_API AImageTracker : public AActor
 {
 	GENERATED_BODY()
 	AImageTracker();
@@ -20,7 +20,7 @@ public:
 	TArray<FString> FilesPath;
 
 protected:
-	void LoadFromImage(const FString& FilePath);
+	void LoadFromImage(const std::string& FilePath);
 	void Initialize();
 	bool Start();
 	void Finalize();
@@ -37,4 +37,5 @@ protected:
 	std::shared_ptr<easyar::InputFrameToFeedbackFrameAdapter> I2FrameAdapter;
 	std::unordered_map<int, std::shared_ptr<easyar::ImageTarget>> TrackTargets;
 	bool IsQuited;
+	void* EasyARSenseDll;
 };
