@@ -26,7 +26,7 @@ public class EasyARforUE4 : ModuleRules
 			new string[]
 			{
 				"Core",
-				"EasyARforUE4Library",
+				// "EasyARforUE4Library",
 				"EasyARSense",
 				"CoreUObject",
 				"Engine",

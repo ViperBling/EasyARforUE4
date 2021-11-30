@@ -18,20 +18,33 @@ public class EasyARSense : ModuleRules
 				? Path.Combine(ModuleDirectory, "Windows", "x86")
 				: Path.Combine(ModuleDirectory, "Windows", "x64");
 			PublicAdditionalLibraries.Add(Path.Combine(EasyARLibPath, "EasyAR.lib"));
-
+		
 			// Delay-load the DLL, so we can load it from the right place first
 			PublicDelayLoadDLLs.Add("EasyAR.dll");
-
+		
 			// Ensure that the DLL is staged along with the executable
 			string EasyAROutBinPath = Target.Platform == UnrealTargetPlatform.Win32
 				? "$(PluginDir)/Binaries/ThirdParty/EasyARSense/Win32"
 				: "$(PluginDir)/Binaries/ThirdParty/EasyARSense/Win64";
-			RuntimeDependencies.Add(Path.Combine(EasyAROutBinPath, "EasyAR.dll"));
+			RuntimeDependencies.Add(Path.Combine(EasyAROutBinPath, "EasyAR.dll"), Path.Combine(EasyARLibPath, "EasyAR.dll"));
 		}
 		else if (Target.Platform == UnrealTargetPlatform.Android)
 		{
 			PublicDelayLoadDLLs.Add(Path.Combine(ModuleDirectory, "Android", "arm64-v8a", "libEasyAR.so"));
 			RuntimeDependencies.Add("$(PluginDir)/Binaries/ThirdParty/EasyARSense/Android/arm64-v8a/libEasyAR.so");
 		}
+		
+		// if (Target.Platform == UnrealTargetPlatform.Win64)
+		// {
+		// 	// Add the import library
+		// 	PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "Windows", "x64", "EasyAR.lib"));
+		//
+		// 	// Delay-load the DLL, so we can load it from the right place first
+		// 	PublicDelayLoadDLLs.Add("EasyAR.dll");
+		//
+		// 	// Ensure that the DLL is staged along with the executable
+		// 	RuntimeDependencies.Add("$(PluginDir)/Binaries/ThirdParty/EasyARSense/Win64/EasyAR.dll", 
+		// 		Path.Combine(ModuleDirectory, "Windows", "x64", "EasyAR.dll"));
+		// }
 	}
 }

@@ -21,7 +21,10 @@ public:
 
 protected:
 	void LoadFromImage(const FString& FilePath);
+	void Initialize();
 	bool Start();
+	void Finalize();
+	void Stop();
 	void NextFrame();
 
 protected:
@@ -33,4 +36,5 @@ protected:
 	std::shared_ptr<easyar::OutputFrameBuffer> OutputFrameBuffer;
 	std::shared_ptr<easyar::InputFrameToFeedbackFrameAdapter> I2FrameAdapter;
 	std::unordered_map<int, std::shared_ptr<easyar::ImageTarget>> TrackTargets;
+	bool IsQuited;
 };
