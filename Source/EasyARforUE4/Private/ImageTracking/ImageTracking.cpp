@@ -1,5 +1,4 @@
 ﻿#include "ImageTracking/ImageTracking.h"
-#include "Modules/ModuleManager.h"
 #include "Interfaces/IPluginManager.h"
 
 AImageTracker::AImageTracker()
@@ -31,19 +30,19 @@ AImageTracker::AImageTracker()
 			UE_LOG(LogTemp, Warning, TEXT("ImageTracker not available.\n"));
 		}
 		Initialize();
-		
 	}
 }
 
 void AImageTracker::BeginPlay()
 {
 	Super::BeginPlay();
-	Start();
+	// Start();
 }
 
 void AImageTracker::BeginDestroy()
 {
 	Super::BeginDestroy();
+	IsQuited = true;
 	Stop();
 	Finalize();
 }
@@ -51,13 +50,15 @@ void AImageTracker::BeginDestroy()
 void AImageTracker::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	// Initialize();
+	Start();
 	NextFrame();
 }
 
 void AImageTracker::LoadFromImage(const std::string& FilePath)
 {
 	std::optional<std::shared_ptr<easyar::ImageTarget>> ImageTarget =
-		easyar::ImageTarget::createFromImageFile(FilePath, easyar::StorageType::Assets, "", "", "", 1.0f);
+		easyar::ImageTarget::createFromImageFile(FilePath, easyar::StorageType::Absolute, "", "", "", 1.0f);
 	if (ImageTarget.has_value())
 	{
 		Tracker->loadTarget(ImageTarget.value(), Scheduler, [](std::shared_ptr<easyar::Target> target, bool status)
@@ -65,6 +66,7 @@ void AImageTracker::LoadFromImage(const std::string& FilePath)
 			GEngine->AddOnScreenDebugMessage(
 				0, 1.0f, FColor::Red,
 				FString::Printf(TEXT("Load Target (%d): %s %d\n"), status, *FString(target->name().c_str()), target->runtimeID()));
+			UE_LOG(LogTemp, Warning, TEXT("Load Target (%d): %s %d\n"), status, *FString(target->name().c_str()), target->runtimeID());
 		});
 	}
 	else
@@ -107,9 +109,10 @@ void AImageTracker::Initialize()
 	// {
 	// 	LoadFromImage(c);
 	// }
-	LoadFromImage("idback.jpg");
+	LoadFromImage("E:\\UnrealProject\\AR\\ARDemo\\Plugins\\EasyARforUE4\\Resources\\Assets\\idback.jpg");
 	
 	Camera->inputFrameSource()->connect(Throttler->input());
+	Throttler->output()->connect(I2FrameAdapter->input());
 	I2FrameAdapter->output()->connect(Tracker->feedbackFrameSink());
 	Tracker->outputFrameSource()->connect(OutputFrameFork->input());
 	OutputFrameFork->output(0)->connect(OutputFrameBuffer->input());
@@ -156,6 +159,7 @@ void AImageTracker::NextFrame()
 	{
 		if (!result.has_value()) {return;}
 		auto ImageTrackerResult = std::static_pointer_cast<easyar::ImageTrackerResult>(result.value());
+
 		if (ImageTrackerResult != nullptr)
 		{
 			for (auto && targetInstance : ImageTrackerResult->targetInstances())

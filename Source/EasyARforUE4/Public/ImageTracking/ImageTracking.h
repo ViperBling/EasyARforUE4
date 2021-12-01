@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "easyar/types.hpp"
+#include <thread>
 #include "ImageTracking.generated.h"
 
 UCLASS()
