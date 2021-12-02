@@ -10,6 +10,8 @@ public class EasyARSense : ModuleRules
 		Type = ModuleType.External;
 		CppStandard = CppStandardVersion.Cpp17;
 		
+		PublicDefinitions.Add("WITH_EASYARSENSE=1");
+		
 		// bUseRTTI = true;
 		if (Target.Platform == UnrealTargetPlatform.Win32 ||
 		    Target.Platform == UnrealTargetPlatform.Win64)

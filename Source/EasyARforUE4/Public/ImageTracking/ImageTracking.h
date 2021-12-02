@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "easyar/types.hpp"
-#include <thread>
 #include "ImageTracking.generated.h"
 
 UCLASS()
@@ -11,24 +10,33 @@ class EASYARFORUE4_API AImageTracker : public AActor
 {
 	GENERATED_BODY()
 	AImageTracker();
+	
+	virtual ~AImageTracker() override
+	{
+		// Free the dll handle
+		FPlatformProcess::FreeDllHandle(EasyARSenseDll);
+		EasyARSenseDll = nullptr;
+	}
+	
 public:
 	virtual void BeginPlay() override;
 	virtual void BeginDestroy() override;
 	virtual void Tick(float DeltaSeconds) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EasyARImageFiles")
-	//TMultiMap<FString, FString> FilesPath;
-	TArray<FString> FilesPath;
+	TArray<FString> ImageFiles;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EasyARStreamingAssets")
+	FString AssetsPath = FPaths::Combine(FPaths::ProjectPluginsDir(), FString("EasyARforUE4/Resources/Assets"));
 
 protected:
-	void LoadFromImage(const std::string& FilePath);
+	void LoadFromImage(const std::string& FileName);
 	void Initialize();
 	bool Start();
 	void Finalize();
 	void Stop();
 	void NextFrame();
 
-protected:
 	std::shared_ptr<easyar::DelayedCallbackScheduler> Scheduler;
 	std::shared_ptr<easyar::CameraDevice> Camera;
 	std::shared_ptr<easyar::ImageTracker> Tracker;

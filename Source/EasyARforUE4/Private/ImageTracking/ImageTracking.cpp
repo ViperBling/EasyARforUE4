@@ -6,8 +6,8 @@ AImageTracker::AImageTracker()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	IsQuited = false;
+
 	FString BaseDir = IPluginManager::Get().FindPlugin("EasyARforUE4")->GetBaseDir();
-	
 	// Add on the relative location of the third party dll and load it
 	FString LibraryPath;
 	#if PLATFORM_WINDOWS
@@ -36,7 +36,16 @@ AImageTracker::AImageTracker()
 void AImageTracker::BeginPlay()
 {
 	Super::BeginPlay();
-	// Start();
+	
+	// LoadFromImage("E:\\UnrealProject\\AR\\ARDemo\\Plugins\\EasyARforUE4\\Resources\\Assets\\namecard.jpg");
+	// LoadFromImage("namecard.jpg");
+	// LoadFromImage("../../../../../UnrealProject/AR/ARDemo/Plugins/EasyARforUE4/Resources/Assets/namecard.jpg");
+	
+	for (auto Image : ImageFiles)
+	{
+		FString ImagePath = FPaths::Combine(AssetsPath, Image);
+		LoadFromImage(TCHAR_TO_UTF8(*ImagePath));
+	}
 }
 
 void AImageTracker::BeginDestroy()
@@ -50,15 +59,14 @@ void AImageTracker::BeginDestroy()
 void AImageTracker::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	// Initialize();
 	Start();
 	NextFrame();
 }
 
-void AImageTracker::LoadFromImage(const std::string& FilePath)
+void AImageTracker::LoadFromImage(const std::string& ImagePath)
 {
 	std::optional<std::shared_ptr<easyar::ImageTarget>> ImageTarget =
-		easyar::ImageTarget::createFromImageFile(FilePath, easyar::StorageType::Absolute, "", "", "", 1.0f);
+		easyar::ImageTarget::createFromImageFile(ImagePath, easyar::StorageType::Absolute, "", "", "", 1.0f);
 	if (ImageTarget.has_value())
 	{
 		Tracker->loadTarget(ImageTarget.value(), Scheduler, [](std::shared_ptr<easyar::Target> target, bool status)
@@ -104,12 +112,6 @@ void AImageTracker::Initialize()
 	});
 	
 	Tracker = easyar::ImageTracker::create();
-	
-	// for (auto c : FilesPath)
-	// {
-	// 	LoadFromImage(c);
-	// }
-	LoadFromImage("E:\\UnrealProject\\AR\\ARDemo\\Plugins\\EasyARforUE4\\Resources\\Assets\\idback.jpg");
 	
 	Camera->inputFrameSource()->connect(Throttler->input());
 	Throttler->output()->connect(I2FrameAdapter->input());

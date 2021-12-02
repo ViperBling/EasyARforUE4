@@ -7,7 +7,6 @@ public class EasyARforUE4 : ModuleRules
 	public EasyARforUE4(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		// bUseRTTI = true;
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...

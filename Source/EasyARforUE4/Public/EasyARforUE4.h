@@ -12,7 +12,7 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
-private:
+protected:
 	/** Handle to the test dll we will load */
-	void* EasyARSenseDll;
+	// void* EasyARSenseDll = nullptr;
 };
