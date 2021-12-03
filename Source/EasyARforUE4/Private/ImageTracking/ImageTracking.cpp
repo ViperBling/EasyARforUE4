@@ -48,9 +48,9 @@ void AImageTracker::BeginPlay()
 	}
 }
 
-void AImageTracker::BeginDestroy()
+void AImageTracker::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::BeginDestroy();
+	Super::EndPlay(EndPlayReason);
 	IsQuited = true;
 	Stop();
 	Finalize();
@@ -153,6 +153,7 @@ void AImageTracker::NextFrame()
 {
 	while (Scheduler->runOne()){}
 
+	// OutFrame, Read from FrameBuffer
 	auto oFrame = OutputFrameBuffer->peek();
 	if (!oFrame.has_value()) {return;}
 	auto Frame = oFrame.value();
