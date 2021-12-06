@@ -73,7 +73,7 @@ public:
 		}
 		
 		Parameters = easyar::CameraParameters::createWithDefaultIntrinsics(
-			easyar::Vec2I{int(Size.X), int(Size.Y)},
+			easyar::Vec2I{(int)Size.X, (int)Size.Y},
 			CameraParameters->cameraDeviceType(),
 			CameraParameters->cameraOrientation());
 	}

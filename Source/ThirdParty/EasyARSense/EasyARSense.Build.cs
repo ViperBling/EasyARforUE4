@@ -9,7 +9,7 @@ public class EasyARSense : ModuleRules
 	{
 		Type = ModuleType.External;
 		CppStandard = CppStandardVersion.Cpp17;
-		
+		bEnableExceptions = true;
 		PublicDefinitions.Add("WITH_EASYARSENSE=1");
 		
 		// bUseRTTI = true;
@@ -35,14 +35,16 @@ public class EasyARSense : ModuleRules
 		else if (Target.Platform == UnrealTargetPlatform.Android)
 		{
 			PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "include"));
-			PublicDelayLoadDLLs.Add(Path.Combine(ModuleDirectory, "Android", "arm64-v8a", "libEasyAR.so"));
-			PublicDelayLoadDLLs.Add(Path.Combine(ModuleDirectory, "Android", "armeabi-v7a", "libEasyAR.so"));
-			RuntimeDependencies.Add(
-				"$(PluginDir)/Binaries/ThirdParty/EasyARSense/Android/arm64-v8a/libEasyAR.so", 
-				Path.Combine(ModuleDirectory, "Android", "arm64-v8a", "libEasyAR.so"));
-			RuntimeDependencies.Add(
-				"$(PluginDir)/Binaries/ThirdParty/EasyARSense/Android/armeabi-v7a/libEasyAR.so", 
-				Path.Combine(ModuleDirectory, "Android", "armeabi-v7a", "libEasyAR.so"));
+			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "Android", "arm64-v8a", "libEasyAR.so"));
+			// PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "Android", "armeabi-v7a"A, "libEasyAR.so"));
+			// RuntimeDependencies.Add(
+			// 	"$(PluginDir)/Binaries/ThirdParty/EasyARSense/Android/arm64-v8a/libEasyAR.so", 
+			// 	Path.Combine(ModuleDirectory, "Android", "arm64-v8a", "libEasyAR.so"));
+			// RuntimeDependencies.Add(
+			// 	"$(PluginDir)/Binaries/ThirdParty/EasyARSense/Android/armeabi-v7a/libEasyAR.so", 
+			// 	Path.Combine(ModuleDirectory, "Android", "armeabi-v7a", "libEasyAR.so"));
+			string RelAPLPath = Utils.MakePathRelativeTo(Path.Combine(ModuleDirectory, "EasyARSenseSDK_APL.xml"), Target.RelativeEnginePath);
+			AdditionalPropertiesForReceipt.Add("AndroidPlugin", RelAPLPath);
 		}
 		// else if (Target.Platform == UnrealTargetPlatform.IOS)
 		// {

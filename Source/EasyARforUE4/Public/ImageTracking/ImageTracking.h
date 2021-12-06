@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "easyar/types.hpp"
+#include <unordered_map>
 #include "ImageTracking.generated.h"
 
 UCLASS()
@@ -46,6 +47,7 @@ protected:
 	std::shared_ptr<easyar::OutputFrameBuffer> OutputFrameBuffer;
 	std::shared_ptr<easyar::InputFrameToFeedbackFrameAdapter> I2FrameAdapter;
 	std::unordered_map<int, std::shared_ptr<easyar::ImageTarget>> TrackTargets;
+	
 	bool IsQuited;
 	void* EasyARSenseDll;
 };
