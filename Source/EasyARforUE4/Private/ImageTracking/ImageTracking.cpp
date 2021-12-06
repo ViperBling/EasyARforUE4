@@ -13,7 +13,7 @@ AImageTracker::AImageTracker()
 	#if PLATFORM_WINDOWS
 	LibraryPath = FPaths::Combine(*BaseDir, TEXT("Binaries/ThirdParty/EasyARSense/Win64/EasyAR.dll"));
 	#elif PLATFORM_ANDROID
-	LibraryPath = FPaths::Combine(*BaseDir, TEXT("Binaries/ThirdParty/EasyARSense/Android/arm64-v8a/libEasyAR.so"));
+	// LibraryPath = FPaths::Combine(*BaseDir, TEXT("Binaries/ThirdParty/EasyARSense/Android/arm64-v8a/libEasyAR.so"));
 	#endif // PLATFORM_WINDOWS
 	
 	EasyARSenseDll = !LibraryPath.IsEmpty() ? FPlatformProcess::GetDllHandle(*LibraryPath) : nullptr;
@@ -35,18 +35,20 @@ AImageTracker::AImageTracker()
 
 void AImageTracker::BeginPlay()
 {
-	// Super::BeginPlay();
+	Super::BeginPlay();
 	
+	AssetsPath = FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectContentDir()), TEXT("Resources/Assets"));
 	for (auto Image : ImageFiles)
 	{
 		FString ImagePath = FPaths::Combine(AssetsPath, Image);
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ImagePath);
 		LoadFromImage(TCHAR_TO_UTF8(*ImagePath));
 	}
 }
 
 void AImageTracker::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	// Super::EndPlay(EndPlayReason);
+	Super::EndPlay(EndPlayReason);
 	IsQuited = true;
 	Stop();
 	Finalize();
@@ -54,7 +56,7 @@ void AImageTracker::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AImageTracker::Tick(float DeltaSeconds)
 {
-	// Super::Tick(DeltaSeconds);
+	Super::Tick(DeltaSeconds);
 	Start();
 	NextFrame();
 }

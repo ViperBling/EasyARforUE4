@@ -29,7 +29,8 @@ public:
 	TArray<FString> ImageFiles;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EasyARStreamingAssets")
-	FString AssetsPath = FPaths::Combine(FPaths::ProjectPluginsDir(), FString("EasyARforUE4/Resources/Assets"));
+	FString AssetsPath;
+
 
 protected:
 	void LoadFromImage(const std::string& FileName);
