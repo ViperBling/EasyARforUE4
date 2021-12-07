@@ -32,7 +32,7 @@
 <!--    <gameActivityOnCreateAdditions>-->
 <!--        <insert>-->
 <!--            // Initialize EasyAR jar file-->
-<!--            cn.easyar.Engine.initialize(this);-->
+<!--            cn.easyar.Engine.initialize(this, key);-->
 <!--        </insert>-->
 <!--    </gameActivityOnCreateAdditions>-->
 
