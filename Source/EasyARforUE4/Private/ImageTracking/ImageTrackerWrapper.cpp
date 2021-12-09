@@ -3,7 +3,7 @@
 void ImageTrackerWrapper::loadFromImage(const std::string& filename)
 {
 	std::optional<std::shared_ptr<easyar::ImageTarget>> ImageTarget =
-		easyar::ImageTarget::createFromImageFile(filename, easyar::StorageType::Assets, "", "", "", 1.0f);
+		easyar::ImageTarget::createFromImageFile(filename, easyar::StorageType::Absolute, "", "", "", 1.0f);
 	if (ImageTarget.has_value())
 	{
 		Tracker->loadTarget(ImageTarget.value(), Scheduler, [](std::shared_ptr<easyar::Target> target, bool status)
@@ -47,8 +47,14 @@ void ImageTrackerWrapper::initialize()
 	Camera = easyar::CameraDeviceSelector::createCameraDevice(easyar::CameraDevicePreference::PreferObjectSensing);
 	if (!Camera->openWithPreferredType(easyar::CameraDeviceType::Back))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Camera Open Failed"));
 		return;
 	}
+	// if (!Camera->openWithIndex(1))
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("Camera Open Failed"));
+	// 	return;
+	// }
 	Camera->setFocusMode(easyar::CameraDeviceFocusMode::Continousauto);
 	Camera->setSize(easyar::Vec2I{{1280, 960}});
 	Camera->setBufferCapacity(10);

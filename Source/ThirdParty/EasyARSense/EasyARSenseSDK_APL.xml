@@ -27,6 +27,8 @@
                   dst="$S(BuildDir)/libs/EasyAR.aar" />
         <copyFile src="$S(PluginDir)/Android/EasyAR.jar"
                   dst="$S(BuildDir)/libs/EasyAR.jar" />
+        
+        
     </resourceCopies>
 
     <gameActivityImportAdditions>
