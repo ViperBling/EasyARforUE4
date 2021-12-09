@@ -8,14 +8,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
 <!--    &lt;!&ndash; optional additions to proguard &ndash;&gt;-->
-<!--    <proguardAdditions>-->
-<!--        <insert>-->
-<!--            -keep class org.fmod.** {-->
-<!--            *;-->
-<!--            }-->
-<!--            -dontwarn org.fmod.**-->
-<!--        </insert>-->
-<!--    </proguardAdditions>-->
+    <proguardAdditions>
+        <insert>
+            -keep class cn.easyar.** {*;}
+            -dontwarn cn.easyar.**
+        </insert>
+    </proguardAdditions>
 
     <!-- optional files or directories to copy to Intermediate/Android/APK -->
     <resourceCopies>
@@ -24,25 +22,39 @@
                   dst="$S(BuildDir)/libs/arm64-v8a/libEasyAR.so" />
 <!--        <copyFile src="$S(PluginDir)/Android/armeabi-v7a/libEasyAR.so"-->
 <!--                  dst="$S(BuildDir)/libs/armeabi-v7a/libEasyAR.so" />-->
-        <copyFile src="$S(PluginDir)Android/EasyAR.jar"
+        
+        <copyFile src="$S(PluginDir)/Android/EasyAR.aar"
+                  dst="$S(BuildDir)/libs/EasyAR.aar" />
+        <copyFile src="$S(PluginDir)/Android/EasyAR.jar"
                   dst="$S(BuildDir)/libs/EasyAR.jar" />
     </resourceCopies>
 
-    <!-- optional additions to GameActivity onCreate in GameActivity.java -->
-<!--    <gameActivityOnCreateAdditions>-->
-<!--        <insert>-->
-<!--            // Initialize EasyAR jar file-->
-<!--            cn.easyar.Engine.initialize(this, key);-->
-<!--        </insert>-->
-<!--    </gameActivityOnCreateAdditions>-->
+    <gameActivityImportAdditions>
+        <insert>
+            import cn.easyar.Engine;
+            import cn.easyar.CameraDevice;
+            import cn.easyar.ImageTracker;
+        </insert>
+    </gameActivityImportAdditions>
 
-    <!-- optional additions to GameActivity onDestroy in GameActivity.java -->
-<!--    <gameActivityOnDestroyAdditions>-->
-<!--        <insert>-->
-<!--            // Shutdown EasyAR jar file-->
-<!--            org.EasyAR.close();-->
-<!--        </insert>-->
-<!--    </gameActivityOnDestroyAdditions>-->
+    <!-- optional additions to GameActivity onCreate in GameActivity.java -->
+    <gameActivityOnCreateAdditions>
+        <insert>
+            String easyARKey = "n6nAJJu62DiD3MElwWP61J9/HWeyJw8kEZXoX6+b9g+bi/ASr4bnX+DK4hSvm/wTvZzyEujYok2agPwJt4n6EfSL/BD4xLEQu5vnGKij9gSTjLFH68SxEbOL9hOpjeBf4LPoX7id/Rm2jdoZqcqpJofEsQu7mvoctJzgX+CzsR61hf4ItIHnBPi1v1+qhPIJvIfhEKnKqSb4n/oTvofkDvjEsRC7i7Eg9sr+Er6d/xipyqkm+Jv2E6mNvTS3ifQYjpryHrGB/Rr4xLEOv4bgGPSr/xKvjMEYuYf0E7Oc+hK0yr9fqY39Dr/GwRi5h+EZs4b0X/bK4Bi0m/ZTlYr5GLmcxw+7i/gUtI+xUfib9hOpjb0ur5r1HLmNxw+7i/gUtI+xUfib9hOpjb0uqonhDr+74xyugfIRl4njX/bK4Bi0m/ZTl4fnFLWGxw+7i/gUtI+xUfib9hOpjb05v4bgGImY8gmzif8wu5ixUfib9hOpjb0+m6zHD7uL+BS0j7Eg9sr2BaqB4RiOgf4YiZzyEKrKqROvhP9R+IHgMbWL8hH40vUctpv2APaTsR+vhvcRv6H3DvjSyF+5h/5Tu5rnEqiB8g70qcE5v4X8X4fEsQu7mvoctJzgX+CzsR61hf4ItIHnBPi1v1+qhPIJvIfhEKnKqSb4if0ZqIf6Gfi1v1+3h/cIto3gX+CzsQ6/huAY9KH+HL2Nxw+7i/gUtI+xUfib9hOpjb0+tofmGYiN8BK9hvoJs4f9X/bK4Bi0m/ZTiI3wEqiM+hO9yr9fqY39Dr/G3B+wjfAJjpryHrGB/Rr4xLEOv4bgGPS75g+8ifAYjpryHrGB/Rr4xLEOv4bgGPS74xyom/YuqonnFLuE3hyqyr9fqY39Dr/G3hKugfwTjpryHrGB/Rr4xLEOv4bgGPSs9hOpjcANu5z6HLal8g34xLEOv4bgGPSr0jmOmvIesYH9Gvi1v1+/kOMUqI3HFLeNwAm7heNf4IbmEbbEsRSppPweu4SxR7yJ/w6/lb8G+IrmE76E9jS+m7FHgcrnGKmcsSD2yuUcqIHyE66bsUeByvASt4XmE7Oc6l+HxLENtonnG7Wa/g740shfs4fgX4fEsRC1jOYRv5uxR4HK4Bi0m/ZTk4XyGr+84Ry5g/oTvcq/X6mN/Q6/xtARtZ33L7+L/Bq0gecUtYaxUfib9hOpjb0vv4v8D76B/Rr4xLEOv4bgGPSn8Re/i+cpqInwFrOG9F/2yuAYtJv2U4md4Ru7i/YpqInwFrOG9F/2yuAYtJv2U4mY8g+pjcANu5z6HLal8g34xLEOv4bgGPSl/Amzh/0pqInwFrOG9F/2yuAYtJv2U56N/Q6/u+McroHyEZeJ41/2yuAYtJv2U5mp1ymoifAWs4b0X4fEsRiimPoPv7z6EL+75xy3mLFHtJ3/EfbK+g6Wh/ActsqpG7uE4Binte7uGlS4D91gEAeTC0Kp27P5yPoHEFEs/klPBKNgIyrPgyu1KCo/ZiZxX/Cv+Kj1W6Oi7ElRPZ6kwQ3L8Nkzf9kcji6DRbmyNjT+/JrJFczcfn0X52Q97H0SIdI41XzwMPDBiri2JNQDfDRFDbhsp5ovz4yOWt11Hp4y+daUptUKdWHcAiscBtclWvv2swsh1CKT9mE6DAVR2+T4HwC2qIolO2d3i7tW0t9GYDJYOfFiAbbSdr03IaGx3JPGW2NPBrjSQwK4T5f+ASvMEARSjPpYBPTe36A7Xl5iY8Ai3TeT8mftk9/K7rsvdnDhiC2QHNSmHHAs12eT9WV/JAba6JN9";
+            if (!Engine.initialize(this, easyARKey)) {
+                Log.debug("Initialization Failed.");
+                return;
+            }
+            if (!CameraDevice.isAvailable()) {
+                Log.debug("CameraDevice not available.");
+                return;
+            }
+            if (!ImageTracker.isAvailable()) {
+                Log.debug("ImageTracker not available.");
+                return;
+            }
+        </insert>
+    </gameActivityOnCreateAdditions>
 
     <!-- optional libraries to load in GameActivity.java before libUE4.so -->
     <soLoadLibrary>

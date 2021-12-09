@@ -15,8 +15,6 @@ public:
 	void perFrame();
 	void loadFromImage(const std::string& filename);
 
-	std::string imagepath;
-
 private:
 	std::shared_ptr<easyar::DelayedCallbackScheduler> Scheduler;
 	std::shared_ptr<easyar::CameraDevice> Camera;
