@@ -36,7 +36,7 @@ public class EasyARSense : ModuleRules
 		{
 			PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "include"));
 			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "Android", "arm64-v8a", "libEasyAR.so"));
-			// PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "Android", "armeabi-v7a"A, "libEasyAR.so"));
+			// PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "Android", "armeabi-v7a", "libEasyAR.so"));
 			// RuntimeDependencies.Add(
 			// 	"$(PluginDir)/Binaries/ThirdParty/EasyARSense/Android/arm64-v8a/libEasyAR.so", 
 			// 	Path.Combine(ModuleDirectory, "Android", "arm64-v8a", "libEasyAR.so"));

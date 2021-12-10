@@ -8,12 +8,14 @@ class ImageTrackerWrapper
 public:
 	ImageTrackerWrapper();
 	virtual ~ImageTrackerWrapper();
-
+	
 	void initialize();
 	bool start();
 	void stop();
 	void perFrame();
 	void loadFromImage(const std::string& filename, const std::string& name);
+
+	std::shared_ptr<easyar::Image> cameraImage;
 
 private:
 	std::shared_ptr<easyar::DelayedCallbackScheduler> Scheduler;

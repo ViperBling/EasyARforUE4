@@ -11,6 +11,9 @@ class EASYARFORUE4_API UImageTrackers : public UObject
 public:
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FString> ImageCollection;
+
+	UPROPERTY(BlueprintReadWrite)
+	UTexture2D* CameraBackground;
 	
 	UFUNCTION(BlueprintCallable, Category = Init)
 	void Initialize();
@@ -31,5 +34,6 @@ public:
 	virtual ~UImageTrackers();
 	
 private:
+	FUpdateTextureRegion2D* UpdateTextureRegion;
 	std::unique_ptr<ImageTrackerWrapper> _imageTracker;
 };

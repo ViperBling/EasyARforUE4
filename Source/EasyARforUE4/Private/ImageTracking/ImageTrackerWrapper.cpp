@@ -4,7 +4,6 @@ void ImageTrackerWrapper::loadFromImage(const std::string& filename, const std::
 {
 	std::optional<std::shared_ptr<easyar::ImageTarget>> ImageTarget =
 		easyar::ImageTarget::createFromImageFile(filename, easyar::StorageType::Assets, name, "", "", 1.0f);
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(filename.c_str()));
 	if (ImageTarget.has_value())
 	{
 		Tracker->loadTarget(ImageTarget.value(), Scheduler, [](std::shared_ptr<easyar::Target> target, bool status)
@@ -38,7 +37,7 @@ void ImageTrackerWrapper::initialize()
 	// if (!easyar::ImageTracker::isAvailable()) {
 	// 	UE_LOG(LogTemp, Warning, TEXT("ImageTracker not available.\n"));
 	// }
-
+	cameraImage = std::shared_ptr<easyar::Image>();
 	Scheduler = std::make_shared<easyar::DelayedCallbackScheduler>();
 	Throttler = easyar::InputFrameThrottler::create();
 	I2FrameAdapter = easyar::InputFrameToFeedbackFrameAdapter::create();
@@ -113,6 +112,13 @@ void ImageTrackerWrapper::perFrame()
 	std::optional<std::shared_ptr<easyar::OutputFrame>> oFrame = OutputFrameBuffer->peek();
 	if (!oFrame.has_value()) { return; }
 	std::shared_ptr<easyar::OutputFrame> frame = oFrame.value();
+	if (!frame->inputFrame()->hasCameraParameters())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Don't have camera parameters"));
+		return;
+	}
+	auto cameraParameters = frame->inputFrame()->cameraParameters();
+	cameraImage = frame->inputFrame()->image();
 	std::unordered_map<int, std::shared_ptr<easyar::ImageTarget>> lostCandidates = TrackTargets;
 	for (auto && result : frame->results())
 	{

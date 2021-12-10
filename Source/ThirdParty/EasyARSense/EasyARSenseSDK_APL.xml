@@ -4,8 +4,8 @@
     <init>
         <log text="EasyARSenseSDK APL init (shipping build)"/>
     </init>
-<!--    <uses-permission android:name="android.permission.CAMERA" />-->
-<!--    <uses-permission android:name="android.permission.INTERNET" />-->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
 <!--    &lt;!&ndash; optional additions to proguard &ndash;&gt;-->
     <proguardAdditions>
