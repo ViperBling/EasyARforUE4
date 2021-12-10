@@ -1,9 +1,10 @@
 ﻿#include "ImageTracking/ImageTrackerWrapper.h"
 
-void ImageTrackerWrapper::loadFromImage(const std::string& filename)
+void ImageTrackerWrapper::loadFromImage(const std::string& filename, const std::string& name)
 {
 	std::optional<std::shared_ptr<easyar::ImageTarget>> ImageTarget =
-		easyar::ImageTarget::createFromImageFile(filename, easyar::StorageType::Absolute, "", "", "", 1.0f);
+		easyar::ImageTarget::createFromImageFile(filename, easyar::StorageType::Assets, name, "", "", 1.0f);
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(filename.c_str()));
 	if (ImageTarget.has_value())
 	{
 		Tracker->loadTarget(ImageTarget.value(), Scheduler, [](std::shared_ptr<easyar::Target> target, bool status)

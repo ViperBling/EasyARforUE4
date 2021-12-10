@@ -13,7 +13,7 @@ public:
 	bool start();
 	void stop();
 	void perFrame();
-	void loadFromImage(const std::string& filename);
+	void loadFromImage(const std::string& filename, const std::string& name);
 
 private:
 	std::shared_ptr<easyar::DelayedCallbackScheduler> Scheduler;

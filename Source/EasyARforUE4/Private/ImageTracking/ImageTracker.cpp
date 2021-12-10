@@ -12,15 +12,10 @@ UImageTrackers::~UImageTrackers()
 
 void UImageTrackers::Initialize()
 {
-	
 	_imageTracker->initialize();
-	// for (auto n : ImageCollection)
-	// {
-	// 	_imageTracker->loadFromImage(TCHAR_TO_UTF8(*GetImagePath(n)));
-	// }
-	for (int32 i = 0; i < ImageCollection.Num(); ++i)
+	for (auto n : ImageCollection)
 	{
-		_imageTracker->loadFromImage(TCHAR_TO_UTF8(*GetImagePath(ImageCollection[i])));
+		_imageTracker->loadFromImage(TCHAR_TO_UTF8(*GetImagePath(n)), TCHAR_TO_UTF8(*n));
 	}
 }
 
@@ -41,7 +36,8 @@ void UImageTrackers::CallEveryFrame()
 
 FString UImageTrackers::GetImagePath(FString& ImageName)
 {
-	FString AssetsPath = FPaths::Combine(FPaths::ProjectContentDir(), TEXT("NonAssets"));
+	// FString AssetsPath = FPaths::Combine(FPaths::ProjectContentDir(), TEXT("NonAssets"));
+	FString AssetsPath = "";
 	// FString AssetsPath = FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectContentDir()), TEXT("NonAssets"));
 	// FString AssetsPath = FPaths::Combine(FPaths::ProjectPluginsDir(), TEXT("EasyARforUE4/Resources/Assets"));
 	FString ImagePath = FPaths::Combine(AssetsPath, ImageName);
