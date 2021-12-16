@@ -31,7 +31,7 @@ public:
 	void Stop();
 
 	UFUNCTION(BlueprintCallable, Category = EasyAR)
-	void CallEveryFrame();
+	void CallEveryFrame(float DeltaTime);
 
 	UFUNCTION(BlueprintCallable, Category = Actions)
 	FString GetImagePath(FString& ImageName);
@@ -42,9 +42,12 @@ public:
 private:
 	FUpdateTextureRegion2D* CameraUpdateTextureRegion;
 	std::unique_ptr<ImageTrackerWrapper> _imageTracker;
+	float Timer = 0;
+	const float FrameRate = 30.f;
+	bool bFirstFrame;
 
 	void UpdateTextureRegions(
 		UTexture2D* Texture, int32 MipIndex,
 		uint32 NumRegions, FUpdateTextureRegion2D* Region2D,
-		uint32 SrcPitch, uint32 SrcBpp, uint8* SrcData, bool bFreeData);
+		uint32 SrcPitch, uint32 SrcBpp, void* SrcData, bool bFreeData);
 };
