@@ -1,24 +1,9 @@
 ﻿#include "ImageTracking/ImageTrackerWrapper.h"
 
-void ImageTrackerWrapper::loadFromImage(const std::string& filename, const std::string& name)
-{
-	std::optional<std::shared_ptr<easyar::ImageTarget>> ImageTarget =
-		easyar::ImageTarget::createFromImageFile(filename, easyar::StorageType::Assets, name, "", "", 1.0f);
-	if (ImageTarget.has_value())
-	{
-		Tracker->loadTarget(ImageTarget.value(), Scheduler, [](std::shared_ptr<easyar::Target> target, bool status)
-		{
-			GEngine->AddOnScreenDebugMessage(
-				0, 1.0f, FColor::Red,
-				FString::Printf(TEXT("Load Target (%d): %s %d\n"), status, *FString(target->name().c_str()), target->runtimeID()));
-			UE_LOG(LogTemp, Warning, TEXT("Load Target (%d): %s %d\n"), status, *FString(target->name().c_str()), target->runtimeID());
-		});
-	}
-}
-
 ImageTrackerWrapper::ImageTrackerWrapper()
 {
-	
+	cameraWidth = 672;
+	cameraHeight = 1280;
 }
 
 ImageTrackerWrapper::~ImageTrackerWrapper()
@@ -50,14 +35,9 @@ void ImageTrackerWrapper::initialize()
 		UE_LOG(LogTemp, Warning, TEXT("Camera Open Failed"));
 		return;
 	}
-	// if (!Camera->openWithIndex(1))
-	// {
-	// 	UE_LOG(LogTemp, Warning, TEXT("Camera Open Failed"));
-	// 	return;
-	// }
+
 	Camera->setFocusMode(easyar::CameraDeviceFocusMode::Continousauto);
-	Camera->setSize(easyar::Vec2I{{1280, 960}});
-	Camera->setBufferCapacity(10);
+	Camera->setSize(easyar::Vec2I{{cameraWidth, cameraHeight}});
 	Camera->setStateChangedCallback(Scheduler, [](easyar::CameraState s)
 	{
 		if (s == easyar::CameraState::Disconnected)
@@ -80,6 +60,13 @@ void ImageTrackerWrapper::initialize()
 	
 	OutputFrameBuffer->signalOutput()->connect(Throttler->signalInput());
 	OutputFrameFork->output(1)->connect(I2FrameAdapter->sideInput());
+
+	Camera->setBufferCapacity(
+		Throttler->bufferRequirement() +
+		I2FrameAdapter->bufferRequirement() +
+		OutputFrameBuffer->bufferRequirement() +
+		Tracker->bufferRequirement() + 2);
+	// Camera->setBufferCapacity(20);
 }
 
 bool ImageTrackerWrapper::start()
@@ -119,6 +106,8 @@ void ImageTrackerWrapper::perFrame()
 	}
 	auto cameraParameters = frame->inputFrame()->cameraParameters();
 	cameraImage = frame->inputFrame()->image();
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), cameraImage->format());
+	
 	std::unordered_map<int, std::shared_ptr<easyar::ImageTarget>> lostCandidates = TrackTargets;
 	for (auto && result : frame->results())
 	{
@@ -179,4 +168,18 @@ void ImageTrackerWrapper::perFrame()
 	}
 }
 
-
+void ImageTrackerWrapper::loadFromImage(const std::string& filename, const std::string& name)
+{
+	std::optional<std::shared_ptr<easyar::ImageTarget>> ImageTarget =
+		easyar::ImageTarget::createFromImageFile(filename, easyar::StorageType::Assets, name, "", "", 1.0f);
+	if (ImageTarget.has_value())
+	{
+		Tracker->loadTarget(ImageTarget.value(), Scheduler, [](std::shared_ptr<easyar::Target> target, bool status)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				0, 1.0f, FColor::Red,
+				FString::Printf(TEXT("Load Target (%d): %s %d\n"), status, *FString(target->name().c_str()), target->runtimeID()));
+			UE_LOG(LogTemp, Warning, TEXT("Load Target (%d): %s %d\n"), status, *FString(target->name().c_str()), target->runtimeID());
+		});
+	}
+}

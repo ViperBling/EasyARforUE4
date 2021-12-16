@@ -17,6 +17,9 @@ public:
 
 	std::shared_ptr<easyar::Image> cameraImage;
 
+	int cameraWidth;
+	int cameraHeight;
+
 private:
 	std::shared_ptr<easyar::DelayedCallbackScheduler> Scheduler;
 	std::shared_ptr<easyar::CameraDevice> Camera;

@@ -5,6 +5,7 @@
 #include "Modules/ModuleManager.h"
 #include "Interfaces/IPluginManager.h"
 
+
 #define LOCTEXT_NAMESPACE "FEasyARforUE4Module"
 
 void FEasyARforUE4Module::StartupModule()
