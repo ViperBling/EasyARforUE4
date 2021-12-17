@@ -4,22 +4,33 @@
 #include "ImageTrackerWrapper.h"
 #include "ImageTracker.generated.h"
 
-UCLASS(Blueprintable, BlueprintType)
-class EASYARFORUE4_API UImageTrackers : public UObject
+UCLASS(ClassGroup = (EasyAR), meta = (BlueprintSpawnableComponent))
+class EASYARFORUE4_API UImageTrackers : public UActorComponent
 {
 	GENERATED_BODY()
 public:
+	
+	UImageTrackers();
+	virtual ~UImageTrackers() override;
+
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FString> ImageCollection;
 
 	UPROPERTY(BlueprintReadOnly)
 	UTexture2D* CameraBackground;
 
-	UPROPERTY(BlueprintReadOnly)
-	int Width = 672;
+	UPROPERTY(BlueprintReadWrite)
+	UTextureRenderTarget2D* OutRT;
 
-	UPROPERTY(BlueprintReadOnly)
-	int Height = 1280;
+	UPROPERTY(BlueprintReadWrite)
+	int Width = 1024;
+
+	UPROPERTY(BlueprintReadWrite)
+	int Height = 1024;
 	
 	UFUNCTION(BlueprintCallable, Category = EasyAR)
 	void Initialize();
@@ -33,21 +44,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = EasyAR)
 	void CallEveryFrame(float DeltaTime);
 
-	UFUNCTION(BlueprintCallable, Category = Actions)
-	FString GetImagePath(FString& ImageName);
-
-	UImageTrackers();
-	virtual ~UImageTrackers();
-	
 private:
+	FString GetImagePath(FString& ImageName);
+	
+	void UpdateTextureRegions(
+		UTexture2D* Texture, int32 MipIndex,
+		uint32 NumRegions, FUpdateTextureRegion2D* Region2D,
+		uint32 SrcPitch, uint32 SrcBpp, void* SrcData, bool bFreeData);
+	
 	FUpdateTextureRegion2D* CameraUpdateTextureRegion;
 	std::unique_ptr<ImageTrackerWrapper> _imageTracker;
 	float Timer = 0;
 	const float FrameRate = 30.f;
 	bool bFirstFrame;
-
-	void UpdateTextureRegions(
-		UTexture2D* Texture, int32 MipIndex,
-		uint32 NumRegions, FUpdateTextureRegion2D* Region2D,
-		uint32 SrcPitch, uint32 SrcBpp, void* SrcData, bool bFreeData);
 };
