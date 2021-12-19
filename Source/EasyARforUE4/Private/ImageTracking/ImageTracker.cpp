@@ -19,6 +19,7 @@ void NV21toRGB_RenderThread(
 UImageTrackers::UImageTrackers()
 {
 	_imageTracker = std::make_unique<ImageTrackerWrapper>();
+	bFirstFrame = true;
 }
 
 UImageTrackers::~UImageTrackers()
@@ -49,7 +50,7 @@ void UImageTrackers::Initialize()
 	
 	CameraUpdateTextureRegion = new FUpdateTextureRegion2D(0, 0, 0, 0, Width, Height);
 
-	CameraBackground = UTexture2D::CreateTransient(Width, Height, PF_B8G8R8A8);
+	CameraBackground = UTexture2D::CreateTransient(Width, Height, PF_NV12);
 	CameraBackground->UpdateResource();
 	
 	_imageTracker->initialize();
@@ -63,7 +64,6 @@ void UImageTrackers::Initialize()
 void UImageTrackers::Start()
 {
 	_imageTracker->start();
-	bFirstFrame = true;
 }
 
 void UImageTrackers::Stop()
@@ -75,36 +75,38 @@ void UImageTrackers::Stop()
 void UImageTrackers::CallEveryFrame(float DeltaTime)
 {
 	Timer += DeltaTime;
+	
 	const auto SrcBpp = GPixelFormats[CameraBackground->GetPixelFormat()].BlockBytes;
-	// if (Timer >= (1. / FrameRate))
-	// {
-	// 	Timer -= 1.0 / FrameRate;
-	// 	// check(IsInGameThread());
-	// 	_imageTracker->perFrame();
-	// 	void* CameraFrameData = nullptr;
-	// 	if (bFirstFrame)
-	// 	{
-	// 		CameraFrameData = _imageTracker->cameraImage->buffer()->data();
-	// 	}
-	// 	if (CameraFrameData != nullptr)
-	// 	{
-	// 		// UE_LOG(LogTemp, Warning, TEXT("%d"), _imageTracker->cameraImage->format());
-	// 		GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Green, FString::Printf(TEXT("%d"), _imageTracker->cameraImage->format()));
-	// 		UpdateTextureRegions(
-	// 			CameraBackground, 0, 1,
-	// 			CameraUpdateTextureRegion, SrcBpp * Width, SrcBpp,
-	// 			CameraFrameData, false);
-	// 		bFirstFrame = false;
-	// 	}
-	// }
-	_imageTracker->perFrame();
-	void* CameraFrameData = nullptr;
-	CameraFrameData = _imageTracker->cameraImage->buffer()->data();
-	// GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Green, FString::Printf(TEXT("%d"), _imageTracker->cameraImage->format()));
-	UpdateTextureRegions(
-		CameraBackground, 0, 1,
-		CameraUpdateTextureRegion, SrcBpp * Width, SrcBpp,
-		CameraFrameData, false);
+	if (Timer >= (1. / FrameRate))
+	{
+		Timer -= 1. / FrameRate;
+		// check(IsInGameThread());
+		_imageTracker->perFrame();
+		void* CameraFrameData = nullptr;
+		// if (CameraBackground && bFirstFrame)
+		// {
+		// 	CameraFrameData = _imageTracker->cameraImage->buffer()->data();
+		// }
+		CameraFrameData = _imageTracker->cameraImage->buffer()->data();
+		if (CameraFrameData != nullptr)
+		{
+			// UE_LOG(LogTemp, Warning, TEXT("%d"), _imageTracker->cameraImage->format());
+			GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Green, FString::Printf(TEXT("%d"), _imageTracker->cameraImage->format()));
+			UpdateTextureRegions(
+				CameraBackground, 0, 1,
+				CameraUpdateTextureRegion, SrcBpp * Width, SrcBpp,
+				CameraFrameData, false);
+			bFirstFrame = false;
+		}
+	}
+	// _imageTracker->perFrame();
+	// void* CameraFrameData = nullptr;
+	// CameraFrameData = _imageTracker->cameraImage->buffer()->data();
+	// // GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Green, FString::Printf(TEXT("%d"), _imageTracker->cameraImage->format()));
+	// UpdateTextureRegions(
+	// 	CameraBackground, 0, 1,
+	// 	CameraUpdateTextureRegion, SrcBpp * Width, SrcBpp,
+	// 	CameraFrameData, false);
 }
 
 FString UImageTrackers::GetImagePath(FString& ImageName)
@@ -123,7 +125,7 @@ void UImageTrackers::UpdateTextureRegions(
 	FUpdateTextureRegion2D* Region2D,
 	uint32 SrcPitch, uint32 SrcBpp, void* SrcData, bool bFreeData)
 {
-	check(IsInGameThread());
+	// check(IsInGameThread());
 	if (Texture && Texture->Resource)
 	{
 		struct FUpdateTextureRegionsData
@@ -147,30 +149,32 @@ void UImageTrackers::UpdateTextureRegions(
 		RegionData->SrcBpp = SrcBpp;
 		
 		char* yuv420sp = (char*)(SrcData);
-		unsigned char* rgb = new unsigned char[Width * Height];
-		NV21toRGB(rgb, yuv420sp, Width, Height);
+
+		int size = Width * Height;
+		int offset = size;
+		int* rgb = new int[size];
 		
-		// int size = Width * Height;
-		// int offset = size;
-		//
+		// unsigned char* rgb = new unsigned char[Width * Height];
+		// NV21toRGB(rgb, yuv420sp, Width, Height);
+
 		// int u, v, y1, y2, y3, y4;
-		//
+		// 
 		// for (int i = 0, k = 0; i < size; i += 2, k += 2) {
 		// 	y1 = yuv420sp[i] & 0xff;
 		// 	y2 = yuv420sp[i + 1] & 0xff;
 		// 	y3 = yuv420sp[Width + i] & 0xff;
 		// 	y4 = yuv420sp[Width + i + 1] & 0xff;
-		//
+		// 
 		// 	u = yuv420sp[offset + k] & 0xff;
 		// 	v = yuv420sp[offset + k + 1] & 0xff;
 		// 	u = u - 128;
 		// 	v = v - 128;
-		//
+		// 
 		// 	rgb[i] = YUVtoRGB(y1, u, v);
 		// 	rgb[i + 1] = YUVtoRGB(y2, u, v);
 		// 	rgb[Width + i] = YUVtoRGB(y3, u, v);
 		// 	rgb[Width + i + 1] = YUVtoRGB(y4, u, v);
-		//
+		// 
 		// 	if (i != 0 && (i + 2) % Width == 0)
 		// 		i += Width;
 		// }
@@ -224,8 +228,8 @@ void NV21toRGB_RenderThread(
 {
 	check(IsInRenderingThread())
 
-	RHICmdList.TransitionResource(EResourceTransitionAccess::EReadable, CameraTextureResource->TextureRHI);
-	RHICmdList.TransitionResource(EResourceTransitionAccess::EWritable, OutRTResource->TextureRHI);
+	RHICmdList.TransitionResource(ERHIAccess::EReadable, CameraTextureResource->TextureRHI);
+	RHICmdList.TransitionResource(ERHIAccess::EWritable, OutRTResource->TextureRHI);
 
 	FRHIRenderPassInfo RenderPassInfo(OutRTResource->GetRenderTargetTexture(), ERenderTargetActions::DontLoad_Store);
 	RHICmdList.BeginRenderPass(RenderPassInfo, TEXT("Convert"));
@@ -260,7 +264,7 @@ void NV21toRGB_RenderThread(
 		RHICmdList.DrawPrimitive(0, PrimitiveCount, 1);
 	}
 	RHICmdList.EndRenderPass();
-	RHICmdList.TransitionResource(EResourceTransitionAccess::EReadable, OutRTResource->TextureRHI);
+	RHICmdList.TransitionResource(ERHIAccess::EReadable, OutRTResource->TextureRHI);
 	// RHICmdList.CopyToResolveTarget(
 	// 	OutRTResource->GetRenderTargetTexture(),
 	// 	OutRTResource->TextureRHI, FResolveParams());
@@ -281,7 +285,9 @@ static int YUVtoRGB(int y, int u, int v)
 static void NV21toRGB(unsigned char* rgb, char* yuv, int width, int height)
 {
 	int total = width * height;
-	char Y, U, V;
+	char Y = {};
+	char U = {};
+	char V = {};
 	unsigned char R, G, B;
 	int index = 0;
 

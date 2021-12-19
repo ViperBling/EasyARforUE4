@@ -5,6 +5,7 @@
         <log text="EasyARSenseSDK APL init (shipping build)"/>
     </init>
     <uses-permission android:name="android.permission.CAMERA" />
+    <addFeature android:name="android.hardware.camera" android:required="true"/>
     <uses-permission android:name="android.permission.INTERNET" />
 
 <!--    &lt;!&ndash; optional additions to proguard &ndash;&gt;-->
@@ -34,12 +35,24 @@
 
     <gameActivityImportAdditions>
         <insert>
+            import android.Manifest;
+            import android.annotation.TargetApi;
+            import android.content.pm.PackageManager;
+            import android.os.Build;
+            import android.os.Bundle;
+            import android.view.ViewGroup;
+            import android.view.WindowManager;
+            import android.util.Log;
+            import android.widget.Toast;
+            import java.util.HashMap;
+            
             import cn.easyar.Engine;
             import cn.easyar.CameraDevice;
             import cn.easyar.ImageTracker;
         </insert>
     </gameActivityImportAdditions>
 
+    
     <!-- optional additions to GameActivity onCreate in GameActivity.java -->
     <gameActivityOnCreateAdditions>
         <insert>
