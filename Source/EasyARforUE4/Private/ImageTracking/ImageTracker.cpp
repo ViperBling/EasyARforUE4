@@ -7,7 +7,7 @@
 #include "Rendering/Texture2DResource.h"
 
 static int YUVtoRGB(int y, int u, int v);
-static void NV21toRGB(int* rgb, char* yuv, int width, int height);
+static void NV21toRGB(unsigned char* rgb, char* yuv, int width, int height);
 
 void NV21toRGB_RenderThread(
 	FRHICommandListImmediate& RHICmdList,
@@ -53,7 +53,7 @@ void UImageTrackers::Initialize()
 	
 	CameraUpdateTextureRegion = new FUpdateTextureRegion2D(0, 0, 0, 0, Width, Height);
 
-	CameraBackground = UTexture2D::CreateTransient(Width, Height);
+	CameraBackground = UTexture2D::CreateTransient(Width, Height, PF_R8G8B8A8);
 	CameraBackground->UpdateResource();
 	
 	_imageTracker->initialize();
@@ -84,15 +84,10 @@ void UImageTrackers::CallEveryFrame(float DeltaTime)
 		Timer -= 1. / FrameRate;
 		// check(IsInGameThread());
 		_imageTracker->perFrame();
-		void* CameraFrameData = nullptr;
-		// if (CameraBackground && bFirstFrame)
-		// {
-		// 	CameraFrameData = _imageTracker->cameraImage->buffer()->data();
-		// }
-		CameraFrameData = _imageTracker->cameraImage->buffer()->data();
+		void* CameraFrameData = _imageTracker->cameraImage->buffer()->data();
 		if (CameraFrameData != nullptr)
 		{
-			GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Green, FString::Printf(TEXT("%d"), _imageTracker->cameraImage->format()));
+			// GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Green, FString::Printf(TEXT("%d"), _imageTracker->cameraImage->format()));
 			UpdateTextureRegions(
 				CameraBackground, 0, 1,
 				CameraUpdateTextureRegion, SrcBpp * Height, SrcBpp,
@@ -155,45 +150,45 @@ void UImageTrackers::UpdateTextureRegions(
 		RegionData->SrcPitch = SrcPitch;
 		RegionData->SrcBpp = SrcBpp;
 		
-		// char* yuv420sp = (char*)(SrcData);
+		char* yuv420sp = (char*)(SrcData);
 		//
-		// int size = Width * Height;
-		// int offset = size;
-		// int* rgb = new int[Width * Height];
+		int size = Width * Height;
+		int offset = size;
+		int* rgb = new int[Width * Height];
 		
 		// unsigned char* rgb = new unsigned char[size];
 		// NV21toRGB(rgb, yuv420sp, Width, Height);
 
-		// int u, v, y1, y2, y3, y4;
-		//
-		// for (int i = 0, k = 0; i < size; i += 2, k += 2) {
-		// 	y1 = yuv420sp[i] & 0xff;
-		// 	y2 = yuv420sp[i + 1] & 0xff;
-		// 	y3 = yuv420sp[Width + i] & 0xff;
-		// 	y4 = yuv420sp[Width + i + 1] & 0xff;
-		//
-		// 	u = yuv420sp[offset + k] & 0xff;
-		// 	v = yuv420sp[offset + k + 1] & 0xff;
-		// 	u = u - 128;
-		// 	v = v - 128;
-		//
-		// 	rgb[i] = YUVtoRGB(y1, u, v);
-		// 	rgb[i + 1] = YUVtoRGB(y2, u, v);
-		// 	rgb[Width + i] = YUVtoRGB(y3, u, v);
-		// 	rgb[Width + i + 1] = YUVtoRGB(y4, u, v);
-		//
-		// 	if (i != 0 && (i + 2) % Width == 0)
-		// 		i += Width;
-		// }
+		int u, v, y1, y2, y3, y4;
 		
-		// RegionData->SrcData = (uint8*)(rgb);
-		RegionData->SrcData = (uint8*)SrcData;
+		for (int i = 0, k = 0; i < size; i += 2, k += 2) {
+			y1 = yuv420sp[i] & 0xff;
+			y2 = yuv420sp[i + 1] & 0xff;
+			y3 = yuv420sp[Width + i] & 0xff;
+			y4 = yuv420sp[Width + i + 1] & 0xff;
 		
-		FTextureRenderTargetResource* OutRTResource = OutRT->GameThread_GetRenderTargetResource();
+			u = yuv420sp[offset + k] & 0xff;
+			v = yuv420sp[offset + k + 1] & 0xff;
+			u = u - 128;
+			v = v - 128;
+		
+			rgb[i] = YUVtoRGB(y1, u, v);
+			rgb[i + 1] = YUVtoRGB(y2, u, v);
+			rgb[Width + i] = YUVtoRGB(y3, u, v);
+			rgb[Width + i + 1] = YUVtoRGB(y4, u, v);
+		
+			if (i != 0 && (i + 2) % Width == 0)
+				i += Width;
+		}
+		
+		RegionData->SrcData = (uint8*)(rgb);
+		// RegionData->SrcData = (uint8*)SrcData;
+		
+		// FTextureRenderTargetResource* OutRTResource = OutRT->GameThread_GetRenderTargetResource();
 		
 		// UE_LOG(LogTemp, Warning, TEXT("s") FString::FromInt(rgb[0]));
 		ENQUEUE_RENDER_COMMAND(UpdateTextureRegionData)
-		([RegionData, OutRTResource, bFreeData, this](FRHICommandListImmediate& RHICmdList)
+		([RegionData, bFreeData, this](FRHICommandListImmediate& RHICmdList)
 		{
 			for (uint32 RegionIndex = 0; RegionIndex < RegionData->NumRegions; ++RegionIndex)
 			{
@@ -212,9 +207,9 @@ void UImageTrackers::UpdateTextureRegions(
 				}
 			}
 
-			FTextureResource* CameraTextureResource = CameraBackground->Resource;
+			// FTextureResource* CameraTextureResource = CameraBackground->Resource;
 
-			NV21toRGB_RenderThread(RHICmdList, OutRTResource, CameraTextureResource, FIntPoint(Width, Height));
+			// NV21toRGB_RenderThread(RHICmdList, OutRTResource, CameraTextureResource, FIntPoint(Width, Height));
 			
 			if (bFreeData)
 			{
@@ -223,7 +218,7 @@ void UImageTrackers::UpdateTextureRegions(
 			}
 			delete RegionData;
 		});
-		// delete[] rgb;
+		delete[] rgb;
 	}
 }
 
@@ -290,7 +285,7 @@ static int YUVtoRGB(int y, int u, int v)
 	return 0xff000000 | (b << 16) | (g << 8) | r;
 }
 
-static void NV21toRGB(int* rgb, char* yuv, int width, int height)
+static void NV21toRGB(unsigned char* rgb, char* yuv, int width, int height)
 {
 	int total = width * height;
 	char Y = {};

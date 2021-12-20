@@ -4,7 +4,7 @@
     <init>
         <log text="EasyARSenseSDK APL init (shipping build)"/>
     </init>
-    <uses-permission android:name="android.permission.CAMERA" />
+    <addPermission android:name="android.permission.CAMERA"/>
     <addFeature android:name="android.hardware.camera" android:required="true"/>
     <uses-permission android:name="android.permission.INTERNET" />
 
