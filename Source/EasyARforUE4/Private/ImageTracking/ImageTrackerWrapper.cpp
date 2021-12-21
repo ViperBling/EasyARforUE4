@@ -104,7 +104,7 @@ void ImageTrackerWrapper::perFrame()
 		UE_LOG(LogTemp, Warning, TEXT("Don't have camera parameters"));
 		return;
 	}
-	auto cameraParameters = frame->inputFrame()->cameraParameters();
+	cameraParameters = frame->inputFrame()->cameraParameters();
 	cameraImage = frame->inputFrame()->image();
 	// UE_LOG(LogTemp, Warning, TEXT("%s"), cameraImage->format());
 	

@@ -16,6 +16,7 @@ public:
 	void loadFromImage(const std::string& filename, const std::string& name);
 
 	std::shared_ptr<easyar::Image> cameraImage;
+	std::shared_ptr<easyar::CameraParameters> cameraParameters;
 
 	int cameraWidth;
 	int cameraHeight;

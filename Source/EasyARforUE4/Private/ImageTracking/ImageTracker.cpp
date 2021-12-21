@@ -8,6 +8,7 @@
 
 static int YUVtoRGB(int y, int u, int v);
 static void NV21toRGB(unsigned char* rgb, char* yuv, int width, int height);
+static FMatrix MatrixConverter(easyar::Matrix44F MatEasyAR);
 
 void NV21toRGB_RenderThread(
 	FRHICommandListImmediate& RHICmdList,
@@ -22,6 +23,7 @@ UImageTrackers::UImageTrackers()
 	PrimaryComponentTick.TickGroup = TG_PostPhysics;
 	
 	_imageTracker = std::make_unique<ImageTrackerWrapper>();
+	CameraRenderer = FCameraRenderer(OutRT);
 	bFirstFrame = true;
 }
 
@@ -87,12 +89,16 @@ void UImageTrackers::CallEveryFrame(float DeltaTime)
 		void* CameraFrameData = _imageTracker->cameraImage->buffer()->data();
 		if (CameraFrameData != nullptr)
 		{
+			auto ImageProjection = _imageTracker->cameraParameters->imageProjection((float)Width / (float)Height, 0, true, false);
+			FMatrix ProjectionMatUE = MatrixConverter(ImageProjection);
+			CameraRenderer.Upload(Width, Height, CameraFrameData);
+			CameraRenderer.Render(ProjectionMatUE);
 			// GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Green, FString::Printf(TEXT("%d"), _imageTracker->cameraImage->format()));
-			UpdateTextureRegions(
-				CameraBackground, 0, 1,
-				CameraUpdateTextureRegion, SrcBpp * Height, SrcBpp,
-				CameraFrameData, false);
-			bFirstFrame = false;
+			// UpdateTextureRegions(
+			// 	CameraBackground, 0, 1,
+			// 	CameraUpdateTextureRegion, SrcBpp * Height, SrcBpp,
+			// 	CameraFrameData, false);
+			// bFirstFrame = false;
 		}
 	}
 	// _imageTracker->perFrame();
@@ -332,4 +338,17 @@ static void NV21toRGB(unsigned char* rgb, char* yuv, int width, int height)
 			rgb[index++] = R;
 		}
 	}
+}
+
+FMatrix MatrixConverter(easyar::Matrix44F MatEasyAR)
+{
+	FMatrix Result;
+	std::array<float, 16> data = MatEasyAR.data;
+	FPlane X, Y, Z, W;
+	X = FPlane(data[0], data[1], data[2], data[3]);
+	Y = FPlane(data[4], data[5], data[6], data[7]);
+	Z = FPlane(data[8], data[9], data[10], data[11]);
+	W = FPlane(data[12], data[13], data[14], data[15]);
+	Result = FMatrix(X, Y, Z, W);
+	return Result;
 }

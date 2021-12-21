@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "ImageTrackerWrapper.h"
+#include "Device/CameraRenderer.h"
 #include "ImageTracker.generated.h"
 
 UCLASS(ClassGroup = (EasyAR), meta = (BlueprintSpawnableComponent))
@@ -43,6 +44,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = EasyAR)
 	void CallEveryFrame(float DeltaTime);
+
+	FCameraRenderer CameraRenderer;
 
 private:
 	FString GetImagePath(FString& ImageName);
