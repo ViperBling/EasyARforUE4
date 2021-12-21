@@ -26,7 +26,7 @@ static unsigned char YUVBlock[24]{
 class FCameraRenderer
 {
 public:
-	FCameraRenderer(UTextureRenderTarget2D* InRenderTarget);
+	FCameraRenderer(int Width, int Height, UTextureRenderTarget2D* InRenderTarget);
 	virtual ~FCameraRenderer();
 
 	void Upload(int Width, int Height, void* BufferData);

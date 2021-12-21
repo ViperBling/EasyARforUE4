@@ -3,9 +3,11 @@
 class FCameraBackgroundVS;
 class FCameraBackgroundPS;
 
-FCameraRenderer::FCameraRenderer(UTextureRenderTarget2D* InRenderTarget)
+FCameraRenderer::FCameraRenderer(int Width, int Height, UTextureRenderTarget2D* InRenderTarget)
 {
 	CameraRT = InRenderTarget;
+	CurrentImageSize.X = Width;
+	CurrentImageSize.Y = Height;
 }
 
 FCameraRenderer::~FCameraRenderer()
@@ -44,21 +46,21 @@ void FCameraRenderer::Render(FMatrix ImageProjection)
 void FCameraRenderer::InitRHI()
 {
 	FRHIResourceCreateInfo CreateInfo;
-	BackTexture = RHICreateTexture2D(
-		CurrentImageSize.X, CurrentImageSize.Y,
-		PF_L8, 1, 1, TexCreate_Dynamic | TexCreate_ShaderResource | TexCreate_UAV,
-		CreateInfo
-	);
-	BackTexture_UAV = RHICreateUnorderedAccessView(BackTexture);
-	BackTexture_SRV = RHICreateShaderResourceView(BackTexture, 0);
-
-	BackTextureUV = RHICreateTexture2D(
-		CurrentImageSize.X, CurrentImageSize.Y,
-		PF_L8, 1, 1, TexCreate_Dynamic | TexCreate_ShaderResource | TexCreate_UAV,
-		CreateInfo
-	);
-	BackTextureUV_UAV = RHICreateUnorderedAccessView(BackTextureUV);
-	BackTextureUV_SRV = RHICreateShaderResourceView(BackTextureUV, 0);
+    	BackTexture = RHICreateTexture2D(
+    		CurrentImageSize.X, CurrentImageSize.Y,
+    		PF_L8, 1, 1, TexCreate_Dynamic | TexCreate_ShaderResource | TexCreate_UAV,
+    		CreateInfo
+    	);
+    	BackTexture_UAV = RHICreateUnorderedAccessView(BackTexture);
+    	BackTexture_SRV = RHICreateShaderResourceView(BackTexture, 0);
+    
+    	BackTextureUV = RHICreateTexture2D(
+    		CurrentImageSize.X, CurrentImageSize.Y,
+    		PF_L8, 1, 1, TexCreate_Dynamic | TexCreate_ShaderResource | TexCreate_UAV,
+    		CreateInfo
+    	);
+    	BackTextureUV_UAV = RHICreateUnorderedAccessView(BackTextureUV);
+    	BackTextureUV_SRV = RHICreateShaderResourceView(BackTextureUV, 0);
 }
 
 void FCameraRenderer::CameraBackground_RenderThread(

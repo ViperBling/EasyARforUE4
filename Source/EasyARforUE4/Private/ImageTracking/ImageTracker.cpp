@@ -23,7 +23,7 @@ UImageTrackers::UImageTrackers()
 	PrimaryComponentTick.TickGroup = TG_PostPhysics;
 	
 	_imageTracker = std::make_unique<ImageTrackerWrapper>();
-	CameraRenderer = FCameraRenderer(OutRT);
+	CameraRenderer = FCameraRenderer(Width, Height, OutRT);
 	bFirstFrame = true;
 }
 
@@ -91,8 +91,8 @@ void UImageTrackers::CallEveryFrame(float DeltaTime)
 		{
 			auto ImageProjection = _imageTracker->cameraParameters->imageProjection((float)Width / (float)Height, 0, true, false);
 			FMatrix ProjectionMatUE = MatrixConverter(ImageProjection);
-			CameraRenderer.Upload(Width, Height, CameraFrameData);
-			CameraRenderer.Render(ProjectionMatUE);
+			CameraRenderer->Upload(Width, Height, CameraFrameData);
+			CameraRenderer->Render(ProjectionMatUE);
 			// GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Green, FString::Printf(TEXT("%d"), _imageTracker->cameraImage->format()));
 			// UpdateTextureRegions(
 			// 	CameraBackground, 0, 1,
