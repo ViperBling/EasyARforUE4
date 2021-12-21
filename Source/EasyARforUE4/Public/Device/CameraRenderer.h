@@ -27,10 +27,11 @@ class FCameraRenderer
 {
 public:
 	FCameraRenderer(int Width, int Height, UTextureRenderTarget2D* InRenderTarget);
+	FCameraRenderer(){ CameraRT = nullptr; };
 	virtual ~FCameraRenderer();
 
 	void Upload(int Width, int Height, void* BufferData);
-	void Render(FMatrix ImageProjection);
+	void Render(FMatrix ImageProjection, void* BufferData);
 	
 	UTextureRenderTarget2D* CameraRT;
 
@@ -40,8 +41,9 @@ private:
 	void CameraBackground_RenderThread(
 		FRHICommandListImmediate& RHICmdList,
 		FMatrix ImageProjection,
-		FShaderResourceViewRHIRef BackTexture,
-		FShaderResourceViewRHIRef BackTextureUV);
+		// FShaderResourceViewRHIRef BackTexture,
+		// FShaderResourceViewRHIRef BackTextureUV,
+		void* BufferData);
 		
 	void Finalize();
 	
@@ -53,12 +55,13 @@ private:
 	};
 
 	FVector2D CurrentImageSize;
-
-	FTexture2DRHIRef BackTexture;
+	FCriticalSection RenderEveryFrameLock;
+	
+	FTextureRHIRef BackTexture;
 	FUnorderedAccessViewRHIRef BackTexture_UAV;
 	FShaderResourceViewRHIRef BackTexture_SRV;
 	
-	FTexture2DRHIRef BackTextureUV;
+	FTextureRHIRef BackTextureUV;
 	FUnorderedAccessViewRHIRef BackTextureUV_UAV;
 	FShaderResourceViewRHIRef BackTextureUV_SRV;
 };

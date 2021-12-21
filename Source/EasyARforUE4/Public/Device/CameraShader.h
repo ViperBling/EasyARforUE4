@@ -55,7 +55,8 @@ BEGIN_SHADER_PARAMETER_STRUCT(FCameraBackgroundParameters, )
 	SHADER_PARAMETER_SRV(Texture2D, BackTextureUV)
 	// SHADER_PARAMETER_SRV(Texture2D, BackTextureU)
 	// SHADER_PARAMETER_SRV(Texture2D, BackTextureV)
-	SHADER_PARAMETER_SAMPLER(SamplerState, Sampler)
+	SHADER_PARAMETER_SAMPLER(SamplerState, BaseSampler)
+	SHADER_PARAMETER_SAMPLER(SamplerState, BaseSamplerUV)
 END_SHADER_PARAMETER_STRUCT()
 
 class FCameraBackgroundPS : public FGlobalShader
