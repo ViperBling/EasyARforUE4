@@ -26,13 +26,10 @@ void MainPS(
 	out float4 OutColor : SV_Target0
 	)
 {
-	float2 cbcr = BackTextureUV.Sample(BaseSampler, uv).wx - float2(0.5, 0.5);
-	float3 ycbcr = float3(BackTexture.Sample(BaseSamplerUV, uv).x, cbcr);
-	// float sizeX, sizeY;
-	// BackTexture.GetDimensions(sizeX, sizeY);
-	//
-	// float2 cbcr = BackTexture.Load(int3(uv.x * sizeX, uv.y * sizeY, 0)).wx - float2(0.5, 0.5);
-	// float3 ycbcr = float3(BackTextureUV.Load(int3(uv.x * sizeX, uv.y * sizeY, 0)).x, cbcr);
+	float2 cbcr = BackTextureUV.Sample(BaseSamplerUV, uv).wx - float2(0.5, 0.5);
+	float3 ycbcr = float3(BackTexture.Sample(BaseSampler, uv).x, cbcr);
+
+	// float3 ycbcr = float3(BackTexture.Sample(BaseSampler, uv).x, 0, 0);
 
 	float3x3 ConvertMat = float3x3(
 		1, 1, 1,

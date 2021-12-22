@@ -60,4 +60,5 @@ private:
 	float Timer = 0;
 	const float FrameRate = 60.f;
 	bool bFirstFrame;
+	int FrameIndex = -1;
 };

@@ -1,5 +1,7 @@
 ﻿#include "Device/CameraRenderer.h"
 
+#include "MediaShaders.h"
+
 class FCameraBackgroundVS;
 class FCameraBackgroundPS;
 
@@ -8,6 +10,7 @@ FCameraRenderer::FCameraRenderer(int Width, int Height, UTextureRenderTarget2D* 
 	CameraRT = InRenderTarget;
 	CurrentImageSize.X = Width;
 	CurrentImageSize.Y = Height;
+	bInitialize = false;
 }
 
 FCameraRenderer::~FCameraRenderer()
@@ -17,16 +20,14 @@ FCameraRenderer::~FCameraRenderer()
 
 void FCameraRenderer::Upload(int Width, int Height, void* BufferData)
 {
-	RenderEveryFrameLock.Lock();
-	RetrieveFrame(Width, Height, BufferData);
-	RenderEveryFrameLock.Unlock();
+	// RenderEveryFrameLock.Lock();
+	// RetrieveFrame(Width, Height, BufferData);
+	// RenderEveryFrameLock.Unlock();
 }
 
 void FCameraRenderer::RetrieveFrame(int Width, int Height, void* BufferData)
 {
 	check(IsInRenderingThread())
-	InitRHI();
-	
 	FUpdateTextureRegion2D UpdateTextureRegion2D = FUpdateTextureRegion2D(0, 0, 0, 0, Width, Height);
 	RHIUpdateTexture2D(BackTexture->GetTexture2D(), 0, UpdateTextureRegion2D, 4 * Width, (uint8*)BufferData);
 
@@ -39,87 +40,100 @@ void FCameraRenderer::RetrieveFrame(int Width, int Height, void* BufferData)
 
 void FCameraRenderer::Render(FMatrix ImageProjection, void* BufferData)
 {
-	RenderEveryFrameLock.Lock();
+	// RenderEveryFrameLock.Lock();
+	FTextureRenderTargetResource* RenderTargetResource = CameraRT->GameThread_GetRenderTargetResource();
 	ENQUEUE_RENDER_COMMAND(CameraBackgroundRendering)
-	([this, BufferData, ImageProjection](FRHICommandListImmediate& RHICmdList)
+	([this, RenderTargetResource, BufferData, ImageProjection](FRHICommandListImmediate& RHICmdList)
 	{
+		if (!bInitialize)
+		{
+			InitRHI();
+			bInitialize = true;
+		}
+		RetrieveFrame(CurrentImageSize.X, CurrentImageSize.Y, BufferData);
 		CameraBackground_RenderThread(
-			RHICmdList, ImageProjection,
-			BufferData
-			);
+			RHICmdList, ImageProjection, RenderTargetResource);
 	});
-	RenderEveryFrameLock.Unlock();
+	// RenderEveryFrameLock.Unlock();
 }
 
 void FCameraRenderer::InitRHI()
 {
-	// FRHIResourceCreateInfo CreateInfo;
-	// BackTexture = RHICreateTexture2D(
-	// 	CurrentImageSize.X, CurrentImageSize.Y,
-	// 	PF_R8G8B8A8_UINT, 1, 1, TexCreate_ShaderResource | TexCreate_UAV,
-	// 	CreateInfo);
- //    BackTexture_UAV = RHICreateUnorderedAccessView(BackTexture);
- //    BackTexture_SRV = RHICreateShaderResourceView(BackTexture, 0);
- //    
- //    BackTextureUV = RHICreateTexture2D(
- //    	CurrentImageSize.X / 2, CurrentImageSize.Y / 2,
- //    	PF_R8G8B8A8_UINT, 1, 1, TexCreate_ShaderResource | TexCreate_UAV,
- //    	CreateInfo);
- //    BackTextureUV_UAV = RHICreateUnorderedAccessView(BackTextureUV);
- //    BackTextureUV_SRV = RHICreateShaderResourceView(BackTextureUV, 0);
-	
+	check(IsInRenderingThread())
+	FRHIResourceCreateInfo CreateInfo;
+	BackTexture = RHICreateTexture2D(
+		CurrentImageSize.X, CurrentImageSize.Y,
+		PF_G8, 1, 1, TexCreate_ShaderResource | TexCreate_UAV,
+		CreateInfo);
+    BackTexture_UAV = RHICreateUnorderedAccessView(BackTexture);
+    BackTexture_SRV = RHICreateShaderResourceView(BackTexture, 0);
+    
+    BackTextureUV = RHICreateTexture2D(
+    	CurrentImageSize.X / 2, CurrentImageSize.Y / 2,
+    	PF_R8G8, 1, 1, TexCreate_ShaderResource | TexCreate_UAV,
+    	CreateInfo);
+    BackTextureUV_UAV = RHICreateUnorderedAccessView(BackTextureUV);
+    BackTextureUV_SRV = RHICreateShaderResourceView(BackTextureUV, 0);
 }
 
 void FCameraRenderer::CameraBackground_RenderThread(
 		FRHICommandListImmediate& RHICmdList,
 		FMatrix ImageProjection,
+		FTextureRenderTargetResource* RenderTargetResource
 		// FShaderResourceViewRHIRef BackTextures_SRV,
-		// FShaderResourceViewRHIRef BackTexturesUV_SRV,
-		void* BufferData)
+		// FShaderResourceViewRHIRef BackTexturesUV_SRV
+		)
 {
 	check(IsInRenderingThread())
 	SCOPED_DRAW_EVENT(RHICmdList, CameraBack);
-    
-	FRHIRenderPassInfo RenderPassInfo(
-    	CameraRT->GetRenderTargetResource()->GetRenderTargetTexture(),
-    	ERenderTargetActions::Clear_Store);
-
+	
+	FGraphicsPipelineStateInitializer GraphicsPSOInit;
+	FRHITexture* RenderTarget = RenderTargetResource->TextureRHI.GetReference();
+	RHICmdList.Transition(FRHITransitionInfo(RenderTarget, ERHIAccess::Unknown, ERHIAccess::RTV));
+	
+	FRHIRenderPassInfo RenderPassInfo(RenderTarget,ERenderTargetActions::DontLoad_Store);
 	RHICmdList.BeginRenderPass(RenderPassInfo, TEXT("CameraBackgroundRendering"));
 	{
-		auto ShaderMap = GetGlobalShaderMap(ERHIFeatureLevel::ES3_1);
-		TShaderMapRef<FCameraBackgroundVS> VertexShader(ShaderMap);
-		TShaderMapRef<FCameraBackgroundPS> PixelShader(ShaderMap);
-
-		// Set the graphic pipeline state.
-		FGraphicsPipelineStateInitializer GraphicsPSOInit;
 		RHICmdList.ApplyCachedRenderTargets(GraphicsPSOInit);
-		GraphicsPSOInit.BlendState = TStaticBlendState<>::GetRHI();
-		GraphicsPSOInit.RasterizerState = TStaticRasterizerState<>::GetRHI();
-		GraphicsPSOInit.DepthStencilState = TStaticDepthStencilState<false, CF_Always>::GetRHI();
-		GraphicsPSOInit.BoundShaderState.VertexDeclarationRHI = GFilterVertexDeclaration.VertexDeclarationRHI;
-		GraphicsPSOInit.BoundShaderState.VertexShaderRHI = VertexShader.GetVertexShader();
-		GraphicsPSOInit.BoundShaderState.PixelShaderRHI = PixelShader.GetPixelShader();
-		GraphicsPSOInit.PrimitiveType = PT_TriangleStrip;
-		SetGraphicsPipelineState(RHICmdList, GraphicsPSOInit);
-
-		FCameraBackgroundPS::FParameters PassParameters;
-		PassParameters.Projection = ImageProjection;
-		PassParameters.BackTexture = BackTexture_SRV;
-		PassParameters.BackTextureUV = BackTextureUV_SRV;
-		PassParameters.BaseSampler = TStaticSamplerState<SF_Bilinear, AM_Clamp, AM_Clamp, AM_Clamp>::GetRHI();
-		PassParameters.BaseSamplerUV = TStaticSamplerState<SF_Bilinear, AM_Clamp, AM_Clamp, AM_Clamp>::GetRHI();
+		RHICmdList.SetViewport(0, 0, 0.0f, CurrentImageSize.X, CurrentImageSize.Y, 1.0f);
 		
-		SetShaderParameters(RHICmdList, PixelShader, PixelShader.GetPixelShader(), PassParameters);
+		GraphicsPSOInit.DepthStencilState = TStaticDepthStencilState<false, CF_Always>::GetRHI();
+		GraphicsPSOInit.RasterizerState = TStaticRasterizerState<>::GetRHI();
+		GraphicsPSOInit.BlendState = TStaticBlendStateWriteMask<CW_RGBA, CW_NONE, CW_NONE, CW_NONE, CW_NONE, CW_NONE, CW_NONE, CW_NONE>::GetRHI();
+		GraphicsPSOInit.PrimitiveType = PT_TriangleStrip;
+		
+		auto ShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
+		TShaderMapRef<FMediaShadersVS> VertexShader(ShaderMap);
+		TShaderMapRef<FNV21ConvertPS> PixelShader(ShaderMap);
+		
+		
+		GraphicsPSOInit.BoundShaderState.VertexDeclarationRHI = GMediaVertexDeclaration.VertexDeclarationRHI;
+		GraphicsPSOInit.BoundShaderState.VertexShaderRHI = VertexShader.GetVertexShader();
+
+		FVector YUVOffset(MediaShaders::YUVOffset10bits);
+
+		GraphicsPSOInit.BoundShaderState.PixelShaderRHI = PixelShader.GetPixelShader();
+		SetGraphicsPipelineState(RHICmdList, GraphicsPSOInit);
+		
+		static const FMatrix DefaultMatrix(
+			FPlane(1.164383f, 0.000000f, 1.596027f, 0.000000f),
+			FPlane(1.164383f, -0.391762f, -0.812968f, 0.000000f),
+			FPlane(1.164383f, 2.017232f, 0.000000f, 0.000000f),
+			FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
+		);
+		PixelShader->SetParameters(RHICmdList, BackTexture, FIntPoint(CurrentImageSize.X, CurrentImageSize.Y), DefaultMatrix, YUVOffset, false);
+		// SetShaderParameters(RHICmdList, PixelShader, PixelShader.GetPixelShader(), PassParameters);
 
 		RHICmdList.SetStreamSource(0, GCameraBackgroundVB.VertexBufferRHI, 0);
+		
 		RHICmdList.DrawPrimitive(0, 2, 1);
-
-		RHICmdList.CopyToResolveTarget(
-			CameraRT->GetRenderTargetResource()->GetRenderTargetTexture(),
-			CameraRT->GetRenderTargetResource()->TextureRHI, FResolveParams()
-		);
+		// RHICmdList.CopyToResolveTarget(
+		// 	CameraRT->GetRenderTargetResource()->GetRenderTargetTexture(),
+		// 	CameraRT->GetRenderTargetResource()->TextureRHI, FResolveParams()
+		// );
 	}
 	RHICmdList.EndRenderPass();
+	RHICmdList.Transition(FRHITransitionInfo(RenderTarget, ERHIAccess::RTV, ERHIAccess::SRVGraphics));
 }
 		
 
