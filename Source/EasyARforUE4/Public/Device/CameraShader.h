@@ -50,7 +50,7 @@ public:
 };
 
 BEGIN_SHADER_PARAMETER_STRUCT(FCameraBackgroundParameters, )
-	SHADER_PARAMETER(FMatrix, Projection)
+	// SHADER_PARAMETER(FMatrix, Projection)
 	SHADER_PARAMETER_SRV(Texture2D, BackTexture)
 	SHADER_PARAMETER_SRV(Texture2D, BackTextureUV)
 	// SHADER_PARAMETER_SRV(Texture2D, BackTextureU)

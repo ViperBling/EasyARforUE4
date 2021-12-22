@@ -1,6 +1,6 @@
 #include "/Engine/Private/Common.ush"
 
-float4x4 Projection;
+// float4x4 Projection;
 Texture2D BackTexture;
 Texture2D BackTextureUV;
 SamplerState BaseSampler;

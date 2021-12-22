@@ -17,10 +17,8 @@ void ImageTrackerWrapper::initialize()
 	I2FrameAdapter = easyar::InputFrameToFeedbackFrameAdapter::create();
 	OutputFrameFork = easyar::OutputFrameFork::create(2);
 	OutputFrameBuffer = easyar::OutputFrameBuffer::create();
-	// CameraParameters = easyar::CameraParameters::createWithDefaultIntrinsics({cameraWidth, cameraHeight}, easyar::CameraDeviceType::Back, 90);
 	Camera = easyar::CameraDeviceSelector::createCameraDevice(easyar::CameraDevicePreference::PreferObjectSensing);
 	Camera->setAndroidCameraApiType(easyar::AndroidCameraApiType::Camera1);
-	
 
 	// Camera->setCameraParameters(CameraParameters);
 	

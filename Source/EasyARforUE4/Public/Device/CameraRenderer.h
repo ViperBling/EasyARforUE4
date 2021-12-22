@@ -42,8 +42,6 @@ private:
 		FRHICommandListImmediate& RHICmdList,
 		FMatrix ImageProjection,
 		FTextureRenderTargetResource* RenderTargetResource
-		// FShaderResourceViewRHIRef BackTexture,
-		// FShaderResourceViewRHIRef BackTextureUV
 		);
 		
 	void Finalize();

@@ -80,8 +80,6 @@ void FCameraRenderer::CameraBackground_RenderThread(
 		FRHICommandListImmediate& RHICmdList,
 		FMatrix ImageProjection,
 		FTextureRenderTargetResource* RenderTargetResource
-		// FShaderResourceViewRHIRef BackTextures_SRV,
-		// FShaderResourceViewRHIRef BackTexturesUV_SRV
 		)
 {
 	check(IsInRenderingThread())
@@ -105,7 +103,8 @@ void FCameraRenderer::CameraBackground_RenderThread(
 		auto ShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
 		TShaderMapRef<FMediaShadersVS> VertexShader(ShaderMap);
 		TShaderMapRef<FNV21ConvertPS> PixelShader(ShaderMap);
-		
+		// TShaderMapRef<FCameraBackgroundVS> VertexShader(ShaderMap);
+		// TShaderMapRef<FCameraBackgroundPS> PixelShader(ShaderMap);
 		
 		GraphicsPSOInit.BoundShaderState.VertexDeclarationRHI = GMediaVertexDeclaration.VertexDeclarationRHI;
 		GraphicsPSOInit.BoundShaderState.VertexShaderRHI = VertexShader.GetVertexShader();
@@ -121,19 +120,26 @@ void FCameraRenderer::CameraBackground_RenderThread(
 			FPlane(1.164383f, 2.017232f, 0.000000f, 0.000000f),
 			FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
 		);
+
+		FCameraBackgroundPS::FParameters PassParameters;
+		PassParameters.BackTexture = BackTexture_SRV;
+		PassParameters.BackTextureUV = BackTextureUV_SRV;
+		PassParameters.BaseSampler = TStaticSamplerState<SF_Bilinear>::GetRHI();
+		PassParameters.BaseSamplerUV = TStaticSamplerState<SF_Point>::GetRHI();
+		
 		PixelShader->SetParameters(RHICmdList, BackTexture, FIntPoint(CurrentImageSize.X, CurrentImageSize.Y), DefaultMatrix, YUVOffset, false);
 		// SetShaderParameters(RHICmdList, PixelShader, PixelShader.GetPixelShader(), PassParameters);
 
-		RHICmdList.SetStreamSource(0, GCameraBackgroundVB.VertexBufferRHI, 0);
-		
+		RHICmdList.SetStreamSource(0, CreateTempMediaVertexBuffer(), 0);
+		RHICmdList.SetViewport(0, 0, 0, CurrentImageSize.X, CurrentImageSize.Y, 1.f);
 		RHICmdList.DrawPrimitive(0, 2, 1);
-		// RHICmdList.CopyToResolveTarget(
-		// 	CameraRT->GetRenderTargetResource()->GetRenderTargetTexture(),
-		// 	CameraRT->GetRenderTargetResource()->TextureRHI, FResolveParams()
-		// );
 	}
 	RHICmdList.EndRenderPass();
 	RHICmdList.Transition(FRHITransitionInfo(RenderTarget, ERHIAccess::RTV, ERHIAccess::SRVGraphics));
+	// RHICmdList.CopyToResolveTarget(
+	// 	CameraRT->GetRenderTargetResource()->GetRenderTargetTexture(),
+	// 	CameraRT->GetRenderTargetResource()->TextureRHI, FResolveParams()
+	// );
 }
 		
 
