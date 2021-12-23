@@ -32,6 +32,15 @@ public class EasyARSense : ModuleRules
 				: "$(PluginDir)/Binaries/ThirdParty/EasyARSense/Win64";
 			RuntimeDependencies.Add(Path.Combine(EasyAROutBinPath, "EasyAR.dll"), Path.Combine(EasyARLibPath, "EasyAR.dll"));
 		}
+		else if (Target.Platform == UnrealTargetPlatform.Mac)
+		{
+			PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "include"));
+			string EasyARLibPath = Path.Combine(ModuleDirectory, "MacOS", "x64");
+			string EasyAROutBinPath = "$(PluginDir)/Binaries/ThirdParty/EasyARSense/MacOS/x64";
+			
+			PublicDelayLoadDLLs.Add(Path.Combine(ModuleDirectory, "MacOS", "x64", "libEasyAR.dylib"));
+			RuntimeDependencies.Add(Path.Combine(EasyAROutBinPath, "libEasyAR.dylib"), Path.Combine(EasyARLibPath, "libEasyAR.dylib"));
+		}
 		else if (Target.Platform == UnrealTargetPlatform.Android)
 		{
 			PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "include"));
