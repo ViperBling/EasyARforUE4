@@ -29,13 +29,13 @@ void FCameraRenderer::RetrieveFrame(int Width, int Height, void* BufferData)
 {
 	check(IsInRenderingThread())
 	FUpdateTextureRegion2D UpdateTextureRegion2D = FUpdateTextureRegion2D(0, 0, 0, 0, Width, Height);
-	RHIUpdateTexture2D(BackTexture->GetTexture2D(), 0, UpdateTextureRegion2D, 4 * Width, (uint8*)BufferData);
+	RHIUpdateTexture2D(BackTexture, 0, UpdateTextureRegion2D, 4 * Width, (uint8*)BufferData);
 
 	UpdateTextureRegion2D.Width = CurrentImageSize.X / 2;
-	UpdateTextureRegion2D.Height = CurrentImageSize.Y / 2;
+	// UpdateTextureRegion2D.Height = CurrentImageSize.Y / 2;
 	
 	auto data = (uint8*)BufferData + Width * Height;
-	RHIUpdateTexture2D(BackTextureUV->GetTexture2D(), 0, UpdateTextureRegion2D, 4 * Width, data);
+	RHIUpdateTexture2D(BackTextureUV, 0, UpdateTextureRegion2D, 4 * Width, data);
 }
 
 void FCameraRenderer::Render(FMatrix ImageProjection, void* BufferData)
@@ -69,7 +69,7 @@ void FCameraRenderer::InitRHI()
     BackTexture_SRV = RHICreateShaderResourceView(BackTexture, 0);
     
     BackTextureUV = RHICreateTexture2D(
-    	CurrentImageSize.X / 2, CurrentImageSize.Y / 2,
+    	CurrentImageSize.X / 2, CurrentImageSize.Y,
     	PF_R8G8, 1, 1, TexCreate_ShaderResource | TexCreate_UAV,
     	CreateInfo);
     BackTextureUV_UAV = RHICreateUnorderedAccessView(BackTextureUV);
@@ -101,12 +101,13 @@ void FCameraRenderer::CameraBackground_RenderThread(
 		GraphicsPSOInit.PrimitiveType = PT_TriangleStrip;
 		
 		auto ShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
-		TShaderMapRef<FMediaShadersVS> VertexShader(ShaderMap);
-		TShaderMapRef<FNV21ConvertPS> PixelShader(ShaderMap);
-		// TShaderMapRef<FCameraBackgroundVS> VertexShader(ShaderMap);
-		// TShaderMapRef<FCameraBackgroundPS> PixelShader(ShaderMap);
+		// TShaderMapRef<FMediaShadersVS> VertexShader(ShaderMap);
+		// TShaderMapRef<FYCbCrConvertPS> PixelShader(ShaderMap);
+		TShaderMapRef<FCameraBackgroundVS> VertexShader(ShaderMap);
+		TShaderMapRef<FCameraBackgroundPS> PixelShader(ShaderMap);
 		
-		GraphicsPSOInit.BoundShaderState.VertexDeclarationRHI = GMediaVertexDeclaration.VertexDeclarationRHI;
+		// GraphicsPSOInit.BoundShaderState.VertexDeclarationRHI = GMediaVertexDeclaration.VertexDeclarationRHI;
+		GraphicsPSOInit.BoundShaderState.VertexDeclarationRHI = GFilterVertexDeclaration.VertexDeclarationRHI;
 		GraphicsPSOInit.BoundShaderState.VertexShaderRHI = VertexShader.GetVertexShader();
 
 		FVector YUVOffset(MediaShaders::YUVOffset10bits);
@@ -120,6 +121,12 @@ void FCameraRenderer::CameraBackground_RenderThread(
 			FPlane(1.164383f, 2.017232f, 0.000000f, 0.000000f),
 			FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
 		);
+		const FMatrix YuvToRgbRec709 = FMatrix(
+		FPlane(1.000000f, 0.000000f, 1.280330f, 0.000000f),
+		FPlane(1.000000f, -0.214820f, -0.380590f, 0.000000f),
+		FPlane(1.000000f, 2.127980f, 0.000000f, 0.000000f),
+		FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
+	);
 
 		FCameraBackgroundPS::FParameters PassParameters;
 		PassParameters.BackTexture = BackTexture_SRV;
@@ -127,10 +134,13 @@ void FCameraRenderer::CameraBackground_RenderThread(
 		PassParameters.BaseSampler = TStaticSamplerState<SF_Bilinear>::GetRHI();
 		PassParameters.BaseSamplerUV = TStaticSamplerState<SF_Point>::GetRHI();
 		
-		PixelShader->SetParameters(RHICmdList, BackTexture, FIntPoint(CurrentImageSize.X, CurrentImageSize.Y), DefaultMatrix, YUVOffset, false);
-		// SetShaderParameters(RHICmdList, PixelShader, PixelShader.GetPixelShader(), PassParameters);
+		// PixelShader->SetParameters(RHICmdList, BackTexture, FIntPoint(CurrentImageSize.X, CurrentImageSize.Y), DefaultMatrix, YUVOffset, false);
+		// PixelShader->SetParameters(RHICmdList, BackTexture, BackTextureUV, YuvToRgbRec709, YUVOffset, false);
+		SetShaderParameters(RHICmdList, PixelShader, PixelShader.GetPixelShader(), PassParameters);
 
-		RHICmdList.SetStreamSource(0, CreateTempMediaVertexBuffer(), 0);
+		// RHICmdList.SetStreamSource(0, CreateTempMediaVertexBuffer(), 0);
+		RHICmdList.SetStreamSource(0, GCameraBackgroundVB.VertexBufferRHI, 0);
+		
 		RHICmdList.SetViewport(0, 0, 0, CurrentImageSize.X, CurrentImageSize.Y, 1.f);
 		RHICmdList.DrawPrimitive(0, 2, 1);
 	}

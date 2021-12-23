@@ -24,9 +24,9 @@ void ImageTrackerWrapper::initialize()
 	
 	if (!Camera->openWithPreferredType(easyar::CameraDeviceType::Back))
 	{
-		//Camera->requestPermissions();
+
 		UE_LOG(LogTemp, Warning, TEXT("Camera Open Failed"));
-		return;
+		// return;
 	}
 
 	Camera->setFocusMode(easyar::CameraDeviceFocusMode::Continousauto);
@@ -94,6 +94,7 @@ void ImageTrackerWrapper::perFrame()
 	std::optional<std::shared_ptr<easyar::OutputFrame>> oFrame = OutputFrameBuffer->peek();
 	if (!oFrame.has_value()) { return; }
 	cameraFrame = oFrame.value();
+	
 	if (!cameraFrame->inputFrame()->hasCameraParameters())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Don't have camera parameters"));

@@ -15,17 +15,17 @@ public:
 		TResourceArray<FFilterVertex, VERTEXBUFFER_ALIGNMENT> Vertices;
 		Vertices.SetNumUninitialized(6);
 
-		Vertices[0].Position = FVector4(1, 1, 0, 1);
-		Vertices[0].UV = FVector2D(1, 1);
+		Vertices[0].Position = FVector4(-1.0f, 1.0f, 1.0f, 1.0f);
+		Vertices[0].UV = FVector2D(0, 0);
 
-		Vertices[1].Position = FVector4(-1, 1, 0, 1);
-		Vertices[1].UV = FVector2D(0, 1);
+		Vertices[1].Position = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
+		Vertices[1].UV = FVector2D(1, 0);
 
-		Vertices[2].Position = FVector4(1, -1, 0, 1);
-		Vertices[2].UV = FVector2D(1, 0);
+		Vertices[2].Position = FVector4(-1.0f, -1.0f, 1.0f, 1.0f);
+		Vertices[2].UV = FVector2D(0, 1);
 
-		Vertices[3].Position = FVector4(-1, -1, 0, 1);
-		Vertices[3].UV = FVector2D(0, 0);
+		Vertices[3].Position = FVector4(1.0f, -1.0f, 1.0f, 1.0f);
+		Vertices[3].UV = FVector2D(1, 1);
 
 		// Create vertex buffer. Fill buffer with initial data upon creation
 		FRHIResourceCreateInfo CreateInfo(&Vertices);
