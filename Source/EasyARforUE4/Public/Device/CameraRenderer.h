@@ -43,18 +43,8 @@ private:
 		FMatrix ImageProjection,
 		FTextureRenderTargetResource* RenderTargetResource
 		);
-		
-	void Finalize();
-	
-	enum class RetrieveStatus
-	{
-		Unset,
-		Upload,
-		Clear,
-	};
 
 	FVector2D CurrentImageSize;
-	FCriticalSection RenderEveryFrameLock;
 	
 	FTexture2DRHIRef BackTexture;
 	FUnorderedAccessViewRHIRef BackTexture_UAV;

@@ -32,7 +32,7 @@ void ImageTrackerWrapper::initialize()
 	Camera->setFocusMode(easyar::CameraDeviceFocusMode::Continousauto);
 	Camera->setSize(easyar::Vec2I{{cameraWidth, cameraHeight}});
 	Camera->cameraParameters()->imageHorizontalFlip(false);
-	Camera->cameraParameters()->imageOrientation(0);
+	Camera->cameraParameters()->imageOrientation(180);
 	/*Camera->setStateChangedCallback(Scheduler, [](easyar::CameraState s)
 	{
 		if (s == easyar::CameraState::Disconnected)
