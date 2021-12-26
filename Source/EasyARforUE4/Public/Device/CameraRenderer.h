@@ -10,18 +10,6 @@
 #include "CameraShader.h"
 
 #include "easyar/types.hpp"
-// #include "CameraRenderer.generated.h"
-
-static unsigned char YUVBlock[24]{
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    127, 127,
-    127, 127,
-    127, 127,
-    127, 127,
-};
 
 class FCameraRenderer
 {
@@ -42,17 +30,18 @@ private:
 		FRHICommandListImmediate& RHICmdList,
 		FMatrix ImageProjection,
 		FTextureRenderTargetResource* RenderTargetResource
-		);
-
+	);
+	
+	void CustomCameraBackground_RenderThread(
+    	FRHICommandListImmediate& RHICmdList,
+    	FTextureRenderTargetResource* RenderTargetResource
+    );
+	
 	FVector2D CurrentImageSize;
 	
 	FTexture2DRHIRef BackTexture;
 	FUnorderedAccessViewRHIRef BackTexture_UAV;
 	FShaderResourceViewRHIRef BackTexture_SRV;
-	
-	FTexture2DRHIRef BackTextureUV;
-	FUnorderedAccessViewRHIRef BackTextureUV_UAV;
-	FShaderResourceViewRHIRef BackTextureUV_SRV;
 	
 	bool bInitialize;
 };

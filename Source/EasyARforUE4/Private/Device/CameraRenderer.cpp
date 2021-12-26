@@ -31,12 +31,6 @@ void FCameraRenderer::RetrieveFrame(int Width, int Height, void* BufferData)
 	const auto BackTexSrcBpp = GPixelFormats[BackTexture->GetFormat()].BlockBytes;
 	FUpdateTextureRegion2D UpdateTextureRegion2D = FUpdateTextureRegion2D(0, 0, 0, 0, Width, Height * 1.5);
 	RHIUpdateTexture2D(BackTexture, 0, UpdateTextureRegion2D, BackTexSrcBpp * Width, (uint8*)BufferData);
-
-	UpdateTextureRegion2D.Width = CurrentImageSize.X / 2.;
-	UpdateTextureRegion2D.Height = CurrentImageSize.Y / 2.;
-	const auto BackTexUVSrcBpp = GPixelFormats[BackTextureUV->GetFormat()].BlockBytes;
-	auto data = (uint8*)BufferData + Width * Height;
-	RHIUpdateTexture2D(BackTextureUV, 0, UpdateTextureRegion2D, BackTexUVSrcBpp * UpdateTextureRegion2D.Width, data);
 }
 
 void FCameraRenderer::Render(FMatrix ImageProjection, void* BufferData)
@@ -53,6 +47,8 @@ void FCameraRenderer::Render(FMatrix ImageProjection, void* BufferData)
 		RetrieveFrame(CurrentImageSize.X, CurrentImageSize.Y, BufferData);
 		CameraBackground_RenderThread(
 			RHICmdList, ImageProjection, RenderTargetResource);
+		//CustomCameraBackground_RenderThread(
+        	//RHICmdList, RenderTargetResource);
 	});
 }
 
@@ -66,13 +62,6 @@ void FCameraRenderer::InitRHI()
 		CreateInfo);
     BackTexture_UAV = RHICreateUnorderedAccessView(BackTexture);
     BackTexture_SRV = RHICreateShaderResourceView(BackTexture, 0);
-    
-    BackTextureUV = RHICreateTexture2D(
-    	CurrentImageSize.X / 2., CurrentImageSize.Y / 2.,
-    	PF_R8G8, 1, 1, TexCreate_ShaderResource | TexCreate_UAV,
-    	CreateInfo);
-    BackTextureUV_UAV = RHICreateUnorderedAccessView(BackTextureUV);
-    BackTextureUV_SRV = RHICreateShaderResourceView(BackTextureUV, 0);
 }
 
 void FCameraRenderer::CameraBackground_RenderThread(
@@ -87,72 +76,138 @@ void FCameraRenderer::CameraBackground_RenderThread(
 	FGraphicsPipelineStateInitializer GraphicsPSOInit;
 	FRHITexture* RenderTarget = RenderTargetResource->TextureRHI.GetReference();
 	RHICmdList.Transition(FRHITransitionInfo(RenderTarget, ERHIAccess::Unknown, ERHIAccess::RTV));
+
+	FIntPoint OutputDim(RenderTarget->GetSizeXYZ().X, RenderTarget->GetSizeXYZ().Y);
 	
 	FRHIRenderPassInfo RenderPassInfo(RenderTarget,ERenderTargetActions::DontLoad_Store);
 	RHICmdList.BeginRenderPass(RenderPassInfo, TEXT("CameraBackgroundRendering"));
 	{
 		RHICmdList.ApplyCachedRenderTargets(GraphicsPSOInit);
-		RHICmdList.SetViewport(0, 0, 0.0f, CurrentImageSize.X, CurrentImageSize.Y, 1.0f);
+		RHICmdList.SetViewport(0, 0, 0.0f, OutputDim.X, OutputDim.Y, 1.0f);
+		
+		auto ShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
+		TShaderMapRef<FMediaShadersVS> VertexShader(ShaderMap);
+		TShaderMapRef<FNV12ConvertAsBytesPS> PixelShader(ShaderMap);
 		
 		GraphicsPSOInit.DepthStencilState = TStaticDepthStencilState<false, CF_Always>::GetRHI();
 		GraphicsPSOInit.RasterizerState = TStaticRasterizerState<>::GetRHI();
 		GraphicsPSOInit.BlendState = TStaticBlendStateWriteMask<CW_RGBA, CW_NONE, CW_NONE, CW_NONE, CW_NONE, CW_NONE, CW_NONE, CW_NONE>::GetRHI();
 		GraphicsPSOInit.PrimitiveType = PT_TriangleStrip;
-		
-		auto ShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
-		TShaderMapRef<FMediaShadersVS> VertexShader(ShaderMap);
-		TShaderMapRef<FNV21ConvertPS> PixelShader(ShaderMap);
-		// TShaderMapRef<FCameraBackgroundVS> VertexShader(ShaderMap);
-		// TShaderMapRef<FCameraBackgroundPS> PixelShader(ShaderMap);
-		
 		GraphicsPSOInit.BoundShaderState.VertexDeclarationRHI = GMediaVertexDeclaration.VertexDeclarationRHI;
-		// GraphicsPSOInit.BoundShaderState.VertexDeclarationRHI = GFilterVertexDeclaration.VertexDeclarationRHI;
 		GraphicsPSOInit.BoundShaderState.VertexShaderRHI = VertexShader.GetVertexShader();
-
-		FVector YUVOffset(MediaShaders::YUVOffset10bits);
-
 		GraphicsPSOInit.BoundShaderState.PixelShaderRHI = PixelShader.GetPixelShader();
 		SetGraphicsPipelineState(RHICmdList, GraphicsPSOInit);
+
+		FVector YUVOffset(MediaShaders::YUVOffset8bits);
 		
-		static const FMatrix DefaultMatrix(
-			FPlane(1.164383f, 0.000000f, 1.596027f, 0.000000f),
+		const FMatrix YuvToSrgbJpeg = FMatrix(
+		FPlane(1.000000f,  0.000000f,  1.402000f, 0.000000f),
+		FPlane(1.000000f, -0.344140f, -0.714140f, 0.000000f),
+		FPlane(1.000000f,  1.772000f,  0.000000f, 0.000000f),
+		FPlane(0.000000f,  0.000000f,  0.000000f, 0.000000f)
+	);
+
+		const FMatrix YuvToSrgbDefault = FMatrix(
+			FPlane(1.164383f,  0.000000f,  1.596027f, 0.000000f),
 			FPlane(1.164383f, -0.391762f, -0.812968f, 0.000000f),
-			FPlane(1.164383f, 2.017232f, 0.000000f, 0.000000f),
+			FPlane(1.164383f,  2.017232f,  0.000000f, 0.000000f),
+			FPlane(0.000000f,  0.000000f,  0.000000f, 0.000000f)
+		);
+
+		const FMatrix YuvToSrgbPs4 = FMatrix(
+			FPlane(1.164400f,  0.000000f,  1.792700f, 0.000000f),
+			FPlane(1.164400f, -0.213300f, -0.532900f, 0.000000f),
+			FPlane(1.164400f,  2.112400f,  0.000000f, 0.000000f),
+			FPlane(0.000000f,  0.000000f,  0.000000f, 0.000000f)
+		);
+
+		const FMatrix YuvToSrgbRec601 = FMatrix(
+			FPlane(1.000000f, 0.000000f, 1.139830f, 0.000000f),
+			FPlane(1.000000f, -0.394650f, -0.580600f, 0.000000f),
+			FPlane(1.000000f, 2.032110, 0.000000, 0.000000f),
 			FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
 		);
-		static const FMatrix YuvToRgbRec709 = FMatrix(
-		FPlane(1.000000f, 0.000000f, 1.280330f, 0.000000f),
-		FPlane(1.000000f, -0.214820f, -0.380590f, 0.000000f),
-		FPlane(1.000000f, 2.127980f, 0.000000f, 0.000000f),
-		FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
-		);
-		static const FMatrix YUVN21Convert(
-		FPlane(1.000000f, 1.000000f, 1.000000f, 0.000000f),
-		FPlane(0.000000f, -0.344000f, 1.722000f, 0.000000f),
-		FPlane(1.402000f, -0.714000f, 0.000000f, 0.000000f),
-		FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
+
+		const FMatrix YuvToRgbRec709 = FMatrix(
+			FPlane(1.000000f, 0.000000f, 1.280330f, 0.000000f),
+			FPlane(1.000000f, -0.214820f, -0.380590f, 0.000000f),
+			FPlane(1.000000f, 2.127980f, 0.000000f, 0.000000f),
+			FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
 		);
 
-		FCameraBackgroundPS::FParameters PassParameters;
-		PassParameters.BackTexture = BackTexture_SRV;
-		PassParameters.BackTextureUV = BackTextureUV_SRV;
-		PassParameters.BaseSampler = TStaticSamplerState<SF_Bilinear>::GetRHI();
-		PassParameters.BaseSamplerUV = TStaticSamplerState<SF_Point>::GetRHI();
+		const FMatrix YuvToRgbRec709Full = FMatrix(
+			FPlane(1.164400f, 0.000000f, 1.792700f, 0.000000f),
+			FPlane(1.164400f, -0.213300f, -0.532900f, 0.000000f),
+			FPlane(1.164400f, 2.112400f, 0.000000f, 0.000000f),
+			FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
+		);
+
+		const FMatrix RgbToYuvRec709Full = FMatrix(
+			FPlane(0.182581f, 0.614210f, 0.062020f, 0.000000f),
+			FPlane(-0.100642f, -0.338566f, 0.439208f, 0.000000f),
+			FPlane(0.439227f, -0.398944f, -0.040283f, 0.000000f),
+			FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
+		);
+
+		static const FMatrix NV21Convert(
+			FPlane(1.000000f, 0.000000f, 1.139830f, 0.000000f),
+			FPlane(1.000000f, -0.394650f, -0.58060f, 0.000000f),
+			FPlane(1.000000f, 2.032110f, 0.000000f, 0.000000f),
+			FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
+		);
 		
-		PixelShader->SetParameters(RHICmdList, BackTexture, FIntPoint(CurrentImageSize.X, CurrentImageSize.Y), DefaultMatrix, YUVOffset, false);
-		// PixelShader->SetParameters(RHICmdList, BackTexture, BackTextureUV, YuvToRgbRec709, YUVOffset, false);
-		// SetShaderParameters(RHICmdList, PixelShader, PixelShader.GetPixelShader(), PassParameters);
-
+		PixelShader->SetParameters(RHICmdList, BackTexture, OutputDim, NV21Convert, YUVOffset, true);
+		RHICmdList.SetViewport(0, 0, 0.0f, OutputDim.X, OutputDim.Y, 1.0f);
 		RHICmdList.SetStreamSource(0, CreateTempMediaVertexBuffer(), 0);
-		// RHICmdList.SetStreamSource(0, GCameraBackgroundVB.VertexBufferRHI, 0);
-		
-		// RHICmdList.SetViewport(0, 0, 0, CurrentImageSize.X, CurrentImageSize.Y, 1.f);
 		RHICmdList.DrawPrimitive(0, 2, 1);
 	}
 	RHICmdList.EndRenderPass();
 	RHICmdList.Transition(FRHITransitionInfo(RenderTarget, ERHIAccess::RTV, ERHIAccess::SRVGraphics));
-	// RHICmdList.CopyToResolveTarget(
-	// 	CameraRT->GetRenderTargetResource()->GetRenderTargetTexture(),
-	// 	CameraRT->GetRenderTargetResource()->TextureRHI, FResolveParams()
-	// );
+}
+
+void FCameraRenderer::CustomCameraBackground_RenderThread(
+    FRHICommandListImmediate& RHICmdList,
+    FTextureRenderTargetResource* RenderTargetResource)
+{
+	check(IsInRenderingThread())
+	SCOPED_DRAW_EVENT(RHICmdList, CameraBack);
+	
+	FGraphicsPipelineStateInitializer GraphicsPSOInit;
+	FRHITexture* RenderTarget = RenderTargetResource->TextureRHI.GetReference();
+	RHICmdList.Transition(FRHITransitionInfo(RenderTarget, ERHIAccess::Unknown, ERHIAccess::RTV));
+	
+	FIntPoint OutputDim(RenderTarget->GetSizeXYZ().X, RenderTarget->GetSizeXYZ().Y);
+	
+	FRHIRenderPassInfo RenderPassInfo(RenderTarget,ERenderTargetActions::DontLoad_Store);
+	RHICmdList.BeginRenderPass(RenderPassInfo, TEXT("CameraBackgroundRendering"));
+	{
+		RHICmdList.ApplyCachedRenderTargets(GraphicsPSOInit);
+		RHICmdList.SetViewport(0, 0, 0.0f, OutputDim.X, OutputDim.Y, 1.0f);
+		auto ShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
+		TShaderMapRef<FCameraBackgroundVS> VertexShader(ShaderMap);
+		TShaderMapRef<FCameraBackgroundPS> PixelShader(ShaderMap);
+		
+		GraphicsPSOInit.DepthStencilState = TStaticDepthStencilState<false, CF_Always>::GetRHI();
+		GraphicsPSOInit.RasterizerState = TStaticRasterizerState<>::GetRHI();
+		GraphicsPSOInit.BlendState = TStaticBlendStateWriteMask<CW_RGBA, CW_NONE, CW_NONE, CW_NONE, CW_NONE, CW_NONE, CW_NONE, CW_NONE>::GetRHI();
+		GraphicsPSOInit.PrimitiveType = PT_TriangleStrip;
+		GraphicsPSOInit.BoundShaderState.VertexDeclarationRHI = GFilterVertexDeclaration.VertexDeclarationRHI;
+		GraphicsPSOInit.BoundShaderState.VertexShaderRHI = VertexShader.GetVertexShader();
+		GraphicsPSOInit.BoundShaderState.PixelShaderRHI = PixelShader.GetPixelShader();
+		SetGraphicsPipelineState(RHICmdList, GraphicsPSOInit);
+
+		FCameraBackgroundPS::FParameters PassParameters;
+		PassParameters.BackTexture = BackTexture_SRV;
+		PassParameters.UVScale = FVector2D((float)OutputDim.X / (float)BackTexture->GetSizeX(), (float)OutputDim.Y / (float)BackTexture->GetSizeY());
+		PassParameters.OutWidth = OutputDim.X;
+		PassParameters.BaseSampler = TStaticSamplerState<SF_Bilinear>::GetRHI();
+		PassParameters.BaseSamplerUV = TStaticSamplerState<SF_Point>::GetRHI();
+
+		SetShaderParameters(RHICmdList, PixelShader, PixelShader.GetPixelShader(), PassParameters);
+		
+		RHICmdList.SetStreamSource(0, GCameraBackgroundVB.VertexBufferRHI, 0);
+		RHICmdList.DrawPrimitive(0, 2, 1);
+	}
+	RHICmdList.EndRenderPass();
+	RHICmdList.Transition(FRHITransitionInfo(RenderTarget, ERHIAccess::RTV, ERHIAccess::SRVGraphics));
 }

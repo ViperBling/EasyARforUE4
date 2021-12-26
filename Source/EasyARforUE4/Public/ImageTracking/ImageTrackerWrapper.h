@@ -23,7 +23,7 @@ public:
 private:
 	std::shared_ptr<easyar::DelayedCallbackScheduler> Scheduler;
 	std::shared_ptr<easyar::CameraDevice> Camera;
-	std::shared_ptr<easyar::CameraParameters> CameraParameters;
+	// std::shared_ptr<easyar::CameraParameters> CameraParameters;
 	std::shared_ptr<easyar::ImageTracker> Tracker;
 	std::shared_ptr<easyar::InputFrameThrottler> Throttler;
 	std::shared_ptr<easyar::OutputFrameFork> OutputFrameFork;

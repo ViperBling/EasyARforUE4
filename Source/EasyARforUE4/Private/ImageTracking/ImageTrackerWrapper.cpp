@@ -18,7 +18,7 @@ void ImageTrackerWrapper::initialize()
 	OutputFrameFork = easyar::OutputFrameFork::create(2);
 	OutputFrameBuffer = easyar::OutputFrameBuffer::create();
 	Camera = easyar::CameraDeviceSelector::createCameraDevice(easyar::CameraDevicePreference::PreferObjectSensing);
-	Camera->setAndroidCameraApiType(easyar::AndroidCameraApiType::Camera1);
+	// Camera->setAndroidCameraApiType(easyar::AndroidCameraApiType::Camera1);
 
 	// Camera->setCameraParameters(CameraParameters);
 	
@@ -30,20 +30,9 @@ void ImageTrackerWrapper::initialize()
 	}
 
 	Camera->setFocusMode(easyar::CameraDeviceFocusMode::Continousauto);
-	Camera->setSize(easyar::Vec2I{{cameraWidth, cameraHeight}});
-	Camera->cameraParameters()->imageHorizontalFlip(false);
-	Camera->cameraParameters()->imageOrientation(180);
-	/*Camera->setStateChangedCallback(Scheduler, [](easyar::CameraState s)
-	{
-		if (s == easyar::CameraState::Disconnected)
-		{
-			GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Red, TEXT("Camera Disconnected"));
-		}
-		else if (s == easyar::CameraState::Preempted)
-		{
-			GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Red, TEXT("Camera preempted"));
-		}
-	});*/
+	Camera->setSize(easyar::Vec2I{{1280, 960}});
+	// Camera->cameraParameters()->imageHorizontalFlip(false);
+	Camera->cameraParameters()->imageOrientation(90);
 	
 	Tracker = easyar::ImageTracker::create();
 	

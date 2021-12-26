@@ -58,6 +58,7 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		// {
 			auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
 			UE_LOG(LogTemp, Warning, TEXT("%d"), Buffer->size());
+			
 			auto ImageProjection = CurrentFrame->inputFrame()->cameraParameters()->imageProjection((float)Width / (float)Height, 90, true, false);
 			FMatrix ProjectionMatUE = MatrixConverter(ImageProjection);
 			// CameraRenderer->Upload(Width, Height, CameraFrameData);

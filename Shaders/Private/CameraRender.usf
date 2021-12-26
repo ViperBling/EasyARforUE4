@@ -1,8 +1,12 @@
 #include "/Engine/Private/Common.ush"
+#include "/Engine/Private/ColorUtils.ush"
 
 // float4x4 Projection;
 Texture2D BackTexture;
-Texture2D BackTextureUV;
+float2 UVScale;
+uint OutWidth;
+uint SRGBToLinear;
+
 SamplerState BaseSampler;
 SamplerState BaseSamplerUV;
 
@@ -26,19 +30,31 @@ void MainPS(
 	out float4 OutColor : SV_Target0
 	)
 {
-	float2 sampleUV = float2(uv.x, uv.y + 0.5) / 2. + float2(0.5, 0.5);
-	// float2 cbcr = BackTextureUV.Sample(BaseSamplerUV, uv).ar - float2(0.5, 0.5);
-	float4 cbcr = BackTextureUV.Sample(BaseSamplerUV, uv);
-	float4 y = BackTexture.Sample(BaseSampler, uv);
-	float3 ycbcr = float3(y.r, cbcr.wx);
+	float2 ScaledUV = uv * UVScale;
 
-	// float3 ycbcr = float3(BackTexture.Sample(BaseSampler, uv).x, 0, 0);
+	float3 YUV;
 
-	float3x3 ConvertMat = float3x3(
-		1, 1, 1,
-		0, -0.344, 1.772,
-		1.402, -0.714, 0);
-	float3 rgb = mul(ConvertMat, ycbcr);
+	YUV.x = BackTexture.Sample(BaseSampler, ScaledUV).x;
+
+	ScaledUV.y *= 0.5f;
+	ScaledUV.y += 2.0f / 3.0f;
+
+	uint UVOffs = uint(uv.x * OutWidth / 2.0f) * 2;
+	float UPos = (float(UVOffs * UVScale.x) + 0.5f) / OutWidth;
+	float VPos = (float(UVOffs * UVScale.x) + 1.5f) / OutWidth;
+
+	YUV.y = BackTexture.Sample(BaseSamplerUV, float2(UPos, ScaledUV.y)).x;
+	YUV.z = BackTexture.Sample(BaseSamplerUV, float2(VPos, ScaledUV.y)).x;
+
+	float4x4 ConvertMatrix = float4x4(
+		1.164383f,  0.000000f,  1.596027f, 0.000000f,
+		1.164383f, -0.391762f, -0.812968f, 0.000000f,
+		1.164383f,  2.017232f,  0.000000f, 0.000000f,
+		0.000000f,  0.000000f,  0.000000f, 0.000000f
+	);
+
 	
-	OutColor = float4(cbcr.xyz, 1.0);
+	
+	OutColor.xyz = YuvToRgb(YUV, ConvertMatrix, SRGBToLinear).zyx;
+	OutColor.w = 1.0;
 }
