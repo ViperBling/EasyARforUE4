@@ -54,5 +54,5 @@ void MainPS(
 	);
 	
 	OutColor.xyz = YuvToRgb(YUV, ConvertMatrix, SRGBToLinear).zyx;
-	OutColor.w = 1.0;
+	OutColor.w = 0.0;
 }

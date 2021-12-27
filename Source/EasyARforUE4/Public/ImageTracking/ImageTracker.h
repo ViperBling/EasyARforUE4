@@ -5,6 +5,7 @@
 #include "Device/CameraRenderer.h"
 #include "ImageTracker.generated.h"
 
+
 UCLASS(ClassGroup = (EasyAR), meta = (BlueprintSpawnableComponent))
 class EASYARFORUE4_API UImageTrackers : public UActorComponent
 {
@@ -18,9 +19,12 @@ public:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(BlueprintReadWrite)
-	TArray<FString> ImageCollection;
+	/*UPROPERTY(BlueprintReadWrite)
+	TArray<FString> ImageCollection;*/
 
+	UPROPERTY(BlueprintReadWrite)
+	TMap<FString, UStaticMesh*> ImageTargets;
+	
 	UPROPERTY(BlueprintReadWrite)
 	UTextureRenderTarget2D* OutRT;
 
@@ -29,7 +33,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	int Height = 960;
-	
+
+	FCameraRenderer* CameraRenderer;
+
 	UFUNCTION(BlueprintCallable, Category = EasyAR)
 	void Initialize();
 
@@ -42,11 +48,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = EasyAR)
 	void CallEveryFrame(float DeltaTime);
 
-	FCameraRenderer* CameraRenderer;
-
 private:
 	FString GetImagePath(FString& ImageName);
 	std::unique_ptr<ImageTrackerWrapper> _imageTracker;
 	float Timer = 0;
 	const float FrameRate = 60.f;
 };
+

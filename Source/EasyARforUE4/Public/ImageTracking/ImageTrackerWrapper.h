@@ -14,8 +14,10 @@ public:
 	void stop();
 	void perFrame();
 	void loadFromImage(const std::string& filename, const std::string& name);
+	//void loadTarget(std::optional<std::shared_ptr<easyar::ImageTarget>> Target, const std::string& filename, const std::string& name);
 
 	std::shared_ptr<easyar::OutputFrame> cameraFrame;
+	std::unordered_map<int, std::shared_ptr<easyar::ImageTarget>> TrackTargets;
 
 	int cameraWidth;
 	int cameraHeight;
@@ -29,5 +31,4 @@ private:
 	std::shared_ptr<easyar::OutputFrameFork> OutputFrameFork;
 	std::shared_ptr<easyar::OutputFrameBuffer> OutputFrameBuffer;
 	std::shared_ptr<easyar::InputFrameToFeedbackFrameAdapter> I2FrameAdapter;
-	std::unordered_map<int, std::shared_ptr<easyar::ImageTarget>> TrackTargets;
 };

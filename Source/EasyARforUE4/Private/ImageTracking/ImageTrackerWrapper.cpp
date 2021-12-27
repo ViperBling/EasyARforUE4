@@ -2,8 +2,8 @@
 
 ImageTrackerWrapper::ImageTrackerWrapper()
 {
-	cameraWidth = 672;
-	cameraHeight = 1280;
+	cameraWidth = 1280;
+	cameraHeight = 960;
 }
 
 ImageTrackerWrapper::~ImageTrackerWrapper()
@@ -118,7 +118,7 @@ void ImageTrackerWrapper::perFrame()
 					lostCandidates.erase(imageTarget->runtimeID());
 
 					auto pose = targetInstance->pose();
-					GEngine->AddOnScreenDebugMessage(
+					/*GEngine->AddOnScreenDebugMessage(
 							0, 1.0f, FColor::Green,
 							FString::Printf(TEXT("Target: %s (%d)\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n\n"),
 							*FString(imageTarget->name().c_str()), imageTarget->runtimeID(),
@@ -132,7 +132,7 @@ void ImageTrackerWrapper::perFrame()
 						pose.data[0], pose.data[1], pose.data[2], pose.data[3],
 						pose.data[4], pose.data[5], pose.data[6], pose.data[7],
 						pose.data[8], pose.data[9], pose.data[10], pose.data[11],
-						pose.data[12], pose.data[13], pose.data[14], pose.data[15])
+						pose.data[12], pose.data[13], pose.data[14], pose.data[15])*/
 				}
 			}
 		}
@@ -165,3 +165,18 @@ void ImageTrackerWrapper::loadFromImage(const std::string& filename, const std::
 		});
 	}
 }
+
+//void ImageTrackerWrapper::loadTarget(std::optional<std::shared_ptr<easyar::ImageTarget>> Target, const std::string& filename, const std::string& name)
+//{
+//	Target = easyar::ImageTarget::createFromImageFile(filename, easyar::StorageType::Assets, name, "", "", 1.0f);
+//	if (Target.has_value())
+//	{
+//		Tracker->loadTarget(Target.value(), Scheduler, [](std::shared_ptr<easyar::Target> target, bool status)
+//			{
+//				GEngine->AddOnScreenDebugMessage(
+//					0, 1.0f, FColor::Red,
+//					FString::Printf(TEXT("Load Target (%d): %s %d\n"), status, *FString(target->name().c_str()), target->runtimeID()));
+//				UE_LOG(LogTemp, Warning, TEXT("Load Target (%d): %s %d\n"), status, *FString(target->name().c_str()), target->runtimeID());
+//			});
+//	}
+//}
