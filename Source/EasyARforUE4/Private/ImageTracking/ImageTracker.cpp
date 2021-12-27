@@ -6,16 +6,7 @@
 #include "Engine/TextureRenderTarget2D.h"
 #include "Rendering/Texture2DResource.h"
 
-static int YUVtoRGB(int y, int u, int v);
-static void NV21toRGB(unsigned char* rgb, char* yuv, int width, int height);
 static FMatrix MatrixConverter(easyar::Matrix44F MatEasyAR);
-
-void NV21toRGB_RenderThread(
-	FRHICommandListImmediate& RHICmdList,
-	FTextureRenderTargetResource* OutRTResource,
-	FTextureResource* CameraTextureResource,
-	FIntPoint Size
-);
 
 UImageTrackers::UImageTrackers()
 {
@@ -47,25 +38,13 @@ void UImageTrackers::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	Timer += DeltaTime;
-	if (Timer >= (1. / FrameRate))
-	{
-		Timer -= 1. / FrameRate;
-		_imageTracker->perFrame();
-		auto CurrentFrame = _imageTracker->cameraFrame;
-		// if (CurrentFrame->inputFrame()->index() != FrameIndex)
-		// {
-			auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
-			UE_LOG(LogTemp, Warning, TEXT("%d"), Buffer->size());
-			
-			auto ImageProjection = CurrentFrame->inputFrame()->cameraParameters()->imageProjection((float)Width / (float)Height, 90, true, false);
-			FMatrix ProjectionMatUE = MatrixConverter(ImageProjection);
-			// CameraRenderer->Upload(Width, Height, CameraFrameData);
-			CameraRenderer->Render(ProjectionMatUE, Buffer->data());
-			// FrameIndex = CurrentFrame->inputFrame()->index();
-		// }
-	}
+	_imageTracker->perFrame();
+	auto CurrentFrame = _imageTracker->cameraFrame;
+	auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
+	// UE_LOG(LogTemp, Warning, TEXT("%d"), Buffer->size());
+	auto ImageProjection = CurrentFrame->inputFrame()->cameraParameters()->imageProjection((float)Width / (float)Height, 90, true, false);
+	FMatrix ProjectionMatUE = MatrixConverter(ImageProjection);
+	CameraRenderer->Render(ProjectionMatUE, Buffer->data());
 }
 
 void UImageTrackers::Initialize()
@@ -93,15 +72,15 @@ void UImageTrackers::Stop()
 	// delete CameraUpdateTextureRegion;
 }
 
-void UImageTrackers::CallEveryFrame(float DeltaTime)
-{
-	Timer += DeltaTime;
-	const auto SrcBpp = GPixelFormats[CameraBackground->GetPixelFormat()].BlockBytes;
-	if (Timer >= (1. / FrameRate))
-	{
-		Timer -= 1. / FrameRate;
-	}
-}
+// void UImageTrackers::CallEveryFrame(float DeltaTime)
+// {
+// 	Timer += DeltaTime;
+// 	const auto SrcBpp = GPixelFormats[CameraBackground->GetPixelFormat()].BlockBytes;
+// 	if (Timer >= (1. / FrameRate))
+// 	{
+// 		Timer -= 1. / FrameRate;
+// 	}
+// }
 
 FString UImageTrackers::GetImagePath(FString& ImageName)
 {

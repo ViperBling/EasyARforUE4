@@ -47,13 +47,11 @@ void MainPS(
 	YUV.z = BackTexture.Sample(BaseSamplerUV, float2(VPos, ScaledUV.y)).x;
 
 	float4x4 ConvertMatrix = float4x4(
-		1.164383f,  0.000000f,  1.596027f, 0.000000f,
-		1.164383f, -0.391762f, -0.812968f, 0.000000f,
-		1.164383f,  2.017232f,  0.000000f, 0.000000f,
-		0.000000f,  0.000000f,  0.000000f, 0.000000f
+		1.164383f,  0.000000f,  1.596027f, 0.06274509803921568627f,
+		1.164383f, -0.391762f, -0.812968f, 0.5019607843137254902f,
+		1.164383f,  2.017232f,  0.000000f, 0.5019607843137254902f,
+		0.000000f,  0.000000f,  0.000000f, 1.000000f
 	);
-
-	
 	
 	OutColor.xyz = YuvToRgb(YUV, ConvertMatrix, SRGBToLinear).zyx;
 	OutColor.w = 1.0;

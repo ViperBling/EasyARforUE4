@@ -45,10 +45,10 @@ void FCameraRenderer::Render(FMatrix ImageProjection, void* BufferData)
 			bInitialize = true;
 		}
 		RetrieveFrame(CurrentImageSize.X, CurrentImageSize.Y, BufferData);
-		CameraBackground_RenderThread(
-			RHICmdList, ImageProjection, RenderTargetResource);
-		//CustomCameraBackground_RenderThread(
-        	//RHICmdList, RenderTargetResource);
+		// CameraBackground_RenderThread(
+		// 	RHICmdList, ImageProjection, RenderTargetResource);
+		CustomCameraBackground_RenderThread(
+        	RHICmdList, RenderTargetResource);
 	});
 }
 
@@ -104,57 +104,13 @@ void FCameraRenderer::CameraBackground_RenderThread(
 		FPlane(1.000000f,  0.000000f,  1.402000f, 0.000000f),
 		FPlane(1.000000f, -0.344140f, -0.714140f, 0.000000f),
 		FPlane(1.000000f,  1.772000f,  0.000000f, 0.000000f),
-		FPlane(0.000000f,  0.000000f,  0.000000f, 0.000000f)
-	);
-
-		const FMatrix YuvToSrgbDefault = FMatrix(
-			FPlane(1.164383f,  0.000000f,  1.596027f, 0.000000f),
-			FPlane(1.164383f, -0.391762f, -0.812968f, 0.000000f),
-			FPlane(1.164383f,  2.017232f,  0.000000f, 0.000000f),
-			FPlane(0.000000f,  0.000000f,  0.000000f, 0.000000f)
-		);
-
-		const FMatrix YuvToSrgbPs4 = FMatrix(
-			FPlane(1.164400f,  0.000000f,  1.792700f, 0.000000f),
-			FPlane(1.164400f, -0.213300f, -0.532900f, 0.000000f),
-			FPlane(1.164400f,  2.112400f,  0.000000f, 0.000000f),
-			FPlane(0.000000f,  0.000000f,  0.000000f, 0.000000f)
-		);
-
-		const FMatrix YuvToSrgbRec601 = FMatrix(
-			FPlane(1.000000f, 0.000000f, 1.139830f, 0.000000f),
-			FPlane(1.000000f, -0.394650f, -0.580600f, 0.000000f),
-			FPlane(1.000000f, 2.032110, 0.000000, 0.000000f),
-			FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
-		);
-
-		const FMatrix YuvToRgbRec709 = FMatrix(
-			FPlane(1.000000f, 0.000000f, 1.280330f, 0.000000f),
-			FPlane(1.000000f, -0.214820f, -0.380590f, 0.000000f),
-			FPlane(1.000000f, 2.127980f, 0.000000f, 0.000000f),
-			FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
-		);
-
-		const FMatrix YuvToRgbRec709Full = FMatrix(
-			FPlane(1.164400f, 0.000000f, 1.792700f, 0.000000f),
-			FPlane(1.164400f, -0.213300f, -0.532900f, 0.000000f),
-			FPlane(1.164400f, 2.112400f, 0.000000f, 0.000000f),
-			FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
-		);
-
-		const FMatrix RgbToYuvRec709Full = FMatrix(
-			FPlane(0.182581f, 0.614210f, 0.062020f, 0.000000f),
-			FPlane(-0.100642f, -0.338566f, 0.439208f, 0.000000f),
-			FPlane(0.439227f, -0.398944f, -0.040283f, 0.000000f),
-			FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
-		);
+		FPlane(0.000000f,  0.000000f,  0.000000f, 0.000000f));
 
 		static const FMatrix NV21Convert(
 			FPlane(1.000000f, 0.000000f, 1.139830f, 0.000000f),
 			FPlane(1.000000f, -0.394650f, -0.58060f, 0.000000f),
 			FPlane(1.000000f, 2.032110f, 0.000000f, 0.000000f),
-			FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f)
-		);
+			FPlane(0.000000f, 0.000000f, 0.000000f, 0.000000f));
 		
 		PixelShader->SetParameters(RHICmdList, BackTexture, OutputDim, NV21Convert, YUVOffset, true);
 		RHICmdList.SetViewport(0, 0, 0.0f, OutputDim.X, OutputDim.Y, 1.0f);
@@ -200,6 +156,7 @@ void FCameraRenderer::CustomCameraBackground_RenderThread(
 		PassParameters.BackTexture = BackTexture_SRV;
 		PassParameters.UVScale = FVector2D((float)OutputDim.X / (float)BackTexture->GetSizeX(), (float)OutputDim.Y / (float)BackTexture->GetSizeY());
 		PassParameters.OutWidth = OutputDim.X;
+		PassParameters.SRGBToLinear = true;
 		PassParameters.BaseSampler = TStaticSamplerState<SF_Bilinear>::GetRHI();
 		PassParameters.BaseSamplerUV = TStaticSamplerState<SF_Point>::GetRHI();
 
