@@ -53,6 +53,5 @@ void MainPS(
 		0.000000f,  0.000000f,  0.000000f, 1.000000f
 	);
 	
-	OutColor.xyz = YuvToRgb(YUV, ConvertMatrix, SRGBToLinear).zyx;
-	OutColor.w = 0.0;
+	OutColor = float4(YuvToRgb(YUV, ConvertMatrix, SRGBToLinear).zyx, 0.0f);
 }

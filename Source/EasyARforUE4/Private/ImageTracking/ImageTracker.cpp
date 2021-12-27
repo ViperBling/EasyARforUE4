@@ -29,24 +29,29 @@ void UImageTrackers::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	_imageTracker->perFrame();
-	auto CurrentFrame = _imageTracker->cameraFrame;
-	auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
-	// UE_LOG(LogTemp, Warning, TEXT("%d"), Buffer->size());
-	
-	auto ImageProjection = CurrentFrame->inputFrame()->cameraParameters()->imageProjection((float)Width / (float)Height, 90, true, false);
-	FMatrix ProjectionMatUE = MatrixConverter(ImageProjection);
-	CameraRenderer->Render(ProjectionMatUE, Buffer->data());
-
-	if (_imageTracker->TrackTargets.size() != 0)
+	Timer += DeltaTime;
+	if (Timer >= 1. / FrameRate)
 	{
-		for (auto target : _imageTracker->TrackTargets)
+		Timer -= 1. / FrameRate;
+		_imageTracker->perFrame();
+		auto CurrentFrame = _imageTracker->cameraFrame;
+		auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
+		// UE_LOG(LogTemp, Warning, TEXT("%d"), Buffer->size());
+	
+		auto ImageProjection = CurrentFrame->inputFrame()->cameraParameters()->imageProjection((float)Width / (float)Height, 90, true, false);
+		FMatrix ProjectionMatUE = MatrixConverter(ImageProjection);
+		CameraRenderer->Render(ProjectionMatUE, Buffer->data());
+
+		if (_imageTracker->TrackTargets.size() != 0)
 		{
-			if (ImageTargets.Contains(FString(target.second->name().c_str())))
+			for (auto target : _imageTracker->TrackTargets)
 			{
-				GEngine->AddOnScreenDebugMessage(
-					0, 1.0f, FColor::Green,
-					FString::Printf(TEXT("Found Target (%s): %d\n"), *FString(target.second->name().c_str()), target.second->runtimeID()));
+				if (ImageTargets.Contains(FString(target.second->name().c_str())))
+				{
+					GEngine->AddOnScreenDebugMessage(
+						0, 1.0f, FColor::Green,
+						FString::Printf(TEXT("Found Target (%s): %d\n"), *FString(target.second->name().c_str()), target.second->runtimeID()));
+				}
 			}
 		}
 	}
