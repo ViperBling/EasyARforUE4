@@ -21,17 +21,14 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FString> ImageCollection;
 
-	UPROPERTY(BlueprintReadOnly)
-	UTexture2D* CameraBackground;
-
 	UPROPERTY(BlueprintReadWrite)
 	UTextureRenderTarget2D* OutRT;
 
 	UPROPERTY(BlueprintReadWrite)
-	int Width = 1024;
+	int Width = 1280;
 
 	UPROPERTY(BlueprintReadWrite)
-	int Height = 1024;
+	int Height = 960;
 	
 	UFUNCTION(BlueprintCallable, Category = EasyAR)
 	void Initialize();
@@ -49,16 +46,7 @@ public:
 
 private:
 	FString GetImagePath(FString& ImageName);
-	
-	// void UpdateTextureRegions(
-	// 	UTexture2D* Texture, int32 MipIndex,
-	// 	uint32 NumRegions, FUpdateTextureRegion2D* Region2D,
-	// 	uint32 SrcPitch, uint32 SrcBpp, void* SrcData, bool bFreeData);
-	//
-	// FUpdateTextureRegion2D* CameraUpdateTextureRegion;
 	std::unique_ptr<ImageTrackerWrapper> _imageTracker;
 	float Timer = 0;
 	const float FrameRate = 60.f;
-	bool bFirstFrame;
-	int FrameIndex = -1;
 };

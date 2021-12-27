@@ -6,9 +6,7 @@
 #include "CommonRenderResources.h"
 #include "ShaderParameterUtils.h"
 #include "RHIStaticStates.h"
-
 #include "CameraShader.h"
-
 #include "easyar/types.hpp"
 
 class FCameraRenderer
@@ -18,7 +16,6 @@ public:
 	FCameraRenderer(){ CameraRT = nullptr; bInitialize = false; };
 	virtual ~FCameraRenderer();
 
-	void Upload(int Width, int Height, void* BufferData);
 	void Render(FMatrix ImageProjection, void* BufferData);
 	
 	UTextureRenderTarget2D* CameraRT;

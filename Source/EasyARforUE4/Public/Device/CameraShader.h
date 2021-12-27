@@ -55,9 +55,6 @@ BEGIN_SHADER_PARAMETER_STRUCT(FCameraBackgroundParameters, )
 	SHADER_PARAMETER(uint32, OutWidth)
 	SHADER_PARAMETER(uint32, SRGBToLinear)
 	SHADER_PARAMETER(FVector2D, UVScale)
-	// SHADER_PARAMETER_SRV(Texture2D, BackTextureUV)
-	// SHADER_PARAMETER_SRV(Texture2D, BackTextureU)
-	// SHADER_PARAMETER_SRV(Texture2D, BackTextureV)
 	SHADER_PARAMETER_SAMPLER(SamplerState, BaseSampler)
 	SHADER_PARAMETER_SAMPLER(SamplerState, BaseSamplerUV)
 END_SHADER_PARAMETER_STRUCT()
@@ -68,17 +65,6 @@ public:
 	DECLARE_GLOBAL_SHADER(FCameraBackgroundPS);
 	SHADER_USE_PARAMETER_STRUCT(FCameraBackgroundPS, FGlobalShader);
     using FParameters = FCameraBackgroundParameters;
-	
-	// class FShaderPF_RGB : SHADER_PERMUTATION_ENUM_CLASS("ShaderPF_RGB", EShaderPixelFormat);
-	// class FShaderPF_BGR : SHADER_PERMUTATION_ENUM_CLASS("ShaderPF_BGR", EShaderPixelFormat);
-	// class FShaderPF_NV12 : SHADER_PERMUTATION_ENUM_CLASS("ShaderPF_NV12", EShaderPixelFormat);
-	// class FShaderPF_NV21 : SHADER_PERMUTATION_ENUM_CLASS("ShaderPF_NV21", EShaderPixelFormat);
-	// class FShaderPF_I420 : SHADER_PERMUTATION_ENUM_CLASS("ShaderPF_I420", EShaderPixelFormat);
-	//
-	// using FPermutationDomain = TShaderPermutationDomain<
-	// 	FShaderPF_RGB, FShaderPF_BGR,
-	// 	FShaderPF_NV12, FShaderPF_NV21,
-	// 	FShaderPF_I420>;
 
 public:
 	static bool ShouldCompilePermutation(const FGlobalShaderPermutationParameters& Parameters)

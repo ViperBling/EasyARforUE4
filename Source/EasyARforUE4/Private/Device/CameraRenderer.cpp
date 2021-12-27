@@ -1,5 +1,4 @@
 ﻿#include "Device/CameraRenderer.h"
-
 #include "MediaShaders.h"
 
 class FCameraBackgroundVS;
@@ -16,13 +15,6 @@ FCameraRenderer::FCameraRenderer(int Width, int Height, UTextureRenderTarget2D* 
 FCameraRenderer::~FCameraRenderer()
 {
 	CameraRT = nullptr;
-}
-
-void FCameraRenderer::Upload(int Width, int Height, void* BufferData)
-{
-	// RenderEveryFrameLock.Lock();
-	// RetrieveFrame(Width, Height, BufferData);
-	// RenderEveryFrameLock.Unlock();
 }
 
 void FCameraRenderer::RetrieveFrame(int Width, int Height, void* BufferData)
