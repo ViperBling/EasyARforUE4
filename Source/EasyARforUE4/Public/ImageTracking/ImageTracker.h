@@ -49,6 +49,7 @@ public:
 	void CallEveryFrame(float DeltaTime);
 
 private:
+	UStaticMeshComponent* StaticMeshComponent;
 	FString GetImagePath(FString& ImageName);
 	std::unique_ptr<ImageTrackerWrapper> _imageTracker;
 	float Timer = 0;

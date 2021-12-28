@@ -2,6 +2,8 @@
 
 static FMatrix MatrixConverter(easyar::Matrix44F MatEasyAR);
 
+static FTransform GetTransformFromMat44F(easyar::Matrix44F MatEasyAR, float Scale);
+
 UImageTrackers::UImageTrackers()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -36,11 +38,14 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		_imageTracker->perFrame();
 		auto CurrentFrame = _imageTracker->cameraFrame;
 		auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
-		// UE_LOG(LogTemp, Warning, TEXT("%d"), Buffer->size());
 	
-		auto ImageProjection = CurrentFrame->inputFrame()->cameraParameters()->imageProjection((float)Width / (float)Height, 90, true, false);
-		FMatrix ProjectionMatUE = MatrixConverter(ImageProjection);
-		CameraRenderer->Render(ProjectionMatUE, Buffer->data());
+		auto Projection = CurrentFrame->inputFrame()->cameraParameters()->projection(0.01, 1000., (float)Width / (float)Height, 0, true, false);
+		FMatrix ProjectionMatUE = MatrixConverter(Projection);
+		// if (*ProjectionMatUE.ToString())
+		// {
+		// 	UE_LOG(LogTemp, Warning, TEXT("%s"), *ProjectionMatUE.ToString());
+		// }
+		CameraRenderer->Render(Buffer->data());
 
 		if (_imageTracker->TrackTargets.size() != 0)
 		{
@@ -48,9 +53,26 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			{
 				if (ImageTargets.Contains(FString(target.second->name().c_str())))
 				{
-					GEngine->AddOnScreenDebugMessage(
-						0, 1.0f, FColor::Green,
-						FString::Printf(TEXT("Found Target (%s): %d\n"), *FString(target.second->name().c_str()), target.second->runtimeID()));
+					// GEngine->AddOnScreenDebugMessage(
+					// 	0, 1.0f, FColor::Green,
+					// 	FString::Printf(TEXT("Found Target (%s): %d\n"), *FString(target.second->name().c_str()), target.second->runtimeID()));
+					// GEngine->AddOnScreenDebugMessage(
+					// 	0, 1.0f, FColor::Green,
+					// 	FString::Printf(TEXT("Target: %s (%d)\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n\n"),
+					// 	*FString(target.second->name().c_str()), target.second->runtimeID(),
+					// 	_imageTracker->targetPose.data[0], _imageTracker->targetPose.data[1], _imageTracker->targetPose.data[2], _imageTracker->targetPose.data[3],
+					// 	_imageTracker->targetPose.data[4], _imageTracker->targetPose.data[5], _imageTracker->targetPose.data[6], _imageTracker->targetPose.data[7],
+					// 	_imageTracker->targetPose.data[8], _imageTracker->targetPose.data[9], _imageTracker->targetPose.data[10], _imageTracker->targetPose.data[11],
+					// 	_imageTracker->targetPose.data[12], _imageTracker->targetPose.data[13], _imageTracker->targetPose.data[14], _imageTracker->targetPose.data[15])
+					// 	);
+					StaticMeshComponent->Activate(false);
+					StaticMeshComponent->SetStaticMesh(ImageTargets[FString(target.second->name().c_str())]);
+					// GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Green, FString::Printf(TEXT("%s"), *ImageTargets[FString(target.second->name().c_str())]->GetName()));
+					FTransform TmpMeshTransform = GetTransformFromMat44F(_imageTracker->targetPose, 1.);
+					FTransform Test = FTransform(FQuat(0, 0, 0, 0), FVector(10., 0, 0));
+					// GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Green, FString::Printf(TEXT("%s"), *TmpMeshTransform.ToString()));
+					StaticMeshComponent->SetRelativeTransform(Test);
+					
 				}
 			}
 		}
@@ -62,7 +84,8 @@ void UImageTrackers::Initialize()
 	_imageTracker->cameraWidth = Width;
 	_imageTracker->cameraHeight = Height;
 	CameraRenderer = new FCameraRenderer(Width, Height, OutRT);
-	
+	StaticMeshComponent = NewObject<UStaticMeshComponent>();
+	StaticMeshComponent->RegisterComponent();
 	_imageTracker->initialize();
 	
 	//for (auto n : ImageCollection)
@@ -111,5 +134,17 @@ FMatrix MatrixConverter(easyar::Matrix44F MatEasyAR)
 	Z = FPlane(data[8], data[9], data[10], data[11]);
 	W = FPlane(data[12], data[13], data[14], data[15]);
 	Result = FMatrix(X, Y, Z, W);
+	return Result;
+}
+
+static FTransform GetTransformFromMat44F(easyar::Matrix44F MatEasyAR, float Scale)
+{
+	FMatrix RotScale = FMatrix(
+		FVector(MatEasyAR.data[0], MatEasyAR.data[4], MatEasyAR.data[8]),
+		FVector(MatEasyAR.data[2], MatEasyAR.data[6], MatEasyAR.data[10]),
+		FVector(MatEasyAR.data[1], MatEasyAR.data[5], MatEasyAR.data[9]),
+		FVector(MatEasyAR.data[3], MatEasyAR.data[7], MatEasyAR.data[11])
+	) * Scale;
+	FTransform Result = FTransform(RotScale);
 	return Result;
 }

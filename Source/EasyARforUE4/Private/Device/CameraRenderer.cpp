@@ -25,11 +25,11 @@ void FCameraRenderer::RetrieveFrame(int Width, int Height, void* BufferData)
 	RHIUpdateTexture2D(BackTexture, 0, UpdateTextureRegion2D, BackTexSrcBpp * Width, (uint8*)BufferData);
 }
 
-void FCameraRenderer::Render(FMatrix ImageProjection, void* BufferData)
+void FCameraRenderer::Render(void* BufferData)
 {
 	FTextureRenderTargetResource* RenderTargetResource = CameraRT->GameThread_GetRenderTargetResource();
 	ENQUEUE_RENDER_COMMAND(CameraBackgroundRendering)
-	([this, RenderTargetResource, BufferData, ImageProjection](FRHICommandListImmediate& RHICmdList)
+	([this, RenderTargetResource, BufferData](FRHICommandListImmediate& RHICmdList)
 	{
 		if (!bInitialize)
 		{

@@ -16,7 +16,7 @@ public:
 	FCameraRenderer(){ CameraRT = nullptr; bInitialize = false; };
 	virtual ~FCameraRenderer();
 
-	void Render(FMatrix ImageProjection, void* BufferData);
+	void Render(void* BufferData);
 	
 	UTextureRenderTarget2D* CameraRT;
 

@@ -110,29 +110,29 @@ void ImageTrackerWrapper::perFrame()
 					if (TrackTargets.count(imageTarget->runtimeID()) == 0)
 					{
 						TrackTargets[imageTarget->runtimeID()] = imageTarget;
-						GEngine->AddOnScreenDebugMessage(
-							0, 1.0f, FColor::Green,
-							FString::Printf(TEXT("Found Target (%s): %d\n"), *FString(imageTarget->name().c_str()), imageTarget->runtimeID()));
+						// GEngine->AddOnScreenDebugMessage(
+						// 	0, 1.0f, FColor::Green,
+						// 	FString::Printf(TEXT("Found Target (%s): %d\n"), *FString(imageTarget->name().c_str()), imageTarget->runtimeID()));
 					}
 
 					lostCandidates.erase(imageTarget->runtimeID());
 
-					auto pose = targetInstance->pose();
-					/*GEngine->AddOnScreenDebugMessage(
-							0, 1.0f, FColor::Green,
-							FString::Printf(TEXT("Target: %s (%d)\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n\n"),
-							*FString(imageTarget->name().c_str()), imageTarget->runtimeID(),
-							pose.data[0], pose.data[1], pose.data[2], pose.data[3],
-							pose.data[4], pose.data[5], pose.data[6], pose.data[7],
-							pose.data[8], pose.data[9], pose.data[10], pose.data[11],
-							pose.data[12], pose.data[13], pose.data[14], pose.data[15])
-							);
-					UE_LOG(LogTemp, Warning, TEXT("Target: %s (%d)\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n\n"),
-						*FString(imageTarget->name().c_str()), imageTarget->runtimeID(),
-						pose.data[0], pose.data[1], pose.data[2], pose.data[3],
-						pose.data[4], pose.data[5], pose.data[6], pose.data[7],
-						pose.data[8], pose.data[9], pose.data[10], pose.data[11],
-						pose.data[12], pose.data[13], pose.data[14], pose.data[15])*/
+					targetPose = targetInstance->pose();
+					// GEngine->AddOnScreenDebugMessage(
+					// 		0, 1.0f, FColor::Green,
+					// 		FString::Printf(TEXT("Target: %s (%d)\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n\n"),
+					// 		*FString(imageTarget->name().c_str()), imageTarget->runtimeID(),
+					// 		targetPose.data[0], targetPose.data[1], targetPose.data[2], targetPose.data[3],
+					// 		targetPose.data[4], targetPose.data[5], targetPose.data[6], targetPose.data[7],
+					// 		targetPose.data[8], targetPose.data[9], targetPose.data[10], targetPose.data[11],
+					// 		targetPose.data[12], targetPose.data[13], targetPose.data[14], targetPose.data[15])
+					// 		);
+					// UE_LOG(LogTemp, Warning, TEXT("Target: %s (%d)\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n\n"),
+					// 	*FString(imageTarget->name().c_str()), imageTarget->runtimeID(),
+					// 	targetPose.data[0], targetPose.data[1], targetPose.data[2], targetPose.data[3],
+					// 	targetPose.data[4], targetPose.data[5], targetPose.data[6], targetPose.data[7],
+					// 	targetPose.data[8], targetPose.data[9], targetPose.data[10], targetPose.data[11],
+					// 	targetPose.data[12], targetPose.data[13], targetPose.data[14], targetPose.data[15])
 				}
 			}
 		}

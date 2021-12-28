@@ -18,6 +18,7 @@ public:
 
 	std::shared_ptr<easyar::OutputFrame> cameraFrame;
 	std::unordered_map<int, std::shared_ptr<easyar::ImageTarget>> TrackTargets;
+	easyar::Matrix44F targetPose;
 
 	int cameraWidth;
 	int cameraHeight;
