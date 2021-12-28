@@ -65,14 +65,13 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 					// 	_imageTracker->targetPose.data[8], _imageTracker->targetPose.data[9], _imageTracker->targetPose.data[10], _imageTracker->targetPose.data[11],
 					// 	_imageTracker->targetPose.data[12], _imageTracker->targetPose.data[13], _imageTracker->targetPose.data[14], _imageTracker->targetPose.data[15])
 					// 	);
-					StaticMeshComponent->Activate(false);
+					
 					StaticMeshComponent->SetStaticMesh(ImageTargets[FString(target.second->name().c_str())]);
 					// GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Green, FString::Printf(TEXT("%s"), *ImageTargets[FString(target.second->name().c_str())]->GetName()));
-					FTransform TmpMeshTransform = GetTransformFromMat44F(_imageTracker->targetPose, 1.);
-					FTransform Test = FTransform(FQuat(0, 0, 0, 0), FVector(10., 0, 0));
+					FTransform TmpMeshTransform = GetTransformFromMat44F(_imageTracker->targetPose, 100.);
+					FTransform Test = FTransform(FQuat(1, 1, 1, 1), FVector(50., 0, 0));
 					// GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Green, FString::Printf(TEXT("%s"), *TmpMeshTransform.ToString()));
-					StaticMeshComponent->SetRelativeTransform(Test);
-					
+					StaticMeshComponent->SetWorldTransform(TmpMeshTransform);
 				}
 			}
 		}
@@ -84,8 +83,8 @@ void UImageTrackers::Initialize()
 	_imageTracker->cameraWidth = Width;
 	_imageTracker->cameraHeight = Height;
 	CameraRenderer = new FCameraRenderer(Width, Height, OutRT);
-	StaticMeshComponent = NewObject<UStaticMeshComponent>();
-	StaticMeshComponent->RegisterComponent();
+	// StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	// StaticMeshComponent->SetupAttachment(this);
 	_imageTracker->initialize();
 	
 	//for (auto n : ImageCollection)
@@ -146,5 +145,6 @@ static FTransform GetTransformFromMat44F(easyar::Matrix44F MatEasyAR, float Scal
 		FVector(MatEasyAR.data[3], MatEasyAR.data[7], MatEasyAR.data[11])
 	) * Scale;
 	FTransform Result = FTransform(RotScale);
+	// Result.SetScale3D(FVector(1, 1, 1));
 	return Result;
 }
