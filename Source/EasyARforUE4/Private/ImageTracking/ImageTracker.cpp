@@ -48,7 +48,6 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		{
 			for (auto target : _imageTracker->TrackTargets)
 			{
-				
 				if (ImageTargetsCollection.Contains(FString(target.second->name().c_str())))
 				{
 					// GEngine->AddOnScreenDebugMessage(
@@ -63,17 +62,26 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 					// 	_imageTracker->targetPose.data[8], _imageTracker->targetPose.data[9], _imageTracker->targetPose.data[10], _imageTracker->targetPose.data[11],
 					// 	_imageTracker->targetPose.data[12], _imageTracker->targetPose.data[13], _imageTracker->targetPose.data[14], _imageTracker->targetPose.data[15])
 					// 	);
+
+					// FTransform TmpMeshTransform = FTransform(GetTransformFromMat44F(
+					// 	_imageTracker->targetPose,
+					// 	ImageTargetsCollection[FString(target.second->name().c_str())].MeshTransform.GetScale3D()));
+					//
+					// ImageTargetsCollection[FString(target.second->name().c_str())].Mesh->SetRelativeTransform(TmpMeshTransform);
+					//
+					// ImageTargetsCollection[FString(target.second->name().c_str())].Mesh->AddLocalTransform(
+					// 	ImageTargetsCollection[FString(target.second->name().c_str())].MeshTransform);
 					
 					FTransform TmpMeshTransform = FTransform(GetTransformFromMat44F(
 						_imageTracker->targetPose,
-						ImageTargetsCollection[FString(target.second->name().c_str())].Mesh->GetRelativeScale3D()));
-					ImageTargetsCollection[FString(target.second->name().c_str())].Mesh->SetWorldTransform(TmpMeshTransform);
-					// StaticMeshComponent->SetStaticMesh(ImageTargets[FString(target.second->name().c_str())]);
-					// StaticMeshComponent->SetWorldTransform(TmpMeshTransform);
-					// StaticMeshComponent->AddLocalRotation(FRotator(90., 0, 0));
+						ImageTargetsCollection[FString(target.second->name().c_str())].MeshTransform.GetScale3D()));
+					
+					StaticMeshComponent->SetStaticMesh(ImageTargetsCollection[FString(target.second->name().c_str())].Mesh);
+					StaticMeshComponent->SetRelativeTransform(TmpMeshTransform);
+					StaticMeshComponent->AddLocalTransform(ImageTargetsCollection[FString(target.second->name().c_str())].MeshTransform);
 				}
 				// if (StaticMeshComponent->GetStaticMesh() != nullptr)
-				// 	StaticMeshComponent->SetRelativeTransform(TmpMeshTransform);
+				// 	StaticMeshComponent->SetStaticMesh(nullptr);
 			}
 		}
 	}
@@ -84,9 +92,11 @@ void UImageTrackers::Initialize()
 	_imageTracker->cameraWidth = Width;
 	_imageTracker->cameraHeight = Height;
 	CameraRenderer = new FCameraRenderer(Width, Height, OutRT);
+	
+	
 	_imageTracker->initialize();
 
-	for (auto target : ImageTargets) 
+	for (auto target : ImageTargetsCollection) 
 	{
 		_imageTracker->loadFromImage(TCHAR_TO_UTF8(*GetImagePath(target.Key)), TCHAR_TO_UTF8(*target.Key));
 	}

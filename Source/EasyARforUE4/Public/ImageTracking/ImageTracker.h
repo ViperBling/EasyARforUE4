@@ -12,10 +12,10 @@ public:
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UStaticMeshComponent* Mesh;
+	UStaticMesh* Mesh;
 
-	// UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	// FTransform MeshTransform;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FTransform MeshTransform;
 };
 
 UCLASS(ClassGroup = (EasyAR), meta = (BlueprintSpawnableComponent))
@@ -48,8 +48,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, FEasyARMesh> ImageTargetsCollection;
 
-	UPROPERTY(BlueprintReadWrite)
-	TMap<FString, UStaticMesh*> ImageTargets;
+	// UPROPERTY(BlueprintReadWrite)
+	// TMap<FString, UStaticMesh*> ImageTargets;
 	
 	UPROPERTY(BlueprintReadWrite)
 	UTextureRenderTarget2D* OutRT;
