@@ -49,7 +49,7 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			for (auto target : _imageTracker->TrackTargets)
 			{
 				
-				if (ImageTargets.Contains(FString(target.second->name().c_str())))
+				if (ImageTargetsCollection.Contains(FString(target.second->name().c_str())))
 				{
 					// GEngine->AddOnScreenDebugMessage(
 					// 	0, 1.0f, FColor::Green,
@@ -64,9 +64,12 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 					// 	_imageTracker->targetPose.data[12], _imageTracker->targetPose.data[13], _imageTracker->targetPose.data[14], _imageTracker->targetPose.data[15])
 					// 	);
 					
-					FTransform TmpMeshTransform = FTransform(GetTransformFromMat44F(_imageTracker->targetPose, FVector(0.2)));
-					StaticMeshComponent->SetStaticMesh(ImageTargets[FString(target.second->name().c_str())]);
-					StaticMeshComponent->SetWorldTransform(TmpMeshTransform);
+					FTransform TmpMeshTransform = FTransform(GetTransformFromMat44F(
+						_imageTracker->targetPose,
+						ImageTargetsCollection[FString(target.second->name().c_str())].Mesh->GetRelativeScale3D()));
+					ImageTargetsCollection[FString(target.second->name().c_str())].Mesh->SetWorldTransform(TmpMeshTransform);
+					// StaticMeshComponent->SetStaticMesh(ImageTargets[FString(target.second->name().c_str())]);
+					// StaticMeshComponent->SetWorldTransform(TmpMeshTransform);
 					// StaticMeshComponent->AddLocalRotation(FRotator(90., 0, 0));
 				}
 				// if (StaticMeshComponent->GetStaticMesh() != nullptr)

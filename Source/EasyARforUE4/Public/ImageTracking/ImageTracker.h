@@ -5,20 +5,18 @@
 #include "Device/CameraRenderer.h"
 #include "ImageTracker.generated.h"
 
-UCLASS()
-class UEasyARMesh : public USceneComponent
+USTRUCT(BlueprintType)
+struct FEasyARMesh
 {
-	GENERATED_BODY()
 public:
-	UPROPERTY()
-	UStaticMesh* Mesh;
-	
-	UPROPERTY()
-	FTransform MeshTransform;
+	GENERATED_BODY()
 
-	UEasyARMesh() : Mesh(nullptr), MeshTransform(FTransform()){}
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* Mesh;
+
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// FTransform MeshTransform;
 };
-
 
 UCLASS(ClassGroup = (EasyAR), meta = (BlueprintSpawnableComponent))
 class EASYARFORUE4_API UImageTrackers : public USceneComponent
@@ -47,8 +45,8 @@ public:
 
 public:
 	
-	// UPROPERTY(BlueprintReadWrite)
-	// TMap<FString, UEasyARMesh*> ImageTargets;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FString, FEasyARMesh> ImageTargetsCollection;
 
 	UPROPERTY(BlueprintReadWrite)
 	TMap<FString, UStaticMesh*> ImageTargets;
