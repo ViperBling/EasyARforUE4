@@ -1,8 +1,9 @@
 ﻿#include "ImageTracking/ImageTracker.h"
 
-static FMatrix MatrixConverter(easyar::Matrix44F MatEasyAR);
+#include "Components/SceneCaptureComponent2D.h"
 
-static FTransform GetTransformFromMat44F(easyar::Matrix44F& MatEasyAR, float Scale);
+static FMatrix MatrixConverter(easyar::Matrix44F& MatEasyAR);
+static FTransform GetTransformFromMat44F(easyar::Matrix44F& MatEasyAR, FVector Scale);
 
 UImageTrackers::UImageTrackers()
 {
@@ -38,20 +39,16 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		_imageTracker->perFrame();
 		auto CurrentFrame = _imageTracker->cameraFrame;
 		auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
-	
-		auto Projection = CurrentFrame->inputFrame()->cameraParameters()->projection(0.01, 1000., (float)Width / (float)Height, 0, true, false);
-		FMatrix ProjectionMatUE = MatrixConverter(Projection);
-		// if (*ProjectionMatUE.ToString())
-		// {
-		// 	UE_LOG(LogTemp, Warning, TEXT("%s"), *ProjectionMatUE.ToString());
-		// }
+		
+		// auto Projection = CurrentFrame->inputFrame()->cameraParameters()->projection(0.01, 1000., (float)Width / (float)Height, 0, true, false);
+
 		CameraRenderer->Render(Buffer->data());
 
 		if (_imageTracker->TrackTargets.size() != 0)
 		{
 			for (auto target : _imageTracker->TrackTargets)
 			{
-				FTransform TmpMeshTransform = FTransform(GetTransformFromMat44F(_imageTracker->targetPose, 1));
+				
 				if (ImageTargets.Contains(FString(target.second->name().c_str())))
 				{
 					// GEngine->AddOnScreenDebugMessage(
@@ -67,15 +64,13 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 					// 	_imageTracker->targetPose.data[12], _imageTracker->targetPose.data[13], _imageTracker->targetPose.data[14], _imageTracker->targetPose.data[15])
 					// 	);
 					
+					FTransform TmpMeshTransform = FTransform(GetTransformFromMat44F(_imageTracker->targetPose, FVector(0.2)));
 					StaticMeshComponent->SetStaticMesh(ImageTargets[FString(target.second->name().c_str())]);
-					// GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Green, FString::Printf(TEXT("%s"), *ImageTargets[FString(target.second->name().c_str())]->GetName()));
-					
-					FTransform Test = FTransform(FQuat(0, 0, 0, 0), FVector(300., 0, 0));
-					GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Green, FString::Printf(TEXT("%s"), *TmpMeshTransform.ToString()));
-					StaticMeshComponent->SetRelativeTransform(TmpMeshTransform);
+					StaticMeshComponent->SetWorldTransform(TmpMeshTransform);
+					// StaticMeshComponent->AddLocalRotation(FRotator(90., 0, 0));
 				}
-				if (StaticMeshComponent->GetStaticMesh() != nullptr)
-					StaticMeshComponent->SetRelativeTransform(TmpMeshTransform);
+				// if (StaticMeshComponent->GetStaticMesh() != nullptr)
+				// 	StaticMeshComponent->SetRelativeTransform(TmpMeshTransform);
 			}
 		}
 	}
@@ -86,14 +81,7 @@ void UImageTrackers::Initialize()
 	_imageTracker->cameraWidth = Width;
 	_imageTracker->cameraHeight = Height;
 	CameraRenderer = new FCameraRenderer(Width, Height, OutRT);
-	// StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	// StaticMeshComponent->SetupAttachment(this);
 	_imageTracker->initialize();
-	
-	//for (auto n : ImageCollection)
-	//{
-	//	_imageTracker->loadFromImage(TCHAR_TO_UTF8(*GetImagePath(n)), TCHAR_TO_UTF8(*n));
-	//}
 
 	for (auto target : ImageTargets) 
 	{
@@ -126,7 +114,7 @@ FString UImageTrackers::GetImagePath(FString& ImageName)
 	return ImagePath;
 }
 
-FMatrix MatrixConverter(easyar::Matrix44F MatEasyAR)
+FMatrix MatrixConverter(easyar::Matrix44F& MatEasyAR)
 {
 	FMatrix Result;
 	std::array<float, 16> data = MatEasyAR.data;
@@ -139,36 +127,33 @@ FMatrix MatrixConverter(easyar::Matrix44F MatEasyAR)
 	return Result;
 }
 
-static FTransform GetTransformFromMat44F(easyar::Matrix44F& MatEasyAR, float Scale)
+static FTransform GetTransformFromMat44F(easyar::Matrix44F& MatEasyAR, FVector Scale)
 {
 	FMatrix Sz = FMatrix::Identity;
 	Sz.M[2][2] = -1;
+
 	FMatrix Rotation = FMatrix(
-		FPlane(MatEasyAR.data[2],  MatEasyAR.data[0], MatEasyAR.data[1],  0),
-		FPlane(MatEasyAR.data[6],  MatEasyAR.data[4], MatEasyAR.data[5],  0),
-		FPlane(MatEasyAR.data[10], MatEasyAR.data[8], MatEasyAR.data[9],  0),
-		FPlane(0, 0, 0, 1));
-	
-	// FMatrix Rotation = FMatrix(
-	// 	FPlane(MatEasyAR.data[8],MatEasyAR.data[9], MatEasyAR.data[10], 0),
-	// 	FPlane(MatEasyAR.data[0],MatEasyAR.data[1], MatEasyAR.data[2],  0),
-	// 	FPlane(MatEasyAR.data[4],MatEasyAR.data[5], MatEasyAR.data[6],  0),
-	// 	FPlane(0, 0, 0, 1));
+		FVector(MatEasyAR.data[0], MatEasyAR.data[1], MatEasyAR.data[2]),
+		FVector(MatEasyAR.data[4], MatEasyAR.data[5], MatEasyAR.data[6]),
+		FVector(MatEasyAR.data[8], MatEasyAR.data[9], MatEasyAR.data[10]),
+		FVector(0, 0, 0));
 	
 	FVector Translation = FVector(MatEasyAR.data[3], MatEasyAR.data[7], MatEasyAR.data[11]);
 	
 	Rotation = Sz * Rotation * Sz;
 	Translation = Sz.TransformVector(Translation);
+	
 	Translation *= 100.;
 	Translation = FVector(Translation[2], Translation[0], Translation[1]);
-	
-	// Rotation = FMatrix(Rotation., Rotation.GetColumn(0), Rotation.GetColumn(1), Rotation.GetColumn(3));
-	// GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Green, FString::Printf(TEXT("%s"), *Translation.ToString()));
-	FRotator Rotator = FQuat(Rotation).Rotator();
 
-	// Rotator.Pitch = -Rotator.Pitch;
-	// Rotator.Yaw = -Rotator.Yaw;
-	// Rotator.Roll += 180;
-	FTransform Result = FTransform(Rotator, Translation, FVector(0.5));
+	FRotator Rotator = FQuat(Rotation).Rotator();
+	
+	float Pitch = Rotator.Roll;				// X->Y
+	float Yaw = Rotator.Pitch;				// Y->Z
+	float Roll = Rotator.Yaw;				// Z->X
+	Rotator = FRotator(Pitch, Yaw, Roll);
+	Rotator.Pitch *= -1.;
+	
+	FTransform Result = FTransform(Rotator, Translation, Scale);
 	return Result;
 }

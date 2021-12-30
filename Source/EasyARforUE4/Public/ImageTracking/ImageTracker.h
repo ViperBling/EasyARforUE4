@@ -5,6 +5,20 @@
 #include "Device/CameraRenderer.h"
 #include "ImageTracker.generated.h"
 
+UCLASS()
+class UEasyARMesh : public USceneComponent
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY()
+	UStaticMesh* Mesh;
+	
+	UPROPERTY()
+	FTransform MeshTransform;
+
+	UEasyARMesh() : Mesh(nullptr), MeshTransform(FTransform()){}
+};
+
 
 UCLASS(ClassGroup = (EasyAR), meta = (BlueprintSpawnableComponent))
 class EASYARFORUE4_API UImageTrackers : public USceneComponent
@@ -19,8 +33,22 @@ public:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	/*UPROPERTY(BlueprintReadWrite)
-	TArray<FString> ImageCollection;*/
+	UFUNCTION(BlueprintCallable, Category = EasyAR)
+	void Initialize();
+
+	UFUNCTION(BlueprintCallable, Category = EasyAR)
+	void Start();
+
+	UFUNCTION(BlueprintCallable, Category = EasyAR)
+	void Stop();
+
+	UFUNCTION(BlueprintCallable, Category = EasyAR)
+	void CallEveryFrame(float DeltaTime);
+
+public:
+	
+	// UPROPERTY(BlueprintReadWrite)
+	// TMap<FString, UEasyARMesh*> ImageTargets;
 
 	UPROPERTY(BlueprintReadWrite)
 	TMap<FString, UStaticMesh*> ImageTargets;
@@ -37,23 +65,12 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	int Height = 960;
 
-	FCameraRenderer* CameraRenderer;
-
-	UFUNCTION(BlueprintCallable, Category = EasyAR)
-	void Initialize();
-
-	UFUNCTION(BlueprintCallable, Category = EasyAR)
-	void Start();
-
-	UFUNCTION(BlueprintCallable, Category = EasyAR)
-	void Stop();
-
-	UFUNCTION(BlueprintCallable, Category = EasyAR)
-	void CallEveryFrame(float DeltaTime);
-
 private:
 	FString GetImagePath(FString& ImageName);
+
+private:
 	std::unique_ptr<ImageTrackerWrapper> _imageTracker;
+	FCameraRenderer* CameraRenderer;
 	float Timer = 0;
 	const float FrameRate = 30.f;
 };

@@ -152,8 +152,9 @@ void ImageTrackerWrapper::perFrame()
 
 void ImageTrackerWrapper::loadFromImage(const std::string& filename, const std::string& name)
 {
+	// Scale是图片宽度和米的比例，也就是多少米，UE的单位是厘米，所以传入时要乘以100
 	std::optional<std::shared_ptr<easyar::ImageTarget>> ImageTarget =
-		easyar::ImageTarget::createFromImageFile(filename, easyar::StorageType::Assets, name, "", "", 1.0f);
+		easyar::ImageTarget::createFromImageFile(filename, easyar::StorageType::Assets, name, "", "", 1.f);
 	if (ImageTarget.has_value())
 	{
 		Tracker->loadTarget(ImageTarget.value(), Scheduler, [](std::shared_ptr<easyar::Target> target, bool status)
