@@ -5,8 +5,6 @@
 #include "RHIStaticStates.h"
 #include "CameraRenderer.h"
 
-
-
 class FCameraBackgroundVB : public FVertexBuffer
 {
 public:

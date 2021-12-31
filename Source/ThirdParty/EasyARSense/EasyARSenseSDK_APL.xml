@@ -2,7 +2,7 @@
 <root xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- init section is always evaluated once per architecture -->
     <init>
-        <log text="EasyARSenseSDK APL init (shipping build)"/>
+        <log text="EasyARSenseSDK APL init"/>
     </init>
     <addPermission android:name="android.permission.CAMERA"/>
     <addFeature android:name="android.hardware.camera" android:required="true"/>

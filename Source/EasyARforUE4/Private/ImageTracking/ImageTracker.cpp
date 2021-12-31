@@ -93,7 +93,6 @@ void UImageTrackers::Initialize()
 	_imageTracker->cameraHeight = Height;
 	CameraRenderer = new FCameraRenderer(Width, Height, OutRT);
 	
-	
 	_imageTracker->initialize();
 
 	for (auto target : ImageTargetsCollection) 
