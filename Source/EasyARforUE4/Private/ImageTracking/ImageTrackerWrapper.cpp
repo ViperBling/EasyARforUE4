@@ -2,8 +2,7 @@
 
 ImageTrackerWrapper::ImageTrackerWrapper()
 {
-	cameraWidth = 1280;
-	cameraHeight = 960;
+
 }
 
 ImageTrackerWrapper::~ImageTrackerWrapper()
@@ -18,9 +17,9 @@ void ImageTrackerWrapper::initialize()
 	OutputFrameFork = easyar::OutputFrameFork::create(2);
 	OutputFrameBuffer = easyar::OutputFrameBuffer::create();
 	Camera = easyar::CameraDeviceSelector::createCameraDevice(easyar::CameraDevicePreference::PreferObjectSensing);
-	// Camera->setAndroidCameraApiType(easyar::AndroidCameraApiType::Camera1);
+	// RealTimeTransform = std::make_shared<easyar::RealTimeCoordinateTransform>();
 
-	// Camera->setCameraParameters(CameraParameters);
+	// auto MotionCamera = easyar::CameraDeviceSelector::createCameraDevice(easyar::CameraDevicePreference::PreferMotionTracking);
 	
 	if (!Camera->openWithPreferredType(easyar::CameraDeviceType::Back))
 	{

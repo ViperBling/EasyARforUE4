@@ -1,6 +1,6 @@
 ﻿//=============================================================================================================================
 //
-// EasyAR Sense 4.3.0.8981-4ecf7d1ec
+// EasyAR Sense 4.4.0.9304-eb4ecde40
 // Copyright (c) 2015-2021 VisionStar Information Technology (Shanghai) Co., Ltd. All Rights Reserved.
 // EasyAR is the registered trademark or trademark of VisionStar Information Technology (Shanghai) Co., Ltd in China
 // and other countries for the augmented reality technology developed by VisionStar Information Technology (Shanghai) Co., Ltd.
@@ -59,6 +59,38 @@ enum class CalibrationDownloadStatus
 };
 
 class CalibrationDownloader;
+
+enum class CloudLocalizeStatus
+{
+    /// <summary>
+    /// Spatial maps are localized.
+    /// </summary>
+    FoundMaps = 0,
+    /// <summary>
+    /// No spatial maps are localized.
+    /// </summary>
+    MapsNotFound = 1,
+    /// <summary>
+    /// Protocol error
+    /// </summary>
+    ProtocolError = 2,
+    /// <summary>
+    /// Exception caught
+    /// </summary>
+    ExceptionCaught = 3,
+    /// <summary>
+    /// Request time out (more than 1 minute)
+    /// </summary>
+    RequestTimeout = 4,
+    /// <summary>
+    /// Request time interval is too low
+    /// </summary>
+    RequestIntervalTooLow = 5,
+};
+
+class CloudLocalizeResult;
+
+class CloudLocalizer;
 
 enum class CloudRecognizationStatus
 {
@@ -204,7 +236,33 @@ class SceneMesh;
 
 struct AccelerometerResult;
 
+class Accelerometer;
+
+enum class ARCoreCameraDeviceFocusMode
+{
+    /// <summary>
+    /// Auto focus mode
+    /// </summary>
+    Auto = 0,
+    /// <summary>
+    /// Fixed focus mode
+    /// </summary>
+    Fixed = 1,
+};
+
 class ARCoreCameraDevice;
+
+enum class ARKitCameraDeviceFocusMode
+{
+    /// <summary>
+    /// Auto focus mode
+    /// </summary>
+    Auto = 0,
+    /// <summary>
+    /// Fixed focus mode
+    /// </summary>
+    Fixed = 1,
+};
 
 class ARKitCameraDevice;
 
@@ -431,6 +489,8 @@ enum class ImageTrackerMode
 class ImageTrackerResult;
 
 class ImageTracker;
+
+class RealTimeCoordinateTransform;
 
 class Recorder;
 
@@ -1099,6 +1159,131 @@ public:
     void download(std::shared_ptr<CallbackScheduler> callbackScheduler, std::function<void(CalibrationDownloadStatus, std::optional<std::string>)> onCompleted);
 };
 
+class CloudLocalizeResult : public FrameFilterResult
+{
+protected:
+    std::shared_ptr<easyar_CloudLocalizeResult> cdata_;
+    void init_cdata(std::shared_ptr<easyar_CloudLocalizeResult> cdata);
+    CloudLocalizeResult & operator=(const CloudLocalizeResult & data) = delete;
+public:
+    CloudLocalizeResult(std::shared_ptr<easyar_CloudLocalizeResult> cdata);
+    virtual ~CloudLocalizeResult();
+
+    std::shared_ptr<easyar_CloudLocalizeResult> get_cdata();
+    static std::shared_ptr<CloudLocalizeResult> from_cdata(std::shared_ptr<easyar_CloudLocalizeResult> cdata);
+
+    /// <summary>
+    /// Returns localization status.
+    /// </summary>
+    CloudLocalizeStatus getLocalizeStatus();
+    /// <summary>
+    /// Returns ID of the best correspond localized map.
+    /// </summary>
+    std::string getLocalizedMapID();
+    /// <summary>
+    /// Returns the name of the best correspond localized map.
+    /// </summary>
+    std::string getLocalizedMapName();
+    /// <summary>
+    /// Returns the camera pose at the best correspond localized map coordinates.
+    /// </summary>
+    Matrix44F getPose();
+    /// <summary>
+    /// Returns the transform from local coordinates (if exists) to the best correspond map coordinates.
+    /// </summary>
+    std::optional<Matrix44F> getDeltaT();
+    /// <summary>
+    /// Returns ID of all localized maps.
+    /// </summary>
+    std::vector<std::string> getAllLocalizedMapID();
+    /// <summary>
+    /// Returns the camera pose at all localized map coordinates.
+    /// </summary>
+    std::vector<Matrix44F> getAllPose();
+    /// <summary>
+    /// Returns the transform from local coordinates (if exists) to all map coordinates.
+    /// </summary>
+    std::vector<Matrix44F> getAllDeltaT();
+    /// <summary>
+    /// Returns extra informations of the localization.
+    /// </summary>
+    std::string getExtraInfo();
+    /// <summary>
+    /// Returns detailed exception message.
+    /// </summary>
+    std::string getExceptionInfo();
+    /// <summary>
+    /// Returns the block id of the best correspond localized map.
+    /// </summary>
+    std::string getLocalizedBlockId();
+    /// <summary>
+    /// Returns the block timestamp of the best correspond localized map.
+    /// </summary>
+    std::string getLocalizedBlockTimestamp();
+    /// <summary>
+    /// Returns the block location of the best correspond localized map.
+    /// </summary>
+    std::optional<Vec3D> getLocalizedBlockLocation();
+    /// <summary>
+    /// Returns the cluster id of the best correspond localized map.
+    /// </summary>
+    std::string getLocalizedClusterId();
+    /// <summary>
+    /// Returns the cluster location of the best correspond localized map.
+    /// </summary>
+    std::optional<Vec3D> getLocalizedClusterLocation();
+    /// <summary>
+    /// Returns the camera pose in the cluster which the best correspond localized map belongs to.
+    /// </summary>
+    Matrix44F getPoseInCluster();
+    /// <summary>
+    /// Returns the transform from local coordinates (if exists) to the best correspond map coordinates.
+    /// </summary>
+    std::optional<Matrix44F> getDeltaTForCluster();
+    /// <summary>
+    /// Returns the location of device.
+    /// </summary>
+    std::optional<Vec3D> getDeviceLocation();
+};
+
+/// <summary>
+/// CloudLocalizer implements cloud based localization.
+/// </summary>
+class CloudLocalizer
+{
+protected:
+    std::shared_ptr<easyar_CloudLocalizer> cdata_;
+    void init_cdata(std::shared_ptr<easyar_CloudLocalizer> cdata);
+    CloudLocalizer & operator=(const CloudLocalizer & data) = delete;
+public:
+    CloudLocalizer(std::shared_ptr<easyar_CloudLocalizer> cdata);
+    virtual ~CloudLocalizer();
+
+    std::shared_ptr<easyar_CloudLocalizer> get_cdata();
+    static std::shared_ptr<CloudLocalizer> from_cdata(std::shared_ptr<easyar_CloudLocalizer> cdata);
+
+    /// <summary>
+    /// Returns true.
+    /// </summary>
+    static bool isAvailable();
+    /// <summary>
+    /// Creates an instance and connects to the server.
+    /// </summary>
+    static std::shared_ptr<CloudLocalizer> create(std::string server, std::string apiKey, std::string apiSecret, std::string appId);
+    /// <summary>
+    /// Send localization request.
+    /// Send `InputFrame`_ to resolve a cloud localization. `InputFrame`_ should have at least image data and camera parameters.
+    /// message input is a json string.
+    /// acceleration is optional which is the readings from device accelerometer.
+    /// location is optional which is the readings from device location manager.
+    /// </summary>
+    void resolve(std::shared_ptr<InputFrame> inputFrame, std::string message, std::optional<Vec3F> acceleration, std::optional<Vec3D> location, std::shared_ptr<CallbackScheduler> callbackScheduler, std::function<void(std::shared_ptr<CloudLocalizeResult>)> callback);
+    /// <summary>
+    /// Stops the localization and closes connection. The component shall not be used after calling close.
+    /// </summary>
+    void close();
+};
+
 class CloudRecognizationResult
 {
 protected:
@@ -1209,7 +1394,7 @@ public:
     /// </summary>
     bool tryCopyFrom(void * src, int srcIndex, int index, int length);
     /// <summary>
-    /// Copies buffer data to user array.
+    /// Tries to copy data from Buffer to user array. If copy succeeds, it returns true, or else it returns false. Possible failure causes includes: source or destination data range overflow.
     /// </summary>
     bool tryCopyTo(int index, void * dest, int destIndex, int length);
     /// <summary>
@@ -1744,6 +1929,47 @@ struct AccelerometerResult
 };
 
 /// <summary>
+/// Accelerometer calls the accelerometer provided by the operating system, and outputs `AccelerometerResult`_ .
+/// When it is not needed anymore, call close function to close it. It shall not be used after calling close.
+/// It is not recommended to open the accelerometer multiple times simultaneously, which may cause failure on open or cause precision downgrade.
+/// </summary>
+class Accelerometer
+{
+protected:
+    std::shared_ptr<easyar_Accelerometer> cdata_;
+    void init_cdata(std::shared_ptr<easyar_Accelerometer> cdata);
+    Accelerometer & operator=(const Accelerometer & data) = delete;
+public:
+    Accelerometer(std::shared_ptr<easyar_Accelerometer> cdata);
+    virtual ~Accelerometer();
+
+    std::shared_ptr<easyar_Accelerometer> get_cdata();
+    static std::shared_ptr<Accelerometer> from_cdata(std::shared_ptr<easyar_Accelerometer> cdata);
+
+    Accelerometer();
+    /// <summary>
+    /// Checks if the component is available. It returns true only on Android or iOS with supported hardware. On other operating systems, it is not supported.
+    /// </summary>
+    bool isAvailable();
+    /// <summary>
+    /// Opens the device. Sampling period is defined by implementation. If failed, it will return false.
+    /// </summary>
+    bool open();
+    /// <summary>
+    /// Opens the device with a specific sampling period. Sampling period is limited by hardware and may not reach the specified value. If failed, it will return false.
+    /// </summary>
+    bool openWithSamplingPeriod(int samplingPeriodMilliseconds);
+    /// <summary>
+    /// Closes. It shall not be used after calling close.
+    /// </summary>
+    void close();
+    /// <summary>
+    /// Gets the most recent result. If there is no result, it returns empty.
+    /// </summary>
+    std::optional<AccelerometerResult> getCurrentResult();
+};
+
+/// <summary>
 /// ARCoreCameraDevice implements a camera device based on ARCore, which outputs `InputFrame`_  (including image, camera parameters, timestamp, 6DOF location, and tracking status).
 /// Loading of libarcore_sdk_c.so with java.lang.System.loadLibrary is required.
 /// After creation, start/stop can be invoked to start or stop video stream capture.
@@ -1784,6 +2010,10 @@ public:
     /// `InputFrame`_ output port.
     /// </summary>
     std::shared_ptr<InputFrameSource> inputFrameSource();
+    /// <summary>
+    /// Sets focus mode to focusMode. Call before start.
+    /// </summary>
+    void setFocusMode(ARCoreCameraDeviceFocusMode focusMode);
     /// <summary>
     /// Starts video stream capture.
     /// </summary>
@@ -1835,6 +2065,10 @@ public:
     /// `InputFrame`_ output port.
     /// </summary>
     std::shared_ptr<InputFrameSource> inputFrameSource();
+    /// <summary>
+    /// Sets focus mode to focusMode. Call before start. Valid since iOS 11.3.
+    /// </summary>
+    void setFocusMode(ARKitCameraDeviceFocusMode focusMode);
     /// <summary>
     /// Starts video stream capture.
     /// </summary>
@@ -2682,6 +2916,42 @@ public:
     /// Gets the max number of targets which will be the simultaneously tracked by the tracker. The default value is 1.
     /// </summary>
     int simultaneousNum();
+};
+
+class RealTimeCoordinateTransform
+{
+protected:
+    std::shared_ptr<easyar_RealTimeCoordinateTransform> cdata_;
+    void init_cdata(std::shared_ptr<easyar_RealTimeCoordinateTransform> cdata);
+    RealTimeCoordinateTransform & operator=(const RealTimeCoordinateTransform & data) = delete;
+public:
+    RealTimeCoordinateTransform(std::shared_ptr<easyar_RealTimeCoordinateTransform> cdata);
+    virtual ~RealTimeCoordinateTransform();
+
+    std::shared_ptr<easyar_RealTimeCoordinateTransform> get_cdata();
+    static std::shared_ptr<RealTimeCoordinateTransform> from_cdata(std::shared_ptr<easyar_RealTimeCoordinateTransform> cdata);
+
+    /// <summary>
+    /// Create RealTimeCoordinateTransform object.
+    /// </summary>
+    RealTimeCoordinateTransform();
+    /// <summary>
+    /// Set buffer size，the unit of capacity is seconds. The data within capacity seconds from now will be saved.
+    /// BufferSize represents the capacity of the buffer. If there is more than capacity seconds of data in the buffer, the latest data will be input to the buffer and the oldest frame of data will be released.
+    /// </summary>
+    void setBufferSize(int capacity);
+    /// <summary>
+    /// Get buffer capacity. The default is 15 seconds. The data within 15 seconds from now will be saved.
+    /// </summary>
+    int getBufferSize();
+    /// <summary>
+    /// Input data to the cache, the data includes localTwc and mapTcw at the time timestamp. localTwc means camera pose at local coordinates, mapTcw means the camera pose at the localized map coordinates.
+    /// </summary>
+    bool insertData(double timestamp, Matrix44F localTwc, Matrix44F mapTcw);
+    /// <summary>
+    /// Returns the camera pose in the localized map after insert motionTracking status and localTwc at the time timestamp. localTwc means camera pose at local coordinates.
+    /// </summary>
+    Matrix44F getPoseInMap(double timestamp, MotionTrackingStatus status, Matrix44F localTwc);
 };
 
 /// <summary>
@@ -3908,6 +4178,7 @@ public:
 #include "easyar/objecttarget.h"
 #include "easyar/objecttracker.h"
 #include "easyar/calibration.h"
+#include "easyar/cloudlocalize.h"
 #include "easyar/cloudrecognizer.h"
 #include "easyar/buffer.h"
 #include "easyar/bufferpool.h"
@@ -3915,6 +4186,7 @@ public:
 #include "easyar/image.h"
 #include "easyar/densespatialmap.h"
 #include "easyar/scenemesh.h"
+#include "easyar/accelerometer.h"
 #include "easyar/arcorecamera.h"
 #include "easyar/arkitcamera.h"
 #include "easyar/camera.h"
@@ -3927,6 +4199,7 @@ public:
 #include "easyar/storage.h"
 #include "easyar/imagetarget.h"
 #include "easyar/imagetracker.h"
+#include "easyar/realtimecoordinatetransform.h"
 #include "easyar/recorder.h"
 #include "easyar/recorder_configuration.h"
 #include "easyar/sparsespatialmap.h"
@@ -3983,6 +4256,18 @@ static inline bool easyar_ListOfTarget_check_external_cpp(const std::vector<std:
 static void FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString_func(void * _state, easyar_CalibrationDownloadStatus, easyar_OptionalOfString, /* OUT */ easyar_String * * _exception);
 static void FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString_destroy(void * _state);
 static inline easyar_FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString_to_c(std::function<void(CalibrationDownloadStatus, std::optional<std::string>)> f);
+
+static inline std::shared_ptr<easyar_ListOfString> std_vector_to_easyar_ListOfString(std::vector<std::string> l);
+static inline std::vector<std::string> std_vector_from_easyar_ListOfString(std::shared_ptr<easyar_ListOfString> pl);
+static inline bool easyar_ListOfString_check_external_cpp(const std::vector<std::string> & l);
+
+static inline std::shared_ptr<easyar_ListOfMatrix44F> std_vector_to_easyar_ListOfMatrix44F(std::vector<Matrix44F> l);
+static inline std::vector<Matrix44F> std_vector_from_easyar_ListOfMatrix44F(std::shared_ptr<easyar_ListOfMatrix44F> pl);
+static inline bool easyar_ListOfMatrix44F_check_external_cpp(const std::vector<Matrix44F> & l);
+
+static void FunctorOfVoidFromCloudLocalizeResult_func(void * _state, easyar_CloudLocalizeResult *, /* OUT */ easyar_String * * _exception);
+static void FunctorOfVoidFromCloudLocalizeResult_destroy(void * _state);
+static inline easyar_FunctorOfVoidFromCloudLocalizeResult FunctorOfVoidFromCloudLocalizeResult_to_c(std::function<void(std::shared_ptr<CloudLocalizeResult>)> f);
 
 static inline std::shared_ptr<easyar_ListOfImage> std_vector_to_easyar_ListOfImage(std::vector<std::shared_ptr<Image>> l);
 static inline std::vector<std::shared_ptr<Image>> std_vector_from_easyar_ListOfImage(std::shared_ptr<easyar_ListOfImage> pl);
@@ -4480,6 +4765,219 @@ _INLINE_SPECIFIER_ void CalibrationDownloader::download(std::shared_ptr<Callback
     if (!(arg0 != nullptr)) { throw std::runtime_error("InvalidArgument: callbackScheduler"); }
     if (!(arg1 != nullptr)) { throw std::runtime_error("InvalidArgument: onCompleted"); }
     easyar_CalibrationDownloader_download(cdata_.get(), arg0->get_cdata().get(), FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString_to_c(arg1));
+}
+
+_INLINE_SPECIFIER_ CloudLocalizeResult::CloudLocalizeResult(std::shared_ptr<easyar_CloudLocalizeResult> cdata)
+    :
+    FrameFilterResult(std::shared_ptr<easyar_FrameFilterResult>(nullptr)),
+    cdata_(nullptr)
+{
+    init_cdata(cdata);
+}
+_INLINE_SPECIFIER_ CloudLocalizeResult::~CloudLocalizeResult()
+{
+    cdata_ = nullptr;
+}
+
+_INLINE_SPECIFIER_ std::shared_ptr<easyar_CloudLocalizeResult> CloudLocalizeResult::get_cdata()
+{
+    return cdata_;
+}
+_INLINE_SPECIFIER_ void CloudLocalizeResult::init_cdata(std::shared_ptr<easyar_CloudLocalizeResult> cdata)
+{
+    cdata_ = cdata;
+    {
+        easyar_FrameFilterResult * ptr = nullptr;
+        easyar_castCloudLocalizeResultToFrameFilterResult(cdata_.get(), &ptr);
+        FrameFilterResult::init_cdata(std::shared_ptr<easyar_FrameFilterResult>(ptr, [](easyar_FrameFilterResult * ptr) { easyar_FrameFilterResult__dtor(ptr); }));
+    }
+}
+_INLINE_SPECIFIER_ std::shared_ptr<CloudLocalizeResult> CloudLocalizeResult::from_cdata(std::shared_ptr<easyar_CloudLocalizeResult> cdata)
+{
+    if (cdata == nullptr) {
+        return nullptr;
+    }
+    return std::make_shared<CloudLocalizeResult>(cdata);
+}
+_INLINE_SPECIFIER_ CloudLocalizeStatus CloudLocalizeResult::getLocalizeStatus()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    auto _return_value_ = easyar_CloudLocalizeResult_getLocalizeStatus(cdata_.get());
+    return static_cast<CloudLocalizeStatus>(_return_value_);
+}
+_INLINE_SPECIFIER_ std::string CloudLocalizeResult::getLocalizedMapID()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    easyar_String * _return_value_;
+    easyar_CloudLocalizeResult_getLocalizedMapID(cdata_.get(), &_return_value_);
+    if (!(_return_value_ != nullptr)) { throw std::runtime_error("InvalidReturnValue"); }
+    return std_string_from_easyar_String(std::shared_ptr<easyar_String>(_return_value_, [](easyar_String * ptr) { easyar_String__dtor(ptr); }));
+}
+_INLINE_SPECIFIER_ std::string CloudLocalizeResult::getLocalizedMapName()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    easyar_String * _return_value_;
+    easyar_CloudLocalizeResult_getLocalizedMapName(cdata_.get(), &_return_value_);
+    if (!(_return_value_ != nullptr)) { throw std::runtime_error("InvalidReturnValue"); }
+    return std_string_from_easyar_String(std::shared_ptr<easyar_String>(_return_value_, [](easyar_String * ptr) { easyar_String__dtor(ptr); }));
+}
+_INLINE_SPECIFIER_ Matrix44F CloudLocalizeResult::getPose()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    auto _return_value_ = easyar_CloudLocalizeResult_getPose(cdata_.get());
+    return Matrix44F{{{_return_value_.data[0], _return_value_.data[1], _return_value_.data[2], _return_value_.data[3], _return_value_.data[4], _return_value_.data[5], _return_value_.data[6], _return_value_.data[7], _return_value_.data[8], _return_value_.data[9], _return_value_.data[10], _return_value_.data[11], _return_value_.data[12], _return_value_.data[13], _return_value_.data[14], _return_value_.data[15]}}};
+}
+_INLINE_SPECIFIER_ std::optional<Matrix44F> CloudLocalizeResult::getDeltaT()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    auto _return_value_ = easyar_CloudLocalizeResult_getDeltaT(cdata_.get());
+    return (_return_value_.has_value ? Matrix44F{{{_return_value_.value.data[0], _return_value_.value.data[1], _return_value_.value.data[2], _return_value_.value.data[3], _return_value_.value.data[4], _return_value_.value.data[5], _return_value_.value.data[6], _return_value_.value.data[7], _return_value_.value.data[8], _return_value_.value.data[9], _return_value_.value.data[10], _return_value_.value.data[11], _return_value_.value.data[12], _return_value_.value.data[13], _return_value_.value.data[14], _return_value_.value.data[15]}}} : std::optional<Matrix44F>{});
+}
+_INLINE_SPECIFIER_ std::vector<std::string> CloudLocalizeResult::getAllLocalizedMapID()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    easyar_ListOfString * _return_value_;
+    easyar_CloudLocalizeResult_getAllLocalizedMapID(cdata_.get(), &_return_value_);
+    if (!(_return_value_ != nullptr)) { throw std::runtime_error("InvalidReturnValue"); }
+    return std_vector_from_easyar_ListOfString(std::shared_ptr<easyar_ListOfString>(_return_value_, [](easyar_ListOfString * ptr) { easyar_ListOfString__dtor(ptr); }));
+}
+_INLINE_SPECIFIER_ std::vector<Matrix44F> CloudLocalizeResult::getAllPose()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    easyar_ListOfMatrix44F * _return_value_;
+    easyar_CloudLocalizeResult_getAllPose(cdata_.get(), &_return_value_);
+    if (!(_return_value_ != nullptr)) { throw std::runtime_error("InvalidReturnValue"); }
+    return std_vector_from_easyar_ListOfMatrix44F(std::shared_ptr<easyar_ListOfMatrix44F>(_return_value_, [](easyar_ListOfMatrix44F * ptr) { easyar_ListOfMatrix44F__dtor(ptr); }));
+}
+_INLINE_SPECIFIER_ std::vector<Matrix44F> CloudLocalizeResult::getAllDeltaT()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    easyar_ListOfMatrix44F * _return_value_;
+    easyar_CloudLocalizeResult_getAllDeltaT(cdata_.get(), &_return_value_);
+    if (!(_return_value_ != nullptr)) { throw std::runtime_error("InvalidReturnValue"); }
+    return std_vector_from_easyar_ListOfMatrix44F(std::shared_ptr<easyar_ListOfMatrix44F>(_return_value_, [](easyar_ListOfMatrix44F * ptr) { easyar_ListOfMatrix44F__dtor(ptr); }));
+}
+_INLINE_SPECIFIER_ std::string CloudLocalizeResult::getExtraInfo()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    easyar_String * _return_value_;
+    easyar_CloudLocalizeResult_getExtraInfo(cdata_.get(), &_return_value_);
+    if (!(_return_value_ != nullptr)) { throw std::runtime_error("InvalidReturnValue"); }
+    return std_string_from_easyar_String(std::shared_ptr<easyar_String>(_return_value_, [](easyar_String * ptr) { easyar_String__dtor(ptr); }));
+}
+_INLINE_SPECIFIER_ std::string CloudLocalizeResult::getExceptionInfo()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    easyar_String * _return_value_;
+    easyar_CloudLocalizeResult_getExceptionInfo(cdata_.get(), &_return_value_);
+    if (!(_return_value_ != nullptr)) { throw std::runtime_error("InvalidReturnValue"); }
+    return std_string_from_easyar_String(std::shared_ptr<easyar_String>(_return_value_, [](easyar_String * ptr) { easyar_String__dtor(ptr); }));
+}
+_INLINE_SPECIFIER_ std::string CloudLocalizeResult::getLocalizedBlockId()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    easyar_String * _return_value_;
+    easyar_CloudLocalizeResult_getLocalizedBlockId(cdata_.get(), &_return_value_);
+    if (!(_return_value_ != nullptr)) { throw std::runtime_error("InvalidReturnValue"); }
+    return std_string_from_easyar_String(std::shared_ptr<easyar_String>(_return_value_, [](easyar_String * ptr) { easyar_String__dtor(ptr); }));
+}
+_INLINE_SPECIFIER_ std::string CloudLocalizeResult::getLocalizedBlockTimestamp()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    easyar_String * _return_value_;
+    easyar_CloudLocalizeResult_getLocalizedBlockTimestamp(cdata_.get(), &_return_value_);
+    if (!(_return_value_ != nullptr)) { throw std::runtime_error("InvalidReturnValue"); }
+    return std_string_from_easyar_String(std::shared_ptr<easyar_String>(_return_value_, [](easyar_String * ptr) { easyar_String__dtor(ptr); }));
+}
+_INLINE_SPECIFIER_ std::optional<Vec3D> CloudLocalizeResult::getLocalizedBlockLocation()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    auto _return_value_ = easyar_CloudLocalizeResult_getLocalizedBlockLocation(cdata_.get());
+    return (_return_value_.has_value ? Vec3D{{{_return_value_.value.data[0], _return_value_.value.data[1], _return_value_.value.data[2]}}} : std::optional<Vec3D>{});
+}
+_INLINE_SPECIFIER_ std::string CloudLocalizeResult::getLocalizedClusterId()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    easyar_String * _return_value_;
+    easyar_CloudLocalizeResult_getLocalizedClusterId(cdata_.get(), &_return_value_);
+    if (!(_return_value_ != nullptr)) { throw std::runtime_error("InvalidReturnValue"); }
+    return std_string_from_easyar_String(std::shared_ptr<easyar_String>(_return_value_, [](easyar_String * ptr) { easyar_String__dtor(ptr); }));
+}
+_INLINE_SPECIFIER_ std::optional<Vec3D> CloudLocalizeResult::getLocalizedClusterLocation()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    auto _return_value_ = easyar_CloudLocalizeResult_getLocalizedClusterLocation(cdata_.get());
+    return (_return_value_.has_value ? Vec3D{{{_return_value_.value.data[0], _return_value_.value.data[1], _return_value_.value.data[2]}}} : std::optional<Vec3D>{});
+}
+_INLINE_SPECIFIER_ Matrix44F CloudLocalizeResult::getPoseInCluster()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    auto _return_value_ = easyar_CloudLocalizeResult_getPoseInCluster(cdata_.get());
+    return Matrix44F{{{_return_value_.data[0], _return_value_.data[1], _return_value_.data[2], _return_value_.data[3], _return_value_.data[4], _return_value_.data[5], _return_value_.data[6], _return_value_.data[7], _return_value_.data[8], _return_value_.data[9], _return_value_.data[10], _return_value_.data[11], _return_value_.data[12], _return_value_.data[13], _return_value_.data[14], _return_value_.data[15]}}};
+}
+_INLINE_SPECIFIER_ std::optional<Matrix44F> CloudLocalizeResult::getDeltaTForCluster()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    auto _return_value_ = easyar_CloudLocalizeResult_getDeltaTForCluster(cdata_.get());
+    return (_return_value_.has_value ? Matrix44F{{{_return_value_.value.data[0], _return_value_.value.data[1], _return_value_.value.data[2], _return_value_.value.data[3], _return_value_.value.data[4], _return_value_.value.data[5], _return_value_.value.data[6], _return_value_.value.data[7], _return_value_.value.data[8], _return_value_.value.data[9], _return_value_.value.data[10], _return_value_.value.data[11], _return_value_.value.data[12], _return_value_.value.data[13], _return_value_.value.data[14], _return_value_.value.data[15]}}} : std::optional<Matrix44F>{});
+}
+_INLINE_SPECIFIER_ std::optional<Vec3D> CloudLocalizeResult::getDeviceLocation()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    auto _return_value_ = easyar_CloudLocalizeResult_getDeviceLocation(cdata_.get());
+    return (_return_value_.has_value ? Vec3D{{{_return_value_.value.data[0], _return_value_.value.data[1], _return_value_.value.data[2]}}} : std::optional<Vec3D>{});
+}
+
+_INLINE_SPECIFIER_ CloudLocalizer::CloudLocalizer(std::shared_ptr<easyar_CloudLocalizer> cdata)
+    :
+    cdata_(nullptr)
+{
+    init_cdata(cdata);
+}
+_INLINE_SPECIFIER_ CloudLocalizer::~CloudLocalizer()
+{
+    cdata_ = nullptr;
+}
+
+_INLINE_SPECIFIER_ std::shared_ptr<easyar_CloudLocalizer> CloudLocalizer::get_cdata()
+{
+    return cdata_;
+}
+_INLINE_SPECIFIER_ void CloudLocalizer::init_cdata(std::shared_ptr<easyar_CloudLocalizer> cdata)
+{
+    cdata_ = cdata;
+}
+_INLINE_SPECIFIER_ std::shared_ptr<CloudLocalizer> CloudLocalizer::from_cdata(std::shared_ptr<easyar_CloudLocalizer> cdata)
+{
+    if (cdata == nullptr) {
+        return nullptr;
+    }
+    return std::make_shared<CloudLocalizer>(cdata);
+}
+_INLINE_SPECIFIER_ bool CloudLocalizer::isAvailable()
+{
+    auto _return_value_ = easyar_CloudLocalizer_isAvailable();
+    return _return_value_;
+}
+_INLINE_SPECIFIER_ std::shared_ptr<CloudLocalizer> CloudLocalizer::create(std::string arg0, std::string arg1, std::string arg2, std::string arg3)
+{
+    easyar_CloudLocalizer * _return_value_;
+    easyar_CloudLocalizer_create(std_string_to_easyar_String(arg0).get(), std_string_to_easyar_String(arg1).get(), std_string_to_easyar_String(arg2).get(), std_string_to_easyar_String(arg3).get(), &_return_value_);
+    if (!(_return_value_ != nullptr)) { throw std::runtime_error("InvalidReturnValue"); }
+    return CloudLocalizer::from_cdata(std::shared_ptr<easyar_CloudLocalizer>(_return_value_, [](easyar_CloudLocalizer * ptr) { easyar_CloudLocalizer__dtor(ptr); }));
+}
+_INLINE_SPECIFIER_ void CloudLocalizer::resolve(std::shared_ptr<InputFrame> arg0, std::string arg1, std::optional<Vec3F> arg2, std::optional<Vec3D> arg3, std::shared_ptr<CallbackScheduler> arg4, std::function<void(std::shared_ptr<CloudLocalizeResult>)> arg5)
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    if (!(arg0 != nullptr)) { throw std::runtime_error("InvalidArgument: inputFrame"); }
+    if (!(arg4 != nullptr)) { throw std::runtime_error("InvalidArgument: callbackScheduler"); }
+    if (!(arg5 != nullptr)) { throw std::runtime_error("InvalidArgument: callback"); }
+    easyar_CloudLocalizer_resolve(cdata_.get(), arg0->get_cdata().get(), std_string_to_easyar_String(arg1).get(), (arg2.has_value() ? easyar_OptionalOfVec3F{true, easyar_Vec3F{{arg2.value().data[0], arg2.value().data[1], arg2.value().data[2]}}} : easyar_OptionalOfVec3F{false, {}}), (arg3.has_value() ? easyar_OptionalOfVec3D{true, easyar_Vec3D{{arg3.value().data[0], arg3.value().data[1], arg3.value().data[2]}}} : easyar_OptionalOfVec3D{false, {}}), arg4->get_cdata().get(), FunctorOfVoidFromCloudLocalizeResult_to_c(arg5));
+}
+_INLINE_SPECIFIER_ void CloudLocalizer::close()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    easyar_CloudLocalizer_close(cdata_.get());
 }
 
 _INLINE_SPECIFIER_ CloudRecognizationResult::CloudRecognizationResult(std::shared_ptr<easyar_CloudRecognizationResult> cdata)
@@ -5186,6 +5684,71 @@ _INLINE_SPECIFIER_ float SceneMesh::getBlockDimensionInMeters()
     return _return_value_;
 }
 
+_INLINE_SPECIFIER_ Accelerometer::Accelerometer(std::shared_ptr<easyar_Accelerometer> cdata)
+    :
+    cdata_(nullptr)
+{
+    init_cdata(cdata);
+}
+_INLINE_SPECIFIER_ Accelerometer::~Accelerometer()
+{
+    cdata_ = nullptr;
+}
+
+_INLINE_SPECIFIER_ std::shared_ptr<easyar_Accelerometer> Accelerometer::get_cdata()
+{
+    return cdata_;
+}
+_INLINE_SPECIFIER_ void Accelerometer::init_cdata(std::shared_ptr<easyar_Accelerometer> cdata)
+{
+    cdata_ = cdata;
+}
+_INLINE_SPECIFIER_ std::shared_ptr<Accelerometer> Accelerometer::from_cdata(std::shared_ptr<easyar_Accelerometer> cdata)
+{
+    if (cdata == nullptr) {
+        return nullptr;
+    }
+    return std::make_shared<Accelerometer>(cdata);
+}
+_INLINE_SPECIFIER_ Accelerometer::Accelerometer()
+    :
+    cdata_(nullptr)
+{
+    easyar_Accelerometer * _return_value_;
+    easyar_Accelerometer__ctor(&_return_value_);
+    if (!(_return_value_ != nullptr)) { throw std::runtime_error("InvalidReturnValue"); };
+    init_cdata(std::shared_ptr<easyar_Accelerometer>(_return_value_, [](easyar_Accelerometer * ptr) { easyar_Accelerometer__dtor(ptr); }));
+}
+_INLINE_SPECIFIER_ bool Accelerometer::isAvailable()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    auto _return_value_ = easyar_Accelerometer_isAvailable(cdata_.get());
+    return _return_value_;
+}
+_INLINE_SPECIFIER_ bool Accelerometer::open()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    auto _return_value_ = easyar_Accelerometer_open(cdata_.get());
+    return _return_value_;
+}
+_INLINE_SPECIFIER_ bool Accelerometer::openWithSamplingPeriod(int arg0)
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    auto _return_value_ = easyar_Accelerometer_openWithSamplingPeriod(cdata_.get(), arg0);
+    return _return_value_;
+}
+_INLINE_SPECIFIER_ void Accelerometer::close()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    easyar_Accelerometer_close(cdata_.get());
+}
+_INLINE_SPECIFIER_ std::optional<AccelerometerResult> Accelerometer::getCurrentResult()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    auto _return_value_ = easyar_Accelerometer_getCurrentResult(cdata_.get());
+    return (_return_value_.has_value ? AccelerometerResult{_return_value_.value.x, _return_value_.value.y, _return_value_.value.z, _return_value_.value.timestamp} : std::optional<AccelerometerResult>{});
+}
+
 _INLINE_SPECIFIER_ ARCoreCameraDevice::ARCoreCameraDevice(std::shared_ptr<easyar_ARCoreCameraDevice> cdata)
     :
     cdata_(nullptr)
@@ -5244,6 +5807,11 @@ _INLINE_SPECIFIER_ std::shared_ptr<InputFrameSource> ARCoreCameraDevice::inputFr
     easyar_ARCoreCameraDevice_inputFrameSource(cdata_.get(), &_return_value_);
     if (!(_return_value_ != nullptr)) { throw std::runtime_error("InvalidReturnValue"); }
     return InputFrameSource::from_cdata(std::shared_ptr<easyar_InputFrameSource>(_return_value_, [](easyar_InputFrameSource * ptr) { easyar_InputFrameSource__dtor(ptr); }));
+}
+_INLINE_SPECIFIER_ void ARCoreCameraDevice::setFocusMode(ARCoreCameraDeviceFocusMode arg0)
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    easyar_ARCoreCameraDevice_setFocusMode(cdata_.get(), static_cast<easyar_ARCoreCameraDeviceFocusMode>(arg0));
 }
 _INLINE_SPECIFIER_ bool ARCoreCameraDevice::start()
 {
@@ -5320,6 +5888,11 @@ _INLINE_SPECIFIER_ std::shared_ptr<InputFrameSource> ARKitCameraDevice::inputFra
     easyar_ARKitCameraDevice_inputFrameSource(cdata_.get(), &_return_value_);
     if (!(_return_value_ != nullptr)) { throw std::runtime_error("InvalidReturnValue"); }
     return InputFrameSource::from_cdata(std::shared_ptr<easyar_InputFrameSource>(_return_value_, [](easyar_InputFrameSource * ptr) { easyar_InputFrameSource__dtor(ptr); }));
+}
+_INLINE_SPECIFIER_ void ARKitCameraDevice::setFocusMode(ARKitCameraDeviceFocusMode arg0)
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    easyar_ARKitCameraDevice_setFocusMode(cdata_.get(), static_cast<easyar_ARKitCameraDeviceFocusMode>(arg0));
 }
 _INLINE_SPECIFIER_ bool ARKitCameraDevice::start()
 {
@@ -6564,6 +7137,65 @@ _INLINE_SPECIFIER_ int ImageTracker::simultaneousNum()
     return _return_value_;
 }
 
+_INLINE_SPECIFIER_ RealTimeCoordinateTransform::RealTimeCoordinateTransform(std::shared_ptr<easyar_RealTimeCoordinateTransform> cdata)
+    :
+    cdata_(nullptr)
+{
+    init_cdata(cdata);
+}
+_INLINE_SPECIFIER_ RealTimeCoordinateTransform::~RealTimeCoordinateTransform()
+{
+    cdata_ = nullptr;
+}
+
+_INLINE_SPECIFIER_ std::shared_ptr<easyar_RealTimeCoordinateTransform> RealTimeCoordinateTransform::get_cdata()
+{
+    return cdata_;
+}
+_INLINE_SPECIFIER_ void RealTimeCoordinateTransform::init_cdata(std::shared_ptr<easyar_RealTimeCoordinateTransform> cdata)
+{
+    cdata_ = cdata;
+}
+_INLINE_SPECIFIER_ std::shared_ptr<RealTimeCoordinateTransform> RealTimeCoordinateTransform::from_cdata(std::shared_ptr<easyar_RealTimeCoordinateTransform> cdata)
+{
+    if (cdata == nullptr) {
+        return nullptr;
+    }
+    return std::make_shared<RealTimeCoordinateTransform>(cdata);
+}
+_INLINE_SPECIFIER_ RealTimeCoordinateTransform::RealTimeCoordinateTransform()
+    :
+    cdata_(nullptr)
+{
+    easyar_RealTimeCoordinateTransform * _return_value_;
+    easyar_RealTimeCoordinateTransform__ctor(&_return_value_);
+    if (!(_return_value_ != nullptr)) { throw std::runtime_error("InvalidReturnValue"); };
+    init_cdata(std::shared_ptr<easyar_RealTimeCoordinateTransform>(_return_value_, [](easyar_RealTimeCoordinateTransform * ptr) { easyar_RealTimeCoordinateTransform__dtor(ptr); }));
+}
+_INLINE_SPECIFIER_ void RealTimeCoordinateTransform::setBufferSize(int arg0)
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    easyar_RealTimeCoordinateTransform_setBufferSize(cdata_.get(), arg0);
+}
+_INLINE_SPECIFIER_ int RealTimeCoordinateTransform::getBufferSize()
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    auto _return_value_ = easyar_RealTimeCoordinateTransform_getBufferSize(cdata_.get());
+    return _return_value_;
+}
+_INLINE_SPECIFIER_ bool RealTimeCoordinateTransform::insertData(double arg0, Matrix44F arg1, Matrix44F arg2)
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    auto _return_value_ = easyar_RealTimeCoordinateTransform_insertData(cdata_.get(), arg0, easyar_Matrix44F{{arg1.data[0], arg1.data[1], arg1.data[2], arg1.data[3], arg1.data[4], arg1.data[5], arg1.data[6], arg1.data[7], arg1.data[8], arg1.data[9], arg1.data[10], arg1.data[11], arg1.data[12], arg1.data[13], arg1.data[14], arg1.data[15]}}, easyar_Matrix44F{{arg2.data[0], arg2.data[1], arg2.data[2], arg2.data[3], arg2.data[4], arg2.data[5], arg2.data[6], arg2.data[7], arg2.data[8], arg2.data[9], arg2.data[10], arg2.data[11], arg2.data[12], arg2.data[13], arg2.data[14], arg2.data[15]}});
+    return _return_value_;
+}
+_INLINE_SPECIFIER_ Matrix44F RealTimeCoordinateTransform::getPoseInMap(double arg0, MotionTrackingStatus arg1, Matrix44F arg2)
+{
+    if (cdata_ == nullptr) { throw std::runtime_error("InvalidArgument: this"); }
+    auto _return_value_ = easyar_RealTimeCoordinateTransform_getPoseInMap(cdata_.get(), arg0, static_cast<easyar_MotionTrackingStatus>(arg1), easyar_Matrix44F{{arg2.data[0], arg2.data[1], arg2.data[2], arg2.data[3], arg2.data[4], arg2.data[5], arg2.data[6], arg2.data[7], arg2.data[8], arg2.data[9], arg2.data[10], arg2.data[11], arg2.data[12], arg2.data[13], arg2.data[14], arg2.data[15]}});
+    return Matrix44F{{{_return_value_.data[0], _return_value_.data[1], _return_value_.data[2], _return_value_.data[3], _return_value_.data[4], _return_value_.data[5], _return_value_.data[6], _return_value_.data[7], _return_value_.data[8], _return_value_.data[9], _return_value_.data[10], _return_value_.data[11], _return_value_.data[12], _return_value_.data[13], _return_value_.data[14], _return_value_.data[15]}}};
+}
+
 _INLINE_SPECIFIER_ Recorder::Recorder(std::shared_ptr<easyar_Recorder> cdata)
     :
     cdata_(nullptr)
@@ -7099,7 +7731,7 @@ _INLINE_SPECIFIER_ int Engine::schemaHash()
 }
 _INLINE_SPECIFIER_ bool Engine::initialize(std::string arg0)
 {
-    if (easyar_Engine_schemaHash() != 493533529) {
+    if (easyar_Engine_schemaHash() != -2089645540) {
         throw std::runtime_error("SchemaHashNotMatched");
     }
     auto _return_value_ = easyar_Engine_initialize(std_string_to_easyar_String(arg0).get());
@@ -8212,6 +8844,11 @@ _INLINE_SPECIFIER_ std::shared_ptr<FrameFilterResult> FrameFilterResult::from_cd
         easyar_tryCastFrameFilterResultToObjectTrackerResult(cdata.get(), &st_cdata);
         return std::static_pointer_cast<FrameFilterResult>(std::make_shared<ObjectTrackerResult>(std::shared_ptr<easyar_ObjectTrackerResult>(st_cdata, [](easyar_ObjectTrackerResult * ptr) { easyar_ObjectTrackerResult__dtor(ptr); })));
     }
+    if (typeName == "CloudLocalizeResult") {
+        easyar_CloudLocalizeResult * st_cdata;
+        easyar_tryCastFrameFilterResultToCloudLocalizeResult(cdata.get(), &st_cdata);
+        return std::static_pointer_cast<FrameFilterResult>(std::make_shared<CloudLocalizeResult>(std::shared_ptr<easyar_CloudLocalizeResult>(st_cdata, [](easyar_CloudLocalizeResult * ptr) { easyar_CloudLocalizeResult__dtor(ptr); })));
+    }
     if (typeName == "SurfaceTrackerResult") {
         easyar_SurfaceTrackerResult * st_cdata;
         easyar_tryCastFrameFilterResultToSurfaceTrackerResult(cdata.get(), &st_cdata);
@@ -8815,6 +9452,88 @@ static void FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString_destro
 static inline easyar_FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString_to_c(std::function<void(CalibrationDownloadStatus, std::optional<std::string>)> f)
 {
     return easyar_FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString{new std::function<void(CalibrationDownloadStatus, std::optional<std::string>)>(f), FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString_func, FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString_destroy};
+}
+
+static inline std::shared_ptr<easyar_ListOfString> std_vector_to_easyar_ListOfString(std::vector<std::string> l)
+{
+    std::vector<easyar_String *> values;
+    values.reserve(l.size());
+    for (auto v : l) {
+        auto cv = std_string_to_easyar_String(v).get();
+        easyar_String_copy(cv, &cv);
+        values.push_back(cv);
+    }
+    easyar_ListOfString * ptr;
+    easyar_ListOfString__ctor(values.data(), values.data() + values.size(), &ptr);
+    return std::shared_ptr<easyar_ListOfString>(ptr, [](easyar_ListOfString * ptr) { easyar_ListOfString__dtor(ptr); });
+}
+static inline std::vector<std::string> std_vector_from_easyar_ListOfString(std::shared_ptr<easyar_ListOfString> pl)
+{
+    auto size = easyar_ListOfString_size(pl.get());
+    std::vector<std::string> values;
+    values.reserve(size);
+    for (int k = 0; k < size; k += 1) {
+        auto v = easyar_ListOfString_at(pl.get(), k);
+        easyar_String_copy(v, &v);
+        values.push_back(std_string_from_easyar_String(std::shared_ptr<easyar_String>(v, [](easyar_String * ptr) { easyar_String__dtor(ptr); })));
+    }
+    return values;
+}
+static inline bool easyar_ListOfString_check_external_cpp(const std::vector<std::string> & l)
+{
+    return true;
+}
+
+static inline std::shared_ptr<easyar_ListOfMatrix44F> std_vector_to_easyar_ListOfMatrix44F(std::vector<Matrix44F> l)
+{
+    std::vector<easyar_Matrix44F> values;
+    values.reserve(l.size());
+    for (auto v : l) {
+        auto cv = easyar_Matrix44F{{v.data[0], v.data[1], v.data[2], v.data[3], v.data[4], v.data[5], v.data[6], v.data[7], v.data[8], v.data[9], v.data[10], v.data[11], v.data[12], v.data[13], v.data[14], v.data[15]}};
+        values.push_back(cv);
+    }
+    easyar_ListOfMatrix44F * ptr;
+    easyar_ListOfMatrix44F__ctor(values.data(), values.data() + values.size(), &ptr);
+    return std::shared_ptr<easyar_ListOfMatrix44F>(ptr, [](easyar_ListOfMatrix44F * ptr) { easyar_ListOfMatrix44F__dtor(ptr); });
+}
+static inline std::vector<Matrix44F> std_vector_from_easyar_ListOfMatrix44F(std::shared_ptr<easyar_ListOfMatrix44F> pl)
+{
+    auto size = easyar_ListOfMatrix44F_size(pl.get());
+    std::vector<Matrix44F> values;
+    values.reserve(size);
+    for (int k = 0; k < size; k += 1) {
+        auto v = easyar_ListOfMatrix44F_at(pl.get(), k);
+        values.push_back(Matrix44F{{{v.data[0], v.data[1], v.data[2], v.data[3], v.data[4], v.data[5], v.data[6], v.data[7], v.data[8], v.data[9], v.data[10], v.data[11], v.data[12], v.data[13], v.data[14], v.data[15]}}});
+    }
+    return values;
+}
+static inline bool easyar_ListOfMatrix44F_check_external_cpp(const std::vector<Matrix44F> & l)
+{
+    return true;
+}
+
+static void FunctorOfVoidFromCloudLocalizeResult_func(void * _state, easyar_CloudLocalizeResult * arg0, /* OUT */ easyar_String * * _exception)
+{
+    *_exception = nullptr;
+    try {
+        easyar_CloudLocalizeResult__retain(arg0, &arg0);
+        std::shared_ptr<CloudLocalizeResult> cpparg0 = CloudLocalizeResult::from_cdata(std::shared_ptr<easyar_CloudLocalizeResult>(arg0, [](easyar_CloudLocalizeResult * ptr) { easyar_CloudLocalizeResult__dtor(ptr); }));
+        auto f = reinterpret_cast<std::function<void(std::shared_ptr<CloudLocalizeResult>)> *>(_state);
+        (*f)(cpparg0);
+    } catch (std::exception & ex) {
+        // auto message = std::string() + typeid(*(&ex)).name() + u8"\n" + ex.what();
+        auto message = std::string() + u8"" + u8"\n" + ex.what();
+        easyar_String_from_utf8_begin(message.c_str(), _exception);
+    }
+}
+static void FunctorOfVoidFromCloudLocalizeResult_destroy(void * _state)
+{
+    auto f = reinterpret_cast<std::function<void(std::shared_ptr<CloudLocalizeResult>)> *>(_state);
+    delete f;
+}
+static inline easyar_FunctorOfVoidFromCloudLocalizeResult FunctorOfVoidFromCloudLocalizeResult_to_c(std::function<void(std::shared_ptr<CloudLocalizeResult>)> f)
+{
+    return easyar_FunctorOfVoidFromCloudLocalizeResult{new std::function<void(std::shared_ptr<CloudLocalizeResult>)>(f), FunctorOfVoidFromCloudLocalizeResult_func, FunctorOfVoidFromCloudLocalizeResult_destroy};
 }
 
 static inline std::shared_ptr<easyar_ListOfImage> std_vector_to_easyar_ListOfImage(std::vector<std::shared_ptr<Image>> l)

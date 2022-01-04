@@ -1,6 +1,6 @@
 ﻿//=============================================================================================================================
 //
-// EasyAR Sense 4.3.0.8981-4ecf7d1ec
+// EasyAR Sense 4.4.0.9304-eb4ecde40
 // Copyright (c) 2015-2021 VisionStar Information Technology (Shanghai) Co., Ltd. All Rights Reserved.
 // EasyAR is the registered trademark or trademark of VisionStar Information Technology (Shanghai) Co., Ltd in China
 // and other countries for the augmented reality technology developed by VisionStar Information Technology (Shanghai) Co., Ltd.
@@ -56,6 +56,10 @@ public:
     /// `InputFrame`_ output port.
     /// </summary>
     void inputFrameSource(/* OUT */ InputFrameSource * * Return);
+    /// <summary>
+    /// Sets focus mode to focusMode. Call before start.
+    /// </summary>
+    void setFocusMode(ARCoreCameraDeviceFocusMode focusMode);
     /// <summary>
     /// Starts video stream capture.
     /// </summary>
@@ -159,6 +163,13 @@ inline void ARCoreCameraDevice::inputFrameSource(/* OUT */ InputFrameSource * * 
     easyar_InputFrameSource * _return_value_ = NULL;
     easyar_ARCoreCameraDevice_inputFrameSource(cdata_, &_return_value_);
     *Return = new InputFrameSource(_return_value_);
+}
+inline void ARCoreCameraDevice::setFocusMode(ARCoreCameraDeviceFocusMode arg0)
+{
+    if (cdata_ == NULL) {
+        return;
+    }
+    easyar_ARCoreCameraDevice_setFocusMode(cdata_, static_cast<easyar_ARCoreCameraDeviceFocusMode>(arg0));
 }
 inline bool ARCoreCameraDevice::start()
 {

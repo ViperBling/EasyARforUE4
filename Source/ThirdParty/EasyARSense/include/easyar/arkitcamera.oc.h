@@ -1,6 +1,6 @@
 ﻿//=============================================================================================================================
 //
-// EasyAR Sense 4.3.0.8981-4ecf7d1ec
+// EasyAR Sense 4.4.0.9304-eb4ecde40
 // Copyright (c) 2015-2021 VisionStar Information Technology (Shanghai) Co., Ltd. All Rights Reserved.
 // EasyAR is the registered trademark or trademark of VisionStar Information Technology (Shanghai) Co., Ltd in China
 // and other countries for the augmented reality technology developed by VisionStar Information Technology (Shanghai) Co., Ltd.
@@ -38,6 +38,10 @@
 /// `InputFrame`_ output port.
 /// </summary>
 - (easyar_InputFrameSource *)inputFrameSource;
+/// <summary>
+/// Sets focus mode to focusMode. Call before start. Valid since iOS 11.3.
+/// </summary>
+- (void)setFocusMode:(easyar_ARKitCameraDeviceFocusMode)focusMode;
 /// <summary>
 /// Starts video stream capture.
 /// </summary>

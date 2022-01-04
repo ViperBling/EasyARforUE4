@@ -33,6 +33,9 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	Timer += DeltaTime;
+
+	FMinimalViewInfo ViewInfo;
+	
 	if (Timer >= 1. / FrameRate)
 	{
 		Timer -= 1. / FrameRate;
@@ -41,7 +44,7 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
 		
 		// auto Projection = CurrentFrame->inputFrame()->cameraParameters()->projection(0.01, 1000., (float)Width / (float)Height, 0, true, false);
-
+		
 		CameraRenderer->Render(Buffer->data());
 
 		if (_imageTracker->TrackTargets.size() != 0)
@@ -62,21 +65,24 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 					// 	_imageTracker->targetPose.data[8], _imageTracker->targetPose.data[9], _imageTracker->targetPose.data[10], _imageTracker->targetPose.data[11],
 					// 	_imageTracker->targetPose.data[12], _imageTracker->targetPose.data[13], _imageTracker->targetPose.data[14], _imageTracker->targetPose.data[15])
 					// 	);
-
-					// FTransform TmpMeshTransform = FTransform(GetTransformFromMat44F(
-					// 	_imageTracker->targetPose,
-					// 	ImageTargetsCollection[FString(target.second->name().c_str())].MeshTransform.GetScale3D()));
-					//
-					// ImageTargetsCollection[FString(target.second->name().c_str())].Mesh->SetRelativeTransform(TmpMeshTransform);
-					//
-					// ImageTargetsCollection[FString(target.second->name().c_str())].Mesh->AddLocalTransform(
-					// 	ImageTargetsCollection[FString(target.second->name().c_str())].MeshTransform);
 					
 					FTransform TmpMeshTransform = FTransform(GetTransformFromMat44F(
 						_imageTracker->targetPose,
 						ImageTargetsCollection[FString(target.second->name().c_str())].MeshTransform.GetScale3D()));
 					
 					StaticMeshComponent->SetStaticMesh(ImageTargetsCollection[FString(target.second->name().c_str())].Mesh);
+					
+					// StaticMeshComponent->SetWorldTransform(FTransform::Identity);
+					// ViewInfo.Location = TmpMeshTransform.GetTranslation();
+					// ViewInfo.Rotation = TmpMeshTransform.Rotator();
+					// SceneCaptureA->SetCameraView(ViewInfo);
+					// SceneCaptureB->SetCameraView(ViewInfo);
+					// SceneCaptureA->CustomProjectionMatrix = (MatrixConverter(Projection));
+
+					GEngine->AddOnScreenDebugMessage(
+						0, 1.0f, FColor::Green,
+						FString::Printf(TEXT("%s\n"), *FString(TmpMeshTransform.Rotator().ToString())));
+					
 					StaticMeshComponent->SetRelativeTransform(TmpMeshTransform);
 					StaticMeshComponent->AddLocalTransform(ImageTargetsCollection[FString(target.second->name().c_str())].MeshTransform);
 				}
@@ -89,8 +95,6 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void UImageTrackers::Initialize()
 {
-	_imageTracker->cameraWidth = Width;
-	_imageTracker->cameraHeight = Height;
 	CameraRenderer = new FCameraRenderer(Width, Height, OutRT);
 	
 	_imageTracker->initialize();

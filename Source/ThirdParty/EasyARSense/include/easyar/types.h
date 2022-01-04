@@ -1,6 +1,6 @@
 ﻿//=============================================================================================================================
 //
-// EasyAR Sense 4.3.0.8981-4ecf7d1ec
+// EasyAR Sense 4.4.0.9304-eb4ecde40
 // Copyright (c) 2015-2021 VisionStar Information Technology (Shanghai) Co., Ltd. All Rights Reserved.
 // EasyAR is the registered trademark or trademark of VisionStar Information Technology (Shanghai) Co., Ltd in China
 // and other countries for the augmented reality technology developed by VisionStar Information Technology (Shanghai) Co., Ltd.
@@ -84,6 +84,46 @@ typedef enum
 /// CalibrationDownloader is used for download and update of calibration data in MotionTracker. The calibration data will only take effect after reallocation of MotionTracker.
 /// </summary>
 typedef struct { char _placeHolder_; } easyar_CalibrationDownloader;
+
+typedef enum
+{
+    /// <summary>
+    /// Spatial maps are localized.
+    /// </summary>
+    easyar_CloudLocalizeStatus_FoundMaps = 0,
+    /// <summary>
+    /// No spatial maps are localized.
+    /// </summary>
+    easyar_CloudLocalizeStatus_MapsNotFound = 1,
+    /// <summary>
+    /// Protocol error
+    /// </summary>
+    easyar_CloudLocalizeStatus_ProtocolError = 2,
+    /// <summary>
+    /// Exception caught
+    /// </summary>
+    easyar_CloudLocalizeStatus_ExceptionCaught = 3,
+    /// <summary>
+    /// Request time out (more than 1 minute)
+    /// </summary>
+    easyar_CloudLocalizeStatus_RequestTimeout = 4,
+    /// <summary>
+    /// Request time interval is too low
+    /// </summary>
+    easyar_CloudLocalizeStatus_RequestIntervalTooLow = 5,
+} easyar_CloudLocalizeStatus;
+
+/// <summary>
+/// class
+/// extends FrameFilterResult
+/// </summary>
+typedef struct { char _placeHolder_; } easyar_CloudLocalizeResult;
+
+/// <summary>
+/// class
+/// CloudLocalizer implements cloud based localization.
+/// </summary>
+typedef struct { char _placeHolder_; } easyar_CloudLocalizer;
 
 typedef enum
 {
@@ -447,6 +487,26 @@ typedef struct
 
 /// <summary>
 /// class
+/// Accelerometer calls the accelerometer provided by the operating system, and outputs `AccelerometerResult`_ .
+/// When it is not needed anymore, call close function to close it. It shall not be used after calling close.
+/// It is not recommended to open the accelerometer multiple times simultaneously, which may cause failure on open or cause precision downgrade.
+/// </summary>
+typedef struct { char _placeHolder_; } easyar_Accelerometer;
+
+typedef enum
+{
+    /// <summary>
+    /// Auto focus mode
+    /// </summary>
+    easyar_ARCoreCameraDeviceFocusMode_Auto = 0,
+    /// <summary>
+    /// Fixed focus mode
+    /// </summary>
+    easyar_ARCoreCameraDeviceFocusMode_Fixed = 1,
+} easyar_ARCoreCameraDeviceFocusMode;
+
+/// <summary>
+/// class
 /// ARCoreCameraDevice implements a camera device based on ARCore, which outputs `InputFrame`_  (including image, camera parameters, timestamp, 6DOF location, and tracking status).
 /// Loading of libarcore_sdk_c.so with java.lang.System.loadLibrary is required.
 /// After creation, start/stop can be invoked to start or stop video stream capture.
@@ -456,6 +516,18 @@ typedef struct
 /// Caution: Currently, ARCore(v1.13.0) has memory leaks on creating and destroying sessions. Repeated creations and destructions will cause an increasing and non-reclaimable memory footprint.
 /// </summary>
 typedef struct { char _placeHolder_; } easyar_ARCoreCameraDevice;
+
+typedef enum
+{
+    /// <summary>
+    /// Auto focus mode
+    /// </summary>
+    easyar_ARKitCameraDeviceFocusMode_Auto = 0,
+    /// <summary>
+    /// Fixed focus mode
+    /// </summary>
+    easyar_ARKitCameraDeviceFocusMode_Fixed = 1,
+} easyar_ARKitCameraDeviceFocusMode;
 
 /// <summary>
 /// class
@@ -813,6 +885,11 @@ typedef struct { char _placeHolder_; } easyar_ImageTrackerResult;
 /// Before a `Target`_ can be tracked by ImageTracker, you have to load it using loadTarget/unloadTarget. You can get load/unload results from callbacks passed into the interfaces.
 /// </summary>
 typedef struct { char _placeHolder_; } easyar_ImageTracker;
+
+/// <summary>
+/// class
+/// </summary>
+typedef struct { char _placeHolder_; } easyar_RealTimeCoordinateTransform;
 
 /// <summary>
 /// class
@@ -1373,6 +1450,23 @@ typedef struct
     void (* destroy)(void * _state);
 } easyar_FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString;
 
+typedef struct { bool has_value; easyar_Matrix44F value; } easyar_OptionalOfMatrix44F;
+
+typedef struct { char _placeHolder_; } easyar_ListOfString;
+
+typedef struct { char _placeHolder_; } easyar_ListOfMatrix44F;
+
+typedef struct { bool has_value; easyar_Vec3D value; } easyar_OptionalOfVec3D;
+
+typedef struct { bool has_value; easyar_Vec3F value; } easyar_OptionalOfVec3F;
+
+typedef struct
+{
+    void * _state;
+    void (* func)(void * _state, easyar_CloudLocalizeResult *, /* OUT */ easyar_String * * _exception);
+    void (* destroy)(void * _state);
+} easyar_FunctorOfVoidFromCloudLocalizeResult;
+
 typedef struct { bool has_value; easyar_ImageTarget * value; } easyar_OptionalOfImageTarget;
 
 typedef struct { char _placeHolder_; } easyar_ListOfImage;
@@ -1385,6 +1479,8 @@ typedef struct
 } easyar_FunctorOfVoidFromCloudRecognizationResult;
 
 typedef struct { char _placeHolder_; } easyar_ListOfBlockInfo;
+
+typedef struct { bool has_value; easyar_AccelerometerResult value; } easyar_OptionalOfAccelerometerResult;
 
 typedef struct
 {
@@ -1428,8 +1524,6 @@ typedef struct
 } easyar_FunctorOfVoidFromRecordStatusAndString;
 
 typedef struct { bool has_value; easyar_FunctorOfVoidFromRecordStatusAndString value; } easyar_OptionalOfFunctorOfVoidFromRecordStatusAndString;
-
-typedef struct { bool has_value; easyar_Matrix44F value; } easyar_OptionalOfMatrix44F;
 
 typedef struct { char _placeHolder_; } easyar_ListOfPlaneData;
 

@@ -1,6 +1,6 @@
 ﻿//=============================================================================================================================
 //
-// EasyAR Sense 4.3.0.8981-4ecf7d1ec
+// EasyAR Sense 4.4.0.9304-eb4ecde40
 // Copyright (c) 2015-2021 VisionStar Information Technology (Shanghai) Co., Ltd. All Rights Reserved.
 // EasyAR is the registered trademark or trademark of VisionStar Information Technology (Shanghai) Co., Ltd in China
 // and other countries for the augmented reality technology developed by VisionStar Information Technology (Shanghai) Co., Ltd.
@@ -45,6 +45,38 @@ typedef enum easyar_CalibrationDownloadStatus : NSInteger
 } easyar_CalibrationDownloadStatus;
 
 @class easyar_CalibrationDownloader;
+
+typedef enum easyar_CloudLocalizeStatus : NSInteger
+{
+    /// <summary>
+    /// Spatial maps are localized.
+    /// </summary>
+    easyar_CloudLocalizeStatus_FoundMaps = 0,
+    /// <summary>
+    /// No spatial maps are localized.
+    /// </summary>
+    easyar_CloudLocalizeStatus_MapsNotFound = 1,
+    /// <summary>
+    /// Protocol error
+    /// </summary>
+    easyar_CloudLocalizeStatus_ProtocolError = 2,
+    /// <summary>
+    /// Exception caught
+    /// </summary>
+    easyar_CloudLocalizeStatus_ExceptionCaught = 3,
+    /// <summary>
+    /// Request time out (more than 1 minute)
+    /// </summary>
+    easyar_CloudLocalizeStatus_RequestTimeout = 4,
+    /// <summary>
+    /// Request time interval is too low
+    /// </summary>
+    easyar_CloudLocalizeStatus_RequestIntervalTooLow = 5,
+} easyar_CloudLocalizeStatus;
+
+@class easyar_CloudLocalizeResult;
+
+@class easyar_CloudLocalizer;
 
 typedef enum easyar_CloudRecognizationStatus : NSInteger
 {
@@ -190,7 +222,33 @@ typedef enum easyar_PixelFormat : NSInteger
 
 @class easyar_AccelerometerResult;
 
+@class easyar_Accelerometer;
+
+typedef enum easyar_ARCoreCameraDeviceFocusMode : NSInteger
+{
+    /// <summary>
+    /// Auto focus mode
+    /// </summary>
+    easyar_ARCoreCameraDeviceFocusMode_Auto = 0,
+    /// <summary>
+    /// Fixed focus mode
+    /// </summary>
+    easyar_ARCoreCameraDeviceFocusMode_Fixed = 1,
+} easyar_ARCoreCameraDeviceFocusMode;
+
 @class easyar_ARCoreCameraDevice;
+
+typedef enum easyar_ARKitCameraDeviceFocusMode : NSInteger
+{
+    /// <summary>
+    /// Auto focus mode
+    /// </summary>
+    easyar_ARKitCameraDeviceFocusMode_Auto = 0,
+    /// <summary>
+    /// Fixed focus mode
+    /// </summary>
+    easyar_ARKitCameraDeviceFocusMode_Fixed = 1,
+} easyar_ARKitCameraDeviceFocusMode;
 
 @class easyar_ARKitCameraDevice;
 
@@ -417,6 +475,8 @@ typedef enum easyar_ImageTrackerMode : NSInteger
 @class easyar_ImageTrackerResult;
 
 @class easyar_ImageTracker;
+
+@class easyar_RealTimeCoordinateTransform;
 
 @class easyar_Recorder;
 

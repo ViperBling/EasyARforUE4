@@ -1,2 +1,2 @@
 ﻿EasyAR Sense
-请阅读EasyAR网站上的发行说明来了解版本更新内容：https://help.easyar.cn/EasyAR%20Sense/v4/ReleaseNotes/ReleaseNotes.html
+请阅读EasyAR网站上的发行说明来了解版本更新内容：https://help.easyar.cn/EasyAR%20Sense/v4_4/ReleaseNotes/ReleaseNotes.html

@@ -1,6 +1,6 @@
 ﻿//=============================================================================================================================
 //
-// EasyAR Sense 4.3.0.8981-4ecf7d1ec
+// EasyAR Sense 4.4.0.9304-eb4ecde40
 // Copyright (c) 2015-2021 VisionStar Information Technology (Shanghai) Co., Ltd. All Rights Reserved.
 // EasyAR is the registered trademark or trademark of VisionStar Information Technology (Shanghai) Co., Ltd in China
 // and other countries for the augmented reality technology developed by VisionStar Information Technology (Shanghai) Co., Ltd.
@@ -41,7 +41,7 @@ void easyar_Buffer_memoryCopy(void * src, void * dest, int length);
 /// </summary>
 bool easyar_Buffer_tryCopyFrom(easyar_Buffer * This, void * src, int srcIndex, int index, int length);
 /// <summary>
-/// Copies buffer data to user array.
+/// Tries to copy data from Buffer to user array. If copy succeeds, it returns true, or else it returns false. Possible failure causes includes: source or destination data range overflow.
 /// </summary>
 bool easyar_Buffer_tryCopyTo(easyar_Buffer * This, int index, void * dest, int destIndex, int length);
 /// <summary>

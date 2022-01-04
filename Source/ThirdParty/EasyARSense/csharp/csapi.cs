@@ -1,6 +1,6 @@
 ﻿//=============================================================================================================================
 //
-// EasyAR Sense 4.3.0.8981-4ecf7d1ec
+// EasyAR Sense 4.4.0.9304-eb4ecde40
 // Copyright (c) 2015-2021 VisionStar Information Technology (Shanghai) Co., Ltd. All Rights Reserved.
 // EasyAR is the registered trademark or trademark of VisionStar Information Technology (Shanghai) Co., Ltd in China
 // and other countries for the augmented reality technology developed by VisionStar Information Technology (Shanghai) Co., Ltd.
@@ -230,6 +230,69 @@ namespace easyar
         public static extern IntPtr easyar_CalibrationDownloader__typeName(IntPtr This);
 
         [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern CloudLocalizeStatus easyar_CloudLocalizeResult_getLocalizeStatus(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizeResult_getLocalizedMapID(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizeResult_getLocalizedMapName(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Matrix44F easyar_CloudLocalizeResult_getPose(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern OptionalOfMatrix44F easyar_CloudLocalizeResult_getDeltaT(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizeResult_getAllLocalizedMapID(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizeResult_getAllPose(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizeResult_getAllDeltaT(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizeResult_getExtraInfo(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizeResult_getExceptionInfo(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizeResult_getLocalizedBlockId(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizeResult_getLocalizedBlockTimestamp(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern OptionalOfVec3D easyar_CloudLocalizeResult_getLocalizedBlockLocation(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizeResult_getLocalizedClusterId(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern OptionalOfVec3D easyar_CloudLocalizeResult_getLocalizedClusterLocation(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Matrix44F easyar_CloudLocalizeResult_getPoseInCluster(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern OptionalOfMatrix44F easyar_CloudLocalizeResult_getDeltaTForCluster(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern OptionalOfVec3D easyar_CloudLocalizeResult_getDeviceLocation(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizeResult__dtor(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizeResult__retain(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr easyar_CloudLocalizeResult__typeName(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_castCloudLocalizeResultToFrameFilterResult(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_tryCastFrameFilterResultToCloudLocalizeResult(IntPtr This, out IntPtr Return);
+
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool easyar_CloudLocalizer_isAvailable();
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizer_create(IntPtr server, IntPtr apiKey, IntPtr apiSecret, IntPtr appId, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizer_resolve(IntPtr This, IntPtr inputFrame, IntPtr message, OptionalOfVec3F acceleration, OptionalOfVec3D location, IntPtr callbackScheduler, FunctorOfVoidFromCloudLocalizeResult callback);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizer_close(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizer__dtor(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_CloudLocalizer__retain(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr easyar_CloudLocalizer__typeName(IntPtr This);
+
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern CloudRecognizationStatus easyar_CloudRecognizationResult_getStatus(IntPtr This);
         [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void easyar_CloudRecognizationResult_getTarget(IntPtr This, out OptionalOfImageTarget Return);
@@ -441,6 +504,28 @@ namespace easyar
         public static extern IntPtr easyar_SceneMesh__typeName(IntPtr This);
 
         [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_Accelerometer__ctor(out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool easyar_Accelerometer_isAvailable(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool easyar_Accelerometer_open(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool easyar_Accelerometer_openWithSamplingPeriod(IntPtr This, int samplingPeriodMilliseconds);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_Accelerometer_close(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern OptionalOfAccelerometerResult easyar_Accelerometer_getCurrentResult(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_Accelerometer__dtor(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_Accelerometer__retain(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr easyar_Accelerometer__typeName(IntPtr This);
+
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void easyar_ARCoreCameraDevice__ctor(out IntPtr Return);
         [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
@@ -451,6 +536,8 @@ namespace easyar
         public static extern void easyar_ARCoreCameraDevice_setBufferCapacity(IntPtr This, int capacity);
         [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void easyar_ARCoreCameraDevice_inputFrameSource(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_ARCoreCameraDevice_setFocusMode(IntPtr This, ARCoreCameraDeviceFocusMode focusMode);
         [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool easyar_ARCoreCameraDevice_start(IntPtr This);
@@ -476,6 +563,8 @@ namespace easyar
         public static extern void easyar_ARKitCameraDevice_setBufferCapacity(IntPtr This, int capacity);
         [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void easyar_ARKitCameraDevice_inputFrameSource(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_ARKitCameraDevice_setFocusMode(IntPtr This, ARKitCameraDeviceFocusMode focusMode);
         [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool easyar_ARKitCameraDevice_start(IntPtr This);
@@ -896,6 +985,24 @@ namespace easyar
         public static extern void easyar_ImageTracker__retain(IntPtr This, out IntPtr Return);
         [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr easyar_ImageTracker__typeName(IntPtr This);
+
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_RealTimeCoordinateTransform__ctor(out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_RealTimeCoordinateTransform_setBufferSize(IntPtr This, int capacity);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int easyar_RealTimeCoordinateTransform_getBufferSize(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool easyar_RealTimeCoordinateTransform_insertData(IntPtr This, double timestamp, Matrix44F localTwc, Matrix44F mapTcw);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Matrix44F easyar_RealTimeCoordinateTransform_getPoseInMap(IntPtr This, double timestamp, MotionTrackingStatus status, Matrix44F localTwc);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_RealTimeCoordinateTransform__dtor(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_RealTimeCoordinateTransform__retain(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr easyar_RealTimeCoordinateTransform__typeName(IntPtr This);
 
         [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
@@ -1525,6 +1632,28 @@ namespace easyar
         public static extern IntPtr easyar_ListOfTarget_at(IntPtr This, int index);
 
         [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_ListOfString__ctor(IntPtr begin, IntPtr end, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_ListOfString__dtor(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_ListOfString_copy(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int easyar_ListOfString_size(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr easyar_ListOfString_at(IntPtr This, int index);
+
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_ListOfMatrix44F__ctor(IntPtr begin, IntPtr end, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_ListOfMatrix44F__dtor(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void easyar_ListOfMatrix44F_copy(IntPtr This, out IntPtr Return);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int easyar_ListOfMatrix44F_size(IntPtr This);
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Matrix44F easyar_ListOfMatrix44F_at(IntPtr This, int index);
+
+        [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void easyar_ListOfImage__ctor(IntPtr begin, IntPtr end, out IntPtr Return);
         [DllImport(BindingLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void easyar_ListOfImage__dtor(IntPtr This);
@@ -1575,6 +1704,8 @@ namespace easyar
             { "ObjectTrackerResult", cdata => new ObjectTrackerResult(cdata, easyar_ObjectTrackerResult__dtor, easyar_ObjectTrackerResult__retain) },
             { "ObjectTracker", cdata => new ObjectTracker(cdata, easyar_ObjectTracker__dtor, easyar_ObjectTracker__retain) },
             { "CalibrationDownloader", cdata => new CalibrationDownloader(cdata, easyar_CalibrationDownloader__dtor, easyar_CalibrationDownloader__retain) },
+            { "CloudLocalizeResult", cdata => new CloudLocalizeResult(cdata, easyar_CloudLocalizeResult__dtor, easyar_CloudLocalizeResult__retain) },
+            { "CloudLocalizer", cdata => new CloudLocalizer(cdata, easyar_CloudLocalizer__dtor, easyar_CloudLocalizer__retain) },
             { "CloudRecognizationResult", cdata => new CloudRecognizationResult(cdata, easyar_CloudRecognizationResult__dtor, easyar_CloudRecognizationResult__retain) },
             { "CloudRecognizer", cdata => new CloudRecognizer(cdata, easyar_CloudRecognizer__dtor, easyar_CloudRecognizer__retain) },
             { "Buffer", cdata => new Buffer(cdata, easyar_Buffer__dtor, easyar_Buffer__retain) },
@@ -1584,6 +1715,7 @@ namespace easyar
             { "Image", cdata => new Image(cdata, easyar_Image__dtor, easyar_Image__retain) },
             { "DenseSpatialMap", cdata => new DenseSpatialMap(cdata, easyar_DenseSpatialMap__dtor, easyar_DenseSpatialMap__retain) },
             { "SceneMesh", cdata => new SceneMesh(cdata, easyar_SceneMesh__dtor, easyar_SceneMesh__retain) },
+            { "Accelerometer", cdata => new Accelerometer(cdata, easyar_Accelerometer__dtor, easyar_Accelerometer__retain) },
             { "ARCoreCameraDevice", cdata => new ARCoreCameraDevice(cdata, easyar_ARCoreCameraDevice__dtor, easyar_ARCoreCameraDevice__retain) },
             { "ARKitCameraDevice", cdata => new ARKitCameraDevice(cdata, easyar_ARKitCameraDevice__dtor, easyar_ARKitCameraDevice__retain) },
             { "CameraDevice", cdata => new CameraDevice(cdata, easyar_CameraDevice__dtor, easyar_CameraDevice__retain) },
@@ -1599,6 +1731,7 @@ namespace easyar
             { "ImageTarget", cdata => new ImageTarget(cdata, easyar_ImageTarget__dtor, easyar_ImageTarget__retain) },
             { "ImageTrackerResult", cdata => new ImageTrackerResult(cdata, easyar_ImageTrackerResult__dtor, easyar_ImageTrackerResult__retain) },
             { "ImageTracker", cdata => new ImageTracker(cdata, easyar_ImageTracker__dtor, easyar_ImageTracker__retain) },
+            { "RealTimeCoordinateTransform", cdata => new RealTimeCoordinateTransform(cdata, easyar_RealTimeCoordinateTransform__dtor, easyar_RealTimeCoordinateTransform__retain) },
             { "Recorder", cdata => new Recorder(cdata, easyar_Recorder__dtor, easyar_Recorder__retain) },
             { "RecorderConfiguration", cdata => new RecorderConfiguration(cdata, easyar_RecorderConfiguration__dtor, easyar_RecorderConfiguration__retain) },
             { "SparseSpatialMapResult", cdata => new SparseSpatialMapResult(cdata, easyar_SparseSpatialMapResult__dtor, easyar_SparseSpatialMapResult__retain) },
@@ -2116,6 +2249,144 @@ namespace easyar
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct OptionalOfMatrix44F
+        {
+            private Byte has_value_;
+            public bool has_value { get { return has_value_ != 0; } set { has_value_ = (Byte)(value ? 1 : 0); } }
+            public Matrix44F value;
+        }
+
+        public static IntPtr ListOfString_to_c(AutoRelease ar, List<string> l)
+        {
+            if (l == null) { throw new ArgumentNullException(); }
+            var arr = l.Select(e => String_to_c(ar, e)).ToArray();
+            var handle = GCHandle.Alloc(arr, GCHandleType.Pinned);
+            try
+            {
+                var beginPtr = Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
+                var endPtr = new IntPtr(beginPtr.ToInt64() + IntPtr.Size * arr.Length);
+                var ptr = IntPtr.Zero;
+                easyar_ListOfString__ctor(beginPtr, endPtr, out ptr);
+                return ar.Add(ptr, easyar_ListOfString__dtor);
+            }
+            finally
+            {
+                handle.Free();
+            }
+        }
+        public static List<string> ListOfString_from_c(AutoRelease ar, IntPtr l)
+        {
+            if (l == IntPtr.Zero) { throw new ArgumentNullException(); }
+            ar.Add(l, easyar_ListOfString__dtor);
+            var size = easyar_ListOfString_size(l);
+            var values = new List<string>();
+            values.Capacity = size;
+            for (int k = 0; k < size; k += 1)
+            {
+                var v = easyar_ListOfString_at(l, k);
+                easyar_String_copy(v, out v);
+                values.Add(String_from_c(ar, v));
+            }
+            return values;
+        }
+
+        public static IntPtr ListOfMatrix44F_to_c(AutoRelease ar, List<Matrix44F> l)
+        {
+            if (l == null) { throw new ArgumentNullException(); }
+            var arr = l.Select(e => e).ToArray();
+            var handle = GCHandle.Alloc(arr, GCHandleType.Pinned);
+            try
+            {
+                var beginPtr = Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
+                var endPtr = new IntPtr(beginPtr.ToInt64() + IntPtr.Size * arr.Length);
+                var ptr = IntPtr.Zero;
+                easyar_ListOfMatrix44F__ctor(beginPtr, endPtr, out ptr);
+                return ar.Add(ptr, easyar_ListOfMatrix44F__dtor);
+            }
+            finally
+            {
+                handle.Free();
+            }
+        }
+        public static List<Matrix44F> ListOfMatrix44F_from_c(AutoRelease ar, IntPtr l)
+        {
+            if (l == IntPtr.Zero) { throw new ArgumentNullException(); }
+            ar.Add(l, easyar_ListOfMatrix44F__dtor);
+            var size = easyar_ListOfMatrix44F_size(l);
+            var values = new List<Matrix44F>();
+            values.Capacity = size;
+            for (int k = 0; k < size; k += 1)
+            {
+                var v = easyar_ListOfMatrix44F_at(l, k);
+                values.Add(v);
+            }
+            return values;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct OptionalOfVec3D
+        {
+            private Byte has_value_;
+            public bool has_value { get { return has_value_ != 0; } set { has_value_ = (Byte)(value ? 1 : 0); } }
+            public Vec3D value;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct OptionalOfVec3F
+        {
+            private Byte has_value_;
+            public bool has_value { get { return has_value_ != 0; } set { has_value_ = (Byte)(value ? 1 : 0); } }
+            public Vec3F value;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct FunctorOfVoidFromCloudLocalizeResult
+        {
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate void FunctionDelegate(IntPtr state, IntPtr arg0, out IntPtr exception);
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate void DestroyDelegate(IntPtr _state);
+
+            public IntPtr _state;
+            public FunctionDelegate _func;
+            public DestroyDelegate _destroy;
+        }
+#if ENABLE_IL2CPP
+        [MonoPInvokeCallback(typeof(FunctorOfVoidFromCloudLocalizeResult.FunctionDelegate))]
+#endif
+        public static void FunctorOfVoidFromCloudLocalizeResult_func(IntPtr state, IntPtr arg0, out IntPtr exception)
+        {
+            exception = IntPtr.Zero;
+            try
+            {
+                using (var ar = new AutoRelease())
+                {
+                    var varg0 = arg0;
+                    easyar_CloudLocalizeResult__retain(varg0, out varg0);
+                    var sarg0 = Object_from_c<CloudLocalizeResult>(varg0, easyar_CloudLocalizeResult__typeName);
+                    ar.Add(() => sarg0.Dispose());
+                    var f = (Action<CloudLocalizeResult>)((GCHandle)(state)).Target;
+                    f(sarg0);
+                }
+            }
+            catch (Exception ex)
+            {
+                exception = Detail.String_to_c_inner(ex.ToString());
+            }
+        }
+#if ENABLE_IL2CPP
+        [MonoPInvokeCallback(typeof(FunctorOfVoidFromCloudLocalizeResult.DestroyDelegate))]
+#endif
+        public static void FunctorOfVoidFromCloudLocalizeResult_destroy(IntPtr _state)
+        {
+            ((GCHandle)(_state)).Free();
+        }
+        public static FunctorOfVoidFromCloudLocalizeResult FunctorOfVoidFromCloudLocalizeResult_to_c(Action<CloudLocalizeResult> f)
+        {
+            if (f == null) { throw new ArgumentNullException(); }
+            var s = GCHandle.Alloc(f, GCHandleType.Normal);
+            return new FunctorOfVoidFromCloudLocalizeResult { _state = (IntPtr)(s), _func = FunctorOfVoidFromCloudLocalizeResult_func, _destroy = FunctorOfVoidFromCloudLocalizeResult_destroy };
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct OptionalOfImageTarget
         {
             private Byte has_value_;
@@ -2235,6 +2506,14 @@ namespace easyar
                 values.Add(v);
             }
             return values;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct OptionalOfAccelerometerResult
+        {
+            private Byte has_value_;
+            public bool has_value { get { return has_value_ != 0; } set { has_value_ = (Byte)(value ? 1 : 0); } }
+            public AccelerometerResult value;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -2499,14 +2778,6 @@ namespace easyar
             if (f == null) { throw new ArgumentNullException(); }
             var s = GCHandle.Alloc(f, GCHandleType.Normal);
             return new FunctorOfVoidFromRecordStatusAndString { _state = (IntPtr)(s), _func = FunctorOfVoidFromRecordStatusAndString_func, _destroy = FunctorOfVoidFromRecordStatusAndString_destroy };
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct OptionalOfMatrix44F
-        {
-            private Byte has_value_;
-            public bool has_value { get { return has_value_ != 0; } set { has_value_ = (Byte)(value ? 1 : 0); } }
-            public Matrix44F value;
         }
 
         public static IntPtr ListOfPlaneData_to_c(AutoRelease ar, List<PlaneData> l)
@@ -3498,6 +3769,326 @@ namespace easyar
         }
     }
 
+    public enum CloudLocalizeStatus
+    {
+        /// <summary>
+        /// Spatial maps are localized.
+        /// </summary>
+        FoundMaps = 0,
+        /// <summary>
+        /// No spatial maps are localized.
+        /// </summary>
+        MapsNotFound = 1,
+        /// <summary>
+        /// Protocol error
+        /// </summary>
+        ProtocolError = 2,
+        /// <summary>
+        /// Exception caught
+        /// </summary>
+        ExceptionCaught = 3,
+        /// <summary>
+        /// Request time out (more than 1 minute)
+        /// </summary>
+        RequestTimeout = 4,
+        /// <summary>
+        /// Request time interval is too low
+        /// </summary>
+        RequestIntervalTooLow = 5,
+    }
+
+    public class CloudLocalizeResult : FrameFilterResult
+    {
+        internal CloudLocalizeResult(IntPtr cdata, Action<IntPtr> deleter, Retainer retainer) : base(cdata, deleter, retainer)
+        {
+        }
+        protected override object CloneObject()
+        {
+            var cdata_new = IntPtr.Zero;
+            if (retainer_ != null) { retainer_(cdata, out cdata_new); }
+            return new CloudLocalizeResult(cdata_new, deleter_, retainer_);
+        }
+        public new CloudLocalizeResult Clone()
+        {
+            return (CloudLocalizeResult)(CloneObject());
+        }
+        /// <summary>
+        /// Returns localization status.
+        /// </summary>
+        public virtual CloudLocalizeStatus getLocalizeStatus()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_CloudLocalizeResult_getLocalizeStatus(cdata);
+                return _return_value_;
+            }
+        }
+        /// <summary>
+        /// Returns ID of the best correspond localized map.
+        /// </summary>
+        public virtual string getLocalizedMapID()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = default(IntPtr);
+                Detail.easyar_CloudLocalizeResult_getLocalizedMapID(cdata, out _return_value_);
+                return Detail.String_from_c(ar, _return_value_);
+            }
+        }
+        /// <summary>
+        /// Returns the name of the best correspond localized map.
+        /// </summary>
+        public virtual string getLocalizedMapName()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = default(IntPtr);
+                Detail.easyar_CloudLocalizeResult_getLocalizedMapName(cdata, out _return_value_);
+                return Detail.String_from_c(ar, _return_value_);
+            }
+        }
+        /// <summary>
+        /// Returns the camera pose at the best correspond localized map coordinates.
+        /// </summary>
+        public virtual Matrix44F getPose()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_CloudLocalizeResult_getPose(cdata);
+                return _return_value_;
+            }
+        }
+        /// <summary>
+        /// Returns the transform from local coordinates (if exists) to the best correspond map coordinates.
+        /// </summary>
+        public virtual Optional<Matrix44F> getDeltaT()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_CloudLocalizeResult_getDeltaT(cdata);
+                return _return_value_.map(p => p.has_value ? p.value : Optional<Matrix44F>.Empty);
+            }
+        }
+        /// <summary>
+        /// Returns ID of all localized maps.
+        /// </summary>
+        public virtual List<string> getAllLocalizedMapID()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = default(IntPtr);
+                Detail.easyar_CloudLocalizeResult_getAllLocalizedMapID(cdata, out _return_value_);
+                return Detail.ListOfString_from_c(ar, _return_value_);
+            }
+        }
+        /// <summary>
+        /// Returns the camera pose at all localized map coordinates.
+        /// </summary>
+        public virtual List<Matrix44F> getAllPose()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = default(IntPtr);
+                Detail.easyar_CloudLocalizeResult_getAllPose(cdata, out _return_value_);
+                return Detail.ListOfMatrix44F_from_c(ar, _return_value_);
+            }
+        }
+        /// <summary>
+        /// Returns the transform from local coordinates (if exists) to all map coordinates.
+        /// </summary>
+        public virtual List<Matrix44F> getAllDeltaT()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = default(IntPtr);
+                Detail.easyar_CloudLocalizeResult_getAllDeltaT(cdata, out _return_value_);
+                return Detail.ListOfMatrix44F_from_c(ar, _return_value_);
+            }
+        }
+        /// <summary>
+        /// Returns extra informations of the localization.
+        /// </summary>
+        public virtual string getExtraInfo()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = default(IntPtr);
+                Detail.easyar_CloudLocalizeResult_getExtraInfo(cdata, out _return_value_);
+                return Detail.String_from_c(ar, _return_value_);
+            }
+        }
+        /// <summary>
+        /// Returns detailed exception message.
+        /// </summary>
+        public virtual string getExceptionInfo()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = default(IntPtr);
+                Detail.easyar_CloudLocalizeResult_getExceptionInfo(cdata, out _return_value_);
+                return Detail.String_from_c(ar, _return_value_);
+            }
+        }
+        /// <summary>
+        /// Returns the block id of the best correspond localized map.
+        /// </summary>
+        public virtual string getLocalizedBlockId()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = default(IntPtr);
+                Detail.easyar_CloudLocalizeResult_getLocalizedBlockId(cdata, out _return_value_);
+                return Detail.String_from_c(ar, _return_value_);
+            }
+        }
+        /// <summary>
+        /// Returns the block timestamp of the best correspond localized map.
+        /// </summary>
+        public virtual string getLocalizedBlockTimestamp()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = default(IntPtr);
+                Detail.easyar_CloudLocalizeResult_getLocalizedBlockTimestamp(cdata, out _return_value_);
+                return Detail.String_from_c(ar, _return_value_);
+            }
+        }
+        /// <summary>
+        /// Returns the block location of the best correspond localized map.
+        /// </summary>
+        public virtual Optional<Vec3D> getLocalizedBlockLocation()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_CloudLocalizeResult_getLocalizedBlockLocation(cdata);
+                return _return_value_.map(p => p.has_value ? p.value : Optional<Vec3D>.Empty);
+            }
+        }
+        /// <summary>
+        /// Returns the cluster id of the best correspond localized map.
+        /// </summary>
+        public virtual string getLocalizedClusterId()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = default(IntPtr);
+                Detail.easyar_CloudLocalizeResult_getLocalizedClusterId(cdata, out _return_value_);
+                return Detail.String_from_c(ar, _return_value_);
+            }
+        }
+        /// <summary>
+        /// Returns the cluster location of the best correspond localized map.
+        /// </summary>
+        public virtual Optional<Vec3D> getLocalizedClusterLocation()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_CloudLocalizeResult_getLocalizedClusterLocation(cdata);
+                return _return_value_.map(p => p.has_value ? p.value : Optional<Vec3D>.Empty);
+            }
+        }
+        /// <summary>
+        /// Returns the camera pose in the cluster which the best correspond localized map belongs to.
+        /// </summary>
+        public virtual Matrix44F getPoseInCluster()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_CloudLocalizeResult_getPoseInCluster(cdata);
+                return _return_value_;
+            }
+        }
+        /// <summary>
+        /// Returns the transform from local coordinates (if exists) to the best correspond map coordinates.
+        /// </summary>
+        public virtual Optional<Matrix44F> getDeltaTForCluster()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_CloudLocalizeResult_getDeltaTForCluster(cdata);
+                return _return_value_.map(p => p.has_value ? p.value : Optional<Matrix44F>.Empty);
+            }
+        }
+        /// <summary>
+        /// Returns the location of device.
+        /// </summary>
+        public virtual Optional<Vec3D> getDeviceLocation()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_CloudLocalizeResult_getDeviceLocation(cdata);
+                return _return_value_.map(p => p.has_value ? p.value : Optional<Vec3D>.Empty);
+            }
+        }
+    }
+
+    /// <summary>
+    /// CloudLocalizer implements cloud based localization.
+    /// </summary>
+    public class CloudLocalizer : RefBase
+    {
+        internal CloudLocalizer(IntPtr cdata, Action<IntPtr> deleter, Retainer retainer) : base(cdata, deleter, retainer)
+        {
+        }
+        protected override object CloneObject()
+        {
+            var cdata_new = IntPtr.Zero;
+            if (retainer_ != null) { retainer_(cdata, out cdata_new); }
+            return new CloudLocalizer(cdata_new, deleter_, retainer_);
+        }
+        public new CloudLocalizer Clone()
+        {
+            return (CloudLocalizer)(CloneObject());
+        }
+        /// <summary>
+        /// Returns true.
+        /// </summary>
+        public static bool isAvailable()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_CloudLocalizer_isAvailable();
+                return _return_value_;
+            }
+        }
+        /// <summary>
+        /// Creates an instance and connects to the server.
+        /// </summary>
+        public static CloudLocalizer create(string server, string apiKey, string apiSecret, string appId)
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = default(IntPtr);
+                Detail.easyar_CloudLocalizer_create(Detail.String_to_c(ar, server), Detail.String_to_c(ar, apiKey), Detail.String_to_c(ar, apiSecret), Detail.String_to_c(ar, appId), out _return_value_);
+                return Detail.Object_from_c<CloudLocalizer>(_return_value_, Detail.easyar_CloudLocalizer__typeName);
+            }
+        }
+        /// <summary>
+        /// Send localization request.
+        /// Send `InputFrame`_ to resolve a cloud localization. `InputFrame`_ should have at least image data and camera parameters.
+        /// message input is a json string.
+        /// acceleration is optional which is the readings from device accelerometer.
+        /// location is optional which is the readings from device location manager.
+        /// </summary>
+        public virtual void resolve(InputFrame inputFrame, string message, Optional<Vec3F> acceleration, Optional<Vec3D> location, CallbackScheduler callbackScheduler, Action<CloudLocalizeResult> callback)
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                Detail.easyar_CloudLocalizer_resolve(cdata, inputFrame.cdata, Detail.String_to_c(ar, message), acceleration.map(p => p.OnSome ? new Detail.OptionalOfVec3F { has_value = true, value = p.Value } : new Detail.OptionalOfVec3F { has_value = false, value = default(Vec3F) }), location.map(p => p.OnSome ? new Detail.OptionalOfVec3D { has_value = true, value = p.Value } : new Detail.OptionalOfVec3D { has_value = false, value = default(Vec3D) }), callbackScheduler.cdata, Detail.FunctorOfVoidFromCloudLocalizeResult_to_c(callback));
+            }
+        }
+        /// <summary>
+        /// Stops the localization and closes connection. The component shall not be used after calling close.
+        /// </summary>
+        public virtual void close()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                Detail.easyar_CloudLocalizer_close(cdata);
+            }
+        }
+    }
+
     public enum CloudRecognizationStatus
     {
         /// <summary>
@@ -3739,7 +4330,7 @@ namespace easyar
             }
         }
         /// <summary>
-        /// Copies buffer data to user array.
+        /// Tries to copy data from Buffer to user array. If copy succeeds, it returns true, or else it returns false. Possible failure causes includes: source or destination data range overflow.
         /// </summary>
         public virtual bool tryCopyTo(int index, IntPtr dest, int destIndex, int length)
         {
@@ -4392,22 +4983,6 @@ namespace easyar
         /// <summary>
         /// The raw data of matrix.
         /// </summary>
-        public float data_0;
-        public float data_1;
-        public float data_2;
-        public float data_3;
-        public float data_4;
-        public float data_5;
-        public float data_6;
-        public float data_7;
-        public float data_8;
-        public float data_9;
-        public float data_10;
-        public float data_11;
-        public float data_12;
-        public float data_13;
-        public float data_14;
-        public float data_15;
         public float[] data
         {
             get
@@ -4435,6 +5010,22 @@ namespace easyar
                 this.data_15 = value[15];
             }
         }
+        public float data_0;
+        public float data_1;
+        public float data_2;
+        public float data_3;
+        public float data_4;
+        public float data_5;
+        public float data_6;
+        public float data_7;
+        public float data_8;
+        public float data_9;
+        public float data_10;
+        public float data_11;
+        public float data_12;
+        public float data_13;
+        public float data_14;
+        public float data_15;
 
         public Matrix44F(float data_0, float data_1, float data_2, float data_3, float data_4, float data_5, float data_6, float data_7, float data_8, float data_9, float data_10, float data_11, float data_12, float data_13, float data_14, float data_15)
         {
@@ -4466,15 +5057,6 @@ namespace easyar
         /// <summary>
         /// The raw data of matrix.
         /// </summary>
-        public float data_0;
-        public float data_1;
-        public float data_2;
-        public float data_3;
-        public float data_4;
-        public float data_5;
-        public float data_6;
-        public float data_7;
-        public float data_8;
         public float[] data
         {
             get
@@ -4495,6 +5077,15 @@ namespace easyar
                 this.data_8 = value[8];
             }
         }
+        public float data_0;
+        public float data_1;
+        public float data_2;
+        public float data_3;
+        public float data_4;
+        public float data_5;
+        public float data_6;
+        public float data_7;
+        public float data_8;
 
         public Matrix33F(float data_0, float data_1, float data_2, float data_3, float data_4, float data_5, float data_6, float data_7, float data_8)
         {
@@ -4519,9 +5110,6 @@ namespace easyar
         /// <summary>
         /// The raw data of vector.
         /// </summary>
-        public double data_0;
-        public double data_1;
-        public double data_2;
         public double[] data
         {
             get
@@ -4536,6 +5124,9 @@ namespace easyar
                 this.data_2 = value[2];
             }
         }
+        public double data_0;
+        public double data_1;
+        public double data_2;
 
         public Vec3D(double data_0, double data_1, double data_2)
         {
@@ -4554,10 +5145,6 @@ namespace easyar
         /// <summary>
         /// The raw data of vector.
         /// </summary>
-        public float data_0;
-        public float data_1;
-        public float data_2;
-        public float data_3;
         public float[] data
         {
             get
@@ -4573,6 +5160,10 @@ namespace easyar
                 this.data_3 = value[3];
             }
         }
+        public float data_0;
+        public float data_1;
+        public float data_2;
+        public float data_3;
 
         public Vec4F(float data_0, float data_1, float data_2, float data_3)
         {
@@ -4592,9 +5183,6 @@ namespace easyar
         /// <summary>
         /// The raw data of vector.
         /// </summary>
-        public float data_0;
-        public float data_1;
-        public float data_2;
         public float[] data
         {
             get
@@ -4609,6 +5197,9 @@ namespace easyar
                 this.data_2 = value[2];
             }
         }
+        public float data_0;
+        public float data_1;
+        public float data_2;
 
         public Vec3F(float data_0, float data_1, float data_2)
         {
@@ -4627,8 +5218,6 @@ namespace easyar
         /// <summary>
         /// The raw data of vector.
         /// </summary>
-        public float data_0;
-        public float data_1;
         public float[] data
         {
             get
@@ -4642,6 +5231,8 @@ namespace easyar
                 this.data_1 = value[1];
             }
         }
+        public float data_0;
+        public float data_1;
 
         public Vec2F(float data_0, float data_1)
         {
@@ -4659,10 +5250,6 @@ namespace easyar
         /// <summary>
         /// The raw data of vector.
         /// </summary>
-        public int data_0;
-        public int data_1;
-        public int data_2;
-        public int data_3;
         public int[] data
         {
             get
@@ -4678,6 +5265,10 @@ namespace easyar
                 this.data_3 = value[3];
             }
         }
+        public int data_0;
+        public int data_1;
+        public int data_2;
+        public int data_3;
 
         public Vec4I(int data_0, int data_1, int data_2, int data_3)
         {
@@ -4697,8 +5288,6 @@ namespace easyar
         /// <summary>
         /// The raw data of vector.
         /// </summary>
-        public int data_0;
-        public int data_1;
         public int[] data
         {
             get
@@ -4712,6 +5301,8 @@ namespace easyar
                 this.data_1 = value[1];
             }
         }
+        public int data_0;
+        public int data_1;
 
         public Vec2I(int data_0, int data_1)
         {
@@ -5086,6 +5677,103 @@ namespace easyar
     }
 
     /// <summary>
+    /// Accelerometer calls the accelerometer provided by the operating system, and outputs `AccelerometerResult`_ .
+    /// When it is not needed anymore, call close function to close it. It shall not be used after calling close.
+    /// It is not recommended to open the accelerometer multiple times simultaneously, which may cause failure on open or cause precision downgrade.
+    /// </summary>
+    public class Accelerometer : RefBase
+    {
+        internal Accelerometer(IntPtr cdata, Action<IntPtr> deleter, Retainer retainer) : base(cdata, deleter, retainer)
+        {
+        }
+        protected override object CloneObject()
+        {
+            var cdata_new = IntPtr.Zero;
+            if (retainer_ != null) { retainer_(cdata, out cdata_new); }
+            return new Accelerometer(cdata_new, deleter_, retainer_);
+        }
+        public new Accelerometer Clone()
+        {
+            return (Accelerometer)(CloneObject());
+        }
+        public Accelerometer() : base(IntPtr.Zero, Detail.easyar_Accelerometer__dtor, Detail.easyar_Accelerometer__retain)
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = IntPtr.Zero;
+                Detail.easyar_Accelerometer__ctor(out _return_value_);
+                cdata_ = _return_value_;
+            }
+        }
+        /// <summary>
+        /// Checks if the component is available. It returns true only on Android or iOS with supported hardware. On other operating systems, it is not supported.
+        /// </summary>
+        public virtual bool isAvailable()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_Accelerometer_isAvailable(cdata);
+                return _return_value_;
+            }
+        }
+        /// <summary>
+        /// Opens the device. Sampling period is defined by implementation. If failed, it will return false.
+        /// </summary>
+        public virtual bool open()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_Accelerometer_open(cdata);
+                return _return_value_;
+            }
+        }
+        /// <summary>
+        /// Opens the device with a specific sampling period. Sampling period is limited by hardware and may not reach the specified value. If failed, it will return false.
+        /// </summary>
+        public virtual bool openWithSamplingPeriod(int samplingPeriodMilliseconds)
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_Accelerometer_openWithSamplingPeriod(cdata, samplingPeriodMilliseconds);
+                return _return_value_;
+            }
+        }
+        /// <summary>
+        /// Closes. It shall not be used after calling close.
+        /// </summary>
+        public virtual void close()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                Detail.easyar_Accelerometer_close(cdata);
+            }
+        }
+        /// <summary>
+        /// Gets the most recent result. If there is no result, it returns empty.
+        /// </summary>
+        public virtual Optional<AccelerometerResult> getCurrentResult()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_Accelerometer_getCurrentResult(cdata);
+                return _return_value_.map(p => p.has_value ? p.value : Optional<AccelerometerResult>.Empty);
+            }
+        }
+    }
+
+    public enum ARCoreCameraDeviceFocusMode
+    {
+        /// <summary>
+        /// Auto focus mode
+        /// </summary>
+        Auto = 0,
+        /// <summary>
+        /// Fixed focus mode
+        /// </summary>
+        Fixed = 1,
+    }
+
+    /// <summary>
     /// ARCoreCameraDevice implements a camera device based on ARCore, which outputs `InputFrame`_  (including image, camera parameters, timestamp, 6DOF location, and tracking status).
     /// Loading of libarcore_sdk_c.so with java.lang.System.loadLibrary is required.
     /// After creation, start/stop can be invoked to start or stop video stream capture.
@@ -5165,6 +5853,16 @@ namespace easyar
             }
         }
         /// <summary>
+        /// Sets focus mode to focusMode. Call before start.
+        /// </summary>
+        public virtual void setFocusMode(ARCoreCameraDeviceFocusMode focusMode)
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                Detail.easyar_ARCoreCameraDevice_setFocusMode(cdata, focusMode);
+            }
+        }
+        /// <summary>
         /// Starts video stream capture.
         /// </summary>
         public virtual bool start()
@@ -5195,6 +5893,18 @@ namespace easyar
                 Detail.easyar_ARCoreCameraDevice_close(cdata);
             }
         }
+    }
+
+    public enum ARKitCameraDeviceFocusMode
+    {
+        /// <summary>
+        /// Auto focus mode
+        /// </summary>
+        Auto = 0,
+        /// <summary>
+        /// Fixed focus mode
+        /// </summary>
+        Fixed = 1,
     }
 
     /// <summary>
@@ -5270,6 +5980,16 @@ namespace easyar
                 var _return_value_ = default(IntPtr);
                 Detail.easyar_ARKitCameraDevice_inputFrameSource(cdata, out _return_value_);
                 return Detail.Object_from_c<InputFrameSource>(_return_value_, Detail.easyar_InputFrameSource__typeName);
+            }
+        }
+        /// <summary>
+        /// Sets focus mode to focusMode. Call before start. Valid since iOS 11.3.
+        /// </summary>
+        public virtual void setFocusMode(ARKitCameraDeviceFocusMode focusMode)
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                Detail.easyar_ARKitCameraDevice_setFocusMode(cdata, focusMode);
             }
         }
         /// <summary>
@@ -7277,6 +7997,79 @@ namespace easyar
         }
     }
 
+    public class RealTimeCoordinateTransform : RefBase
+    {
+        internal RealTimeCoordinateTransform(IntPtr cdata, Action<IntPtr> deleter, Retainer retainer) : base(cdata, deleter, retainer)
+        {
+        }
+        protected override object CloneObject()
+        {
+            var cdata_new = IntPtr.Zero;
+            if (retainer_ != null) { retainer_(cdata, out cdata_new); }
+            return new RealTimeCoordinateTransform(cdata_new, deleter_, retainer_);
+        }
+        public new RealTimeCoordinateTransform Clone()
+        {
+            return (RealTimeCoordinateTransform)(CloneObject());
+        }
+        /// <summary>
+        /// Create RealTimeCoordinateTransform object.
+        /// </summary>
+        public RealTimeCoordinateTransform() : base(IntPtr.Zero, Detail.easyar_RealTimeCoordinateTransform__dtor, Detail.easyar_RealTimeCoordinateTransform__retain)
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = IntPtr.Zero;
+                Detail.easyar_RealTimeCoordinateTransform__ctor(out _return_value_);
+                cdata_ = _return_value_;
+            }
+        }
+        /// <summary>
+        /// Set buffer size，the unit of capacity is seconds. The data within capacity seconds from now will be saved.
+        /// BufferSize represents the capacity of the buffer. If there is more than capacity seconds of data in the buffer, the latest data will be input to the buffer and the oldest frame of data will be released.
+        /// </summary>
+        public virtual void setBufferSize(int capacity)
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                Detail.easyar_RealTimeCoordinateTransform_setBufferSize(cdata, capacity);
+            }
+        }
+        /// <summary>
+        /// Get buffer capacity. The default is 15 seconds. The data within 15 seconds from now will be saved.
+        /// </summary>
+        public virtual int getBufferSize()
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_RealTimeCoordinateTransform_getBufferSize(cdata);
+                return _return_value_;
+            }
+        }
+        /// <summary>
+        /// Input data to the cache, the data includes localTwc and mapTcw at the time timestamp. localTwc means camera pose at local coordinates, mapTcw means the camera pose at the localized map coordinates.
+        /// </summary>
+        public virtual bool insertData(double timestamp, Matrix44F localTwc, Matrix44F mapTcw)
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_RealTimeCoordinateTransform_insertData(cdata, timestamp, localTwc, mapTcw);
+                return _return_value_;
+            }
+        }
+        /// <summary>
+        /// Returns the camera pose in the localized map after insert motionTracking status and localTwc at the time timestamp. localTwc means camera pose at local coordinates.
+        /// </summary>
+        public virtual Matrix44F getPoseInMap(double timestamp, MotionTrackingStatus status, Matrix44F localTwc)
+        {
+            using (var ar = new Detail.AutoRelease())
+            {
+                var _return_value_ = Detail.easyar_RealTimeCoordinateTransform_getPoseInMap(cdata, timestamp, status, localTwc);
+                return _return_value_;
+            }
+        }
+    }
+
     /// <summary>
     /// Recorder implements recording for current rendering screen.
     /// Currently Recorder only works on Android (4.3 or later) and iOS with OpenGL ES 2.0 context.
@@ -8154,7 +8947,7 @@ namespace easyar
         }
         public static bool initialize(string key)
         {
-            if (Detail.easyar_Engine_schemaHash() != 493533529)
+            if (Detail.easyar_Engine_schemaHash() != -2089645540)
             {
                 throw new InvalidOperationException("SchemaHashNotMatched");
             }

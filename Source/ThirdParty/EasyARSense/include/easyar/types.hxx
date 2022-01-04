@@ -1,6 +1,6 @@
 ﻿//=============================================================================================================================
 //
-// EasyAR Sense 4.3.0.8981-4ecf7d1ec
+// EasyAR Sense 4.4.0.9304-eb4ecde40
 // Copyright (c) 2015-2021 VisionStar Information Technology (Shanghai) Co., Ltd. All Rights Reserved.
 // EasyAR is the registered trademark or trademark of VisionStar Information Technology (Shanghai) Co., Ltd in China
 // and other countries for the augmented reality technology developed by VisionStar Information Technology (Shanghai) Co., Ltd.
@@ -99,6 +99,38 @@ enum CalibrationDownloadStatus
 };
 
 class CalibrationDownloader;
+
+enum CloudLocalizeStatus
+{
+    /// <summary>
+    /// Spatial maps are localized.
+    /// </summary>
+    CloudLocalizeStatus_FoundMaps = 0,
+    /// <summary>
+    /// No spatial maps are localized.
+    /// </summary>
+    CloudLocalizeStatus_MapsNotFound = 1,
+    /// <summary>
+    /// Protocol error
+    /// </summary>
+    CloudLocalizeStatus_ProtocolError = 2,
+    /// <summary>
+    /// Exception caught
+    /// </summary>
+    CloudLocalizeStatus_ExceptionCaught = 3,
+    /// <summary>
+    /// Request time out (more than 1 minute)
+    /// </summary>
+    CloudLocalizeStatus_RequestTimeout = 4,
+    /// <summary>
+    /// Request time interval is too low
+    /// </summary>
+    CloudLocalizeStatus_RequestIntervalTooLow = 5,
+};
+
+class CloudLocalizeResult;
+
+class CloudLocalizer;
 
 enum CloudRecognizationStatus
 {
@@ -244,7 +276,33 @@ class SceneMesh;
 
 struct AccelerometerResult;
 
+class Accelerometer;
+
+enum ARCoreCameraDeviceFocusMode
+{
+    /// <summary>
+    /// Auto focus mode
+    /// </summary>
+    ARCoreCameraDeviceFocusMode_Auto = 0,
+    /// <summary>
+    /// Fixed focus mode
+    /// </summary>
+    ARCoreCameraDeviceFocusMode_Fixed = 1,
+};
+
 class ARCoreCameraDevice;
+
+enum ARKitCameraDeviceFocusMode
+{
+    /// <summary>
+    /// Auto focus mode
+    /// </summary>
+    ARKitCameraDeviceFocusMode_Auto = 0,
+    /// <summary>
+    /// Fixed focus mode
+    /// </summary>
+    ARKitCameraDeviceFocusMode_Fixed = 1,
+};
 
 class ARKitCameraDevice;
 
@@ -471,6 +529,8 @@ enum ImageTrackerMode
 class ImageTrackerResult;
 
 class ImageTracker;
+
+class RealTimeCoordinateTransform;
 
 class Recorder;
 
@@ -815,6 +875,18 @@ struct FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString;
 
 struct OptionalOfString;
 
+struct OptionalOfMatrix44F;
+
+class ListOfString;
+
+class ListOfMatrix44F;
+
+struct OptionalOfVec3D;
+
+struct OptionalOfVec3F;
+
+struct FunctorOfVoidFromCloudLocalizeResult;
+
 struct OptionalOfImageTarget;
 
 class ListOfImage;
@@ -822,6 +894,8 @@ class ListOfImage;
 struct FunctorOfVoidFromCloudRecognizationResult;
 
 class ListOfBlockInfo;
+
+struct OptionalOfAccelerometerResult;
 
 struct OptionalOfFunctorOfVoidFromInputFrame;
 
@@ -840,8 +914,6 @@ struct FunctorOfVoidFromLogLevelAndString;
 struct OptionalOfFunctorOfVoidFromRecordStatusAndString;
 
 struct FunctorOfVoidFromRecordStatusAndString;
-
-struct OptionalOfMatrix44F;
 
 class ListOfPlaneData;
 

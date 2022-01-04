@@ -58,6 +58,12 @@ public:
 	UStaticMeshComponent* StaticMeshComponent;
 
 	UPROPERTY(BlueprintReadWrite)
+	USceneCaptureComponent2D* SceneCaptureA;
+
+	UPROPERTY(BlueprintReadWrite)
+	USceneCaptureComponent2D* SceneCaptureB;
+
+	UPROPERTY(BlueprintReadWrite)
 	int Width = 1280;
 
 	UPROPERTY(BlueprintReadWrite)
