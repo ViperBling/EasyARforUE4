@@ -43,22 +43,15 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		auto CurrentFrame = _imageTracker->cameraFrame;
 		auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
 
-		auto easyarProjection = CurrentFrame->inputFrame()->cameraParameters()->projection(0.01, 1000., (float)Width / (float)Height, 0, true, false);
-		FMatrix Projection = MatrixConverter(easyarProjection);
-		FReversedZPerspectiveMatrix PerspectiveMatrix = FReversedZPerspectiveMatrix(45, 16, 9, GNearClippingPlane);
-		Projection = Projection.GetTransposed();
-		Projection.M[2][3] *= -1;
-		Projection.M[2][2] *= -1;
-		FVector tmpColumn = Projection.GetColumn(0);
-		Projection.SetColumn(0, Projection.GetColumn(1));
-		Projection.SetColumn(1, tmpColumn);
+		auto easyarProjection = CurrentFrame->inputFrame()->cameraParameters()->projection(0.01, 1000., 16. / 9., 0, true, false);
+		FReversedZPerspectiveMatrix PerspectiveMatrix = FReversedZPerspectiveMatrix(45, 16, 9, 0.01, 1000);
+
+		PerspectiveMatrix.M[0][0] = easyarProjection.data[1];
+		PerspectiveMatrix.M[1][1] = -easyarProjection.data[4];
 		
 		SceneCaptureA->CustomProjectionMatrix = PerspectiveMatrix;
 		SceneCaptureB->CustomProjectionMatrix = PerspectiveMatrix;
 
-		GEngine->AddOnScreenDebugMessage(
-			0, 1.0f, FColor::Green,
-			FString::Printf(TEXT("%s\n"), *FString(Projection.ToString())));
 		GEngine->AddOnScreenDebugMessage(
 			1, 1.0f, FColor::Green,
 			FString::Printf(TEXT("%s\n"), *FString(PerspectiveMatrix.ToString())));
@@ -181,7 +174,7 @@ static FTransform GetTransformFromMat44F(easyar::Matrix44F& MatEasyAR, FVector S
 	Translation = Sz.TransformVector(Translation);
 	
 	Translation *= 100.;
-	Translation = FVector(Translation[2], Translation[0] * 2., Translation[1] * 2.);
+	Translation = FVector(Translation[2], Translation[0], Translation[1]);
 
 	FRotator Rotator = FQuat(Rotation).Rotator();
 	
