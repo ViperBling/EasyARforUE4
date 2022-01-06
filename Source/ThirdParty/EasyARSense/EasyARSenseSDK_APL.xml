@@ -45,9 +45,14 @@
             import android.util.Log;
             import android.widget.Toast;
             import java.util.HashMap;
-            
-            import cn.easyar.Engine;
+
+            import cn.easyar.CalibrationDownloadStatus;
+            import cn.easyar.CalibrationDownloader;
             import cn.easyar.CameraDevice;
+            import cn.easyar.Engine;
+            import cn.easyar.FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString;
+            import cn.easyar.ImmediateCallbackScheduler;
+            import cn.easyar.MotionTrackerCameraDevice;
             import cn.easyar.ImageTracker;
         </insert>
     </gameActivityImportAdditions>
@@ -67,6 +72,10 @@
             }
             if (!ImageTracker.isAvailable()) {
                 Log.debug("ImageTracker not available.");
+                return;
+            }
+            if (!MotionTrackerCameraDevice.isAvailable()) {
+                Log.debug("MotionTrackerCameraDevice not available.");
                 return;
             }
         </insert>

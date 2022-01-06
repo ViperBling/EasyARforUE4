@@ -2,7 +2,6 @@
 
 ImageTrackerWrapper::ImageTrackerWrapper()
 {
-
 }
 
 ImageTrackerWrapper::~ImageTrackerWrapper()
@@ -109,29 +108,9 @@ void ImageTrackerWrapper::perFrame()
 					if (TrackTargets.count(imageTarget->runtimeID()) == 0)
 					{
 						TrackTargets[imageTarget->runtimeID()] = imageTarget;
-						// GEngine->AddOnScreenDebugMessage(
-						// 	0, 1.0f, FColor::Green,
-						// 	FString::Printf(TEXT("Found Target (%s): %d\n"), *FString(imageTarget->name().c_str()), imageTarget->runtimeID()));
 					}
-
 					lostCandidates.erase(imageTarget->runtimeID());
-
 					targetPose = targetInstance->pose();
-					// GEngine->AddOnScreenDebugMessage(
-					// 		0, 1.0f, FColor::Green,
-					// 		FString::Printf(TEXT("Target: %s (%d)\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n\n"),
-					// 		*FString(imageTarget->name().c_str()), imageTarget->runtimeID(),
-					// 		targetPose.data[0], targetPose.data[1], targetPose.data[2], targetPose.data[3],
-					// 		targetPose.data[4], targetPose.data[5], targetPose.data[6], targetPose.data[7],
-					// 		targetPose.data[8], targetPose.data[9], targetPose.data[10], targetPose.data[11],
-					// 		targetPose.data[12], targetPose.data[13], targetPose.data[14], targetPose.data[15])
-					// 		);
-					// UE_LOG(LogTemp, Warning, TEXT("Target: %s (%d)\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n %f %f %f %f\n\n"),
-					// 	*FString(imageTarget->name().c_str()), imageTarget->runtimeID(),
-					// 	targetPose.data[0], targetPose.data[1], targetPose.data[2], targetPose.data[3],
-					// 	targetPose.data[4], targetPose.data[5], targetPose.data[6], targetPose.data[7],
-					// 	targetPose.data[8], targetPose.data[9], targetPose.data[10], targetPose.data[11],
-					// 	targetPose.data[12], targetPose.data[13], targetPose.data[14], targetPose.data[15])
 				}
 			}
 		}
@@ -166,17 +145,65 @@ void ImageTrackerWrapper::loadFromImage(const std::string& filename, const std::
 	}
 }
 
-//void ImageTrackerWrapper::loadTarget(std::optional<std::shared_ptr<easyar::ImageTarget>> Target, const std::string& filename, const std::string& name)
-//{
-//	Target = easyar::ImageTarget::createFromImageFile(filename, easyar::StorageType::Assets, name, "", "", 1.0f);
-//	if (Target.has_value())
-//	{
-//		Tracker->loadTarget(Target.value(), Scheduler, [](std::shared_ptr<easyar::Target> target, bool status)
-//			{
-//				GEngine->AddOnScreenDebugMessage(
-//					0, 1.0f, FColor::Red,
-//					FString::Printf(TEXT("Load Target (%d): %s %d\n"), status, *FString(target->name().c_str()), target->runtimeID()));
-//				UE_LOG(LogTemp, Warning, TEXT("Load Target (%d): %s %d\n"), status, *FString(target->name().c_str()), target->runtimeID());
-//			});
-//	}
-//}
+// =======================================================================================================
+MotionTrakerWrapper::MotionTrakerWrapper()
+{
+}
+
+MotionTrakerWrapper::~MotionTrakerWrapper()
+{
+}
+
+void MotionTrakerWrapper::initialize()
+{
+	Scheduler = std::make_shared<easyar::DelayedCallbackScheduler>();
+	I2FrameAdapter = easyar::InputFrameToOutputFrameAdapter::create();
+	OutputFrameBuffer = easyar::OutputFrameBuffer::create();
+	
+	MotionTrackerCamera = std::make_shared<easyar::MotionTrackerCameraDevice>();
+
+	MotionTrackerCamera->inputFrameSource()->connect(I2FrameAdapter->input());
+	I2FrameAdapter->output()->connect(OutputFrameBuffer->input());
+
+	MotionTrackerCamera->setFrameRateType(easyar::MotionTrackerCameraDeviceFPS::Camera_FPS_60);
+	MotionTrackerCamera->setFocusMode(easyar::MotionTrackerCameraDeviceFocusMode::Continousauto);
+	MotionTrackerCamera->setFrameResolutionType(easyar::MotionTrackerCameraDeviceResolution::Resolution_1280);
+	MotionTrackerCamera->setBufferCapacity(OutputFrameBuffer->bufferRequirement() + 2);
+}
+
+bool MotionTrakerWrapper::start()
+{
+	bool Status = true;
+    Status &= MotionTrackerCamera->start();
+    return Status;
+}
+
+void MotionTrakerWrapper::stop()
+{
+	if (MotionTrackerCamera != nullptr)
+	{
+		MotionTrackerCamera->stop();
+	}
+}
+void MotionTrakerWrapper::render()
+{
+	while (Scheduler->runOne()) {}
+	
+	std::optional<std::shared_ptr<easyar::OutputFrame>> oFrame = OutputFrameBuffer->peek();
+	if (!oFrame.has_value()) { return; }
+	cameraFrame = oFrame.value();
+	auto iFrame = cameraFrame->inputFrame();
+	
+	if (!iFrame->hasCameraParameters())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Don't have camera parameters"));
+		return;
+	}
+
+	auto image = iFrame->image();
+
+	if (iFrame->trackingStatus() != easyar::MotionTrackingStatus::NotTracking)
+	{
+		cameraTransform = iFrame->cameraTransform();
+	}
+}

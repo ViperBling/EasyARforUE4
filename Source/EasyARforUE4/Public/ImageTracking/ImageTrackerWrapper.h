@@ -31,3 +31,25 @@ private:
 	std::shared_ptr<easyar::OutputFrameBuffer> OutputFrameBuffer;
 	std::shared_ptr<easyar::InputFrameToFeedbackFrameAdapter> I2FrameAdapter;
 };
+
+class MotionTrakerWrapper
+{
+public:
+	MotionTrakerWrapper();
+	virtual ~MotionTrakerWrapper();
+
+	void initialize();
+	bool start();
+	void stop();
+	void render();
+
+	std::shared_ptr<easyar::OutputFrame> cameraFrame;
+	easyar::Matrix44F cameraTransform;
+	
+private:
+	std::shared_ptr<easyar::CalibrationDownloader> CalibrationDownloader;
+	std::shared_ptr<easyar::DelayedCallbackScheduler> Scheduler;
+	std::shared_ptr<easyar::MotionTrackerCameraDevice> MotionTrackerCamera;
+	std::shared_ptr<easyar::OutputFrameBuffer> OutputFrameBuffer;
+	std::shared_ptr<easyar::InputFrameToOutputFrameAdapter> I2FrameAdapter;
+};

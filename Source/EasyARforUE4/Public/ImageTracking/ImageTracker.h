@@ -40,9 +40,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = EasyAR)
 	void Stop();
 
-	UFUNCTION(BlueprintCallable, Category = EasyAR)
-	void CallEveryFrame(float DeltaTime);
-
 public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -74,8 +71,9 @@ private:
 
 private:
 	std::unique_ptr<ImageTrackerWrapper> _imageTracker;
+	std::unique_ptr<MotionTrakerWrapper> _motionTracker;
 	FCameraRenderer* CameraRenderer;
 	float Timer = 0;
-	const float FrameRate = 30.f;
+	const float FrameRate = 60.f;
 };
 
