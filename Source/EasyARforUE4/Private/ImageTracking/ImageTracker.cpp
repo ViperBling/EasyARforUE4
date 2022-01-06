@@ -55,20 +55,23 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		SceneCaptureB->CustomProjectionMatrix = PerspectiveMatrix;
 		
 		auto easyarCamTrans = _motionTracker->cameraTransform;
-		FMatrix CameraTransform = MatrixConverter(easyarCamTrans).Inverse();
 
 		StaticMeshComponent->SetStaticMesh(ImageTargetsCollection[FString("namecard.jpg")].Mesh);
-		StaticMeshComponent->SetWorldTransform(FTransform::Identity);
 
 		FTransform TmpMeshTransform = FTransform(GetTransformFromMat44F(
 			easyarCamTrans,
-			ImageTargetsCollection[FString("namecard.jpg")].MeshTransform.GetScale3D()));
-		SceneCaptureA->SetWorldTransform(TmpMeshTransform.Inverse());
-		SceneCaptureB->SetWorldTransform(TmpMeshTransform.Inverse());
-
+			FVector(1)));
+		StaticMeshComponent->SetWorldTransform(FTransform(FRotator(0, 0, 0), FVector(0), FVector(0.2)));
+		
+		SceneCaptureA->SetWorldTransform(TmpMeshTransform);
+		SceneCaptureB->SetWorldTransform(TmpMeshTransform);
+		
 		GEngine->AddOnScreenDebugMessage(
 			0, 1.0f, FColor::Green,
-			FString::Printf(TEXT("%s\n"), *FString(TmpMeshTransform.Inverse().ToString())));
+			FString::Printf(TEXT("%s\n"), *FString(SceneCaptureA->GetComponentLocation().ToString())));
+		GEngine->AddOnScreenDebugMessage(
+			1, 1.0f, FColor::Green,
+			FString::Printf(TEXT("%s\n"), *FString(StaticMeshComponent->GetComponentLocation().ToString())));
 	}
 	
 	// if (Timer >= 1. / FrameRate)

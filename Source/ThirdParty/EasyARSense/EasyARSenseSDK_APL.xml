@@ -57,7 +57,12 @@
         </insert>
     </gameActivityImportAdditions>
 
-    
+
+    <gameActivityClassAdditions>
+        <insert>
+            private CalibrationDownloader downloader;
+        </insert>
+    </gameActivityClassAdditions>
     <!-- optional additions to GameActivity onCreate in GameActivity.java -->
     <gameActivityOnCreateAdditions>
         <insert>
@@ -78,6 +83,27 @@
                 Log.debug("MotionTrackerCameraDevice not available.");
                 return;
             }
+
+            downloader = new CalibrationDownloader();
+            downloader.download(ImmediateCallbackScheduler.getDefault(), new FunctorOfVoidFromCalibrationDownloadStatusAndOptionalOfString() {
+                @Override
+                public void invoke(int status, String error) {
+                    //following code runs on a non-GUI thread
+<!--                    if (status == CalibrationDownloadStatus.Successful) {-->
+<!--                        Log.debug("HelloAR Calibration file download successful.");-->
+<!--                    } else if (status == CalibrationDownloadStatus.NotModified) {-->
+<!--                        Log.debug("HelloAR Calibration file is latest.");-->
+<!--                    } else if (status == CalibrationDownloadStatus.ConnectionError) {-->
+<!--                        Log.debug("HelloAR Calibration file download connection error: ");-->
+<!--                    } else if (status == CalibrationDownloadStatus.UnexpectedError) {-->
+<!--                        Log.debug("HelloAR Calibration file download unexpected error: ");-->
+<!--                    } else {-->
+<!--                        Log.debug("HelloAR", "Calibration file download failed.");-->
+<!--                    }-->
+                downloader.dispose();
+                downloader = null;
+                }
+            });
         </insert>
     </gameActivityOnCreateAdditions>
 

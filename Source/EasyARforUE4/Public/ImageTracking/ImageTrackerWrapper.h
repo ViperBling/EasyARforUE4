@@ -47,7 +47,6 @@ public:
 	easyar::Matrix44F cameraTransform;
 	
 private:
-	std::shared_ptr<easyar::CalibrationDownloader> CalibrationDownloader;
 	std::shared_ptr<easyar::DelayedCallbackScheduler> Scheduler;
 	std::shared_ptr<easyar::MotionTrackerCameraDevice> MotionTrackerCamera;
 	std::shared_ptr<easyar::OutputFrameBuffer> OutputFrameBuffer;

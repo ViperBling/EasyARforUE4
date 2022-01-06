@@ -165,10 +165,10 @@ void MotionTrakerWrapper::initialize()
 	MotionTrackerCamera->inputFrameSource()->connect(I2FrameAdapter->input());
 	I2FrameAdapter->output()->connect(OutputFrameBuffer->input());
 
-	MotionTrackerCamera->setFrameRateType(easyar::MotionTrackerCameraDeviceFPS::Camera_FPS_60);
+	MotionTrackerCamera->setFrameRateType(easyar::MotionTrackerCameraDeviceFPS::Camera_FPS_30);
 	MotionTrackerCamera->setFocusMode(easyar::MotionTrackerCameraDeviceFocusMode::Continousauto);
 	MotionTrackerCamera->setFrameResolutionType(easyar::MotionTrackerCameraDeviceResolution::Resolution_1280);
-	MotionTrackerCamera->setBufferCapacity(OutputFrameBuffer->bufferRequirement() + 2);
+	MotionTrackerCamera->setBufferCapacity(OutputFrameBuffer->bufferRequirement() + 8);
 }
 
 bool MotionTrakerWrapper::start()
@@ -184,6 +184,7 @@ void MotionTrakerWrapper::stop()
 	{
 		MotionTrackerCamera->stop();
 	}
+	MotionTrackerCamera->close();
 }
 void MotionTrakerWrapper::render()
 {
@@ -199,8 +200,6 @@ void MotionTrakerWrapper::render()
 		UE_LOG(LogTemp, Warning, TEXT("Don't have camera parameters"));
 		return;
 	}
-
-	auto image = iFrame->image();
 
 	if (iFrame->trackingStatus() != easyar::MotionTrackingStatus::NotTracking)
 	{

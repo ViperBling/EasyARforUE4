@@ -74,6 +74,6 @@ private:
 	std::unique_ptr<MotionTrakerWrapper> _motionTracker;
 	FCameraRenderer* CameraRenderer;
 	float Timer = 0;
-	const float FrameRate = 60.f;
+	const float FrameRate = 30.f;
 };
 
