@@ -72,15 +72,15 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		_imageTracker->perFrame();
 		auto CurrentFrame = _imageTracker->cameraFrame;
 		auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
-
-		float FOVX = FMath::DegreesToRadians(45.0f);
-		float FOVY = FMath::DegreesToRadians(30.0f);
-		auto easyarProjection = CurrentFrame->inputFrame()->cameraParameters()->projection(0.01, 1000., 1280 / 720., 0, true, false);
-		auto easyarImageProjection = CurrentFrame->inputFrame()->cameraParameters()->imageProjection(1280 / 720., 0, true, false);
-		FReversedZPerspectiveMatrix PerspectiveMatrix = FReversedZPerspectiveMatrix(FOVX, FOVY,
-			easyarProjection.data[1] * FMath::Tan(FOVX),
-			-easyarProjection.data[4] * FMath::Tan(FOVY),
-			0.01, 10000);
+	
+		// float FOVX = FMath::DegreesToRadians(45.0f);
+		// float FOVY = FMath::DegreesToRadians(30.0f);
+		// auto easyarProjection = CurrentFrame->inputFrame()->cameraParameters()->projection(0.01, 1000., 1280 / 720., 0, true, false);
+		// auto easyarImageProjection = CurrentFrame->inputFrame()->cameraParameters()->imageProjection(1280 / 720., 0, true, false);
+		// FReversedZPerspectiveMatrix PerspectiveMatrix = FReversedZPerspectiveMatrix(FOVX, FOVY,
+		// 	easyarProjection.data[1] * FMath::Tan(FOVX),
+		// 	-easyarProjection.data[4] * FMath::Tan(FOVY),
+		// 	0.01, 10000);
 	
 		// PerspectiveMatrix.M[0][0] = easyarProjection.data[1];
 		// PerspectiveMatrix.M[0][1] = easyarProjection.data[0];
@@ -91,17 +91,12 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		
 		// SceneCaptureA->CustomProjectionMatrix = PerspectiveMatrix;
 		// SceneCaptureB->CustomProjectionMatrix = PerspectiveMatrix;
-
-		GEngine->AddOnScreenDebugMessage(
-			0, 1.0f, FColor::Green,
-			FString::Printf(TEXT("%s\n"), *FString(MatrixConverter(easyarImageProjection).ToString())));
-
-		GEngine->AddOnScreenDebugMessage(
-			1, 1.0f, FColor::Green,
-			FString::Printf(TEXT("%s\n"), *FString(MatrixConverter(easyarProjection).ToString())));
-
-		FMatrix ImageProjection = FMatrix::Identity;
-		ImageProjection.M[1][1] = -easyarImageProjection.data[4];
+		//
+		// GEngine->AddOnScreenDebugMessage(
+		// 	0, 1.0f, FColor::Green,
+		// 	FString::Printf(TEXT("%s\n"), *FString(MatrixConverter(easyarImageProjection).ToString())));
+		//
+		//
 		
 		CameraRenderer->Render(Buffer->data());
 	
@@ -117,14 +112,26 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 					// 	FString::Printf(TEXT("Found Target (%s): %d\n"), *FString(target.second->name().c_str()), target.second->runtimeID()));
 					StaticMeshComponent->SetStaticMesh(ImageTargetsCollection[FString(target.second->name().c_str())].Mesh);
 					float ImageTargetSize = target.second->scale() * 100.;
-					float targetScale = ImageTargetSize / 18.;
+					float targetScale = ImageTargetSize / StaticMeshComponent->GetStaticMesh()->GetBoundingBox().GetSize().GetMax();
+					
 					FTransform TmpMeshTransform = FTransform(GetTransformFromMat44F(
 						_imageTracker->targetPose,
 						FVector(targetScale)
 						// ImageTargetsCollection[FString(target.second->name().c_str())].MeshTransform.GetScale3D()
 						));
-					SceneCaptureA->SetWorldTransform(TmpMeshTransform.Inverse());
-					SceneCaptureB->SetWorldTransform(TmpMeshTransform.Inverse());
+	
+					GEngine->AddOnScreenDebugMessage(
+						0, 1.0f, FColor::Green,
+						FString::Printf(TEXT("%s\n"),
+							*FString(FVector(_imageTracker->targetPose.data[3] * 100, _imageTracker->targetPose.data[7] * 100, _imageTracker->targetPose.data[11] * 100).ToString())));
+					// GEngine->AddOnScreenDebugMessage(
+					// 	1, 1.0f, FColor::Green,
+					// 	FString::Printf(TEXT("%s\n"), *FString(TmpMeshTransform.ToString())));
+	
+					StaticMeshComponent->SetWorldTransform(TmpMeshTransform);
+					StaticMeshComponent->AddLocalRotation(FRotator(90, 0, 0));
+					// SceneCaptureA->SetWorldTransform(TmpMeshTransform.Inverse());
+					// SceneCaptureB->SetWorldTransform(TmpMeshTransform.Inverse());
 				}
 			}
 		}
@@ -139,7 +146,7 @@ void UImageTrackers::Initialize()
 {
 	SceneCaptureA->bUseCustomProjectionMatrix = false;
 	SceneCaptureB->bUseCustomProjectionMatrix = false;
-	StaticMeshComponent->AddLocalRotation(FRotator(90, 0, 0));
+	
 	CameraRenderer = new FCameraRenderer(Width, Height, OutRT);
 	
 	_imageTracker->initialize();

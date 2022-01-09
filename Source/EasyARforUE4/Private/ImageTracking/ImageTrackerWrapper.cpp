@@ -15,10 +15,8 @@ void ImageTrackerWrapper::initialize()
 	I2FrameAdapter = easyar::InputFrameToFeedbackFrameAdapter::create();
 	OutputFrameFork = easyar::OutputFrameFork::create(2);
 	OutputFrameBuffer = easyar::OutputFrameBuffer::create();
-	Camera = easyar::CameraDeviceSelector::createCameraDevice(easyar::CameraDevicePreference::PreferObjectSensing);
-	// RealTimeTransform = std::make_shared<easyar::RealTimeCoordinateTransform>();
-
-	// auto MotionCamera = easyar::CameraDeviceSelector::createCameraDevice(easyar::CameraDevicePreference::PreferMotionTracking);
+	// ObjectSensing模式Camera Size固定为1280x960，导致画面和SceneCapture的对应不上，会漂移
+	Camera = easyar::CameraDeviceSelector::createCameraDevice(easyar::CameraDevicePreference::PreferSurfaceTracking);
 	
 	if (!Camera->openWithPreferredType(easyar::CameraDeviceType::Back))
 	{
@@ -26,11 +24,9 @@ void ImageTrackerWrapper::initialize()
 		UE_LOG(LogTemp, Warning, TEXT("Camera Open Failed"));
 		// return;
 	}
-
+	
 	Camera->setFocusMode(easyar::CameraDeviceFocusMode::Continousauto);
-	Camera->setSize(easyar::Vec2I{{1280, 960}});
-	// Camera->cameraParameters()->imageHorizontalFlip(false);
-	Camera->cameraParameters()->imageOrientation(90);
+	Camera->setSize(easyar::Vec2I{{1280, 720}});
 	
 	Tracker = easyar::ImageTracker::create();
 	
@@ -77,7 +73,10 @@ void ImageTrackerWrapper::stop()
 void ImageTrackerWrapper::perFrame()
 {
 	while (Scheduler->runOne()) {}
-
+	// GEngine->AddOnScreenDebugMessage(
+ //    	0, 1.0f, FColor::Green,
+ //    	FString::Printf(TEXT("%s\n"),
+ //    		*FString(FVector(Camera->size().data[0], Camera->size().data[1], 0).ToString())));
 	std::optional<std::shared_ptr<easyar::OutputFrame>> oFrame = OutputFrameBuffer->peek();
 	if (!oFrame.has_value()) { return; }
 	cameraFrame = oFrame.value();
@@ -168,6 +167,7 @@ void MotionTrakerWrapper::initialize()
 	MotionTrackerCamera->setFrameRateType(easyar::MotionTrackerCameraDeviceFPS::Camera_FPS_30);
 	MotionTrackerCamera->setFocusMode(easyar::MotionTrackerCameraDeviceFocusMode::Continousauto);
 	MotionTrackerCamera->setFrameResolutionType(easyar::MotionTrackerCameraDeviceResolution::Resolution_1280);
+	
 	MotionTrackerCamera->setBufferCapacity(OutputFrameBuffer->bufferRequirement() + 8);
 }
 
