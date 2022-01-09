@@ -73,28 +73,35 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		auto CurrentFrame = _imageTracker->cameraFrame;
 		auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
 
-		float FOVX = FMath::DegreesToRadians(70.0f);
+		float FOVX = FMath::DegreesToRadians(45.0f);
 		float FOVY = FMath::DegreesToRadians(30.0f);
-		auto easyarProjection = CurrentFrame->inputFrame()->cameraParameters()->projection(0.01, 1000., (float)OutRT->SizeX / (float)OutRT->SizeY, 0, true, false);
-		FReversedZPerspectiveMatrix PerspectiveMatrix = FReversedZPerspectiveMatrix(FOVX, FOVY, 1, 1, 0.01, 10000);
+		auto easyarProjection = CurrentFrame->inputFrame()->cameraParameters()->projection(0.01, 1000., 1280 / 720., 0, true, false);
+		auto easyarImageProjection = CurrentFrame->inputFrame()->cameraParameters()->imageProjection(1280 / 720., 0, true, false);
+		FReversedZPerspectiveMatrix PerspectiveMatrix = FReversedZPerspectiveMatrix(FOVX, FOVY,
+			easyarProjection.data[1] * FMath::Tan(FOVX),
+			-easyarProjection.data[4] * FMath::Tan(FOVY),
+			0.01, 10000);
 	
 		// PerspectiveMatrix.M[0][0] = easyarProjection.data[1];
 		// PerspectiveMatrix.M[0][1] = easyarProjection.data[0];
 		// PerspectiveMatrix.M[1][0] = easyarProjection.data[5];
 		// PerspectiveMatrix.M[1][1] = -easyarProjection.data[4];
-		// PerspectiveMatrix.M[2][2] = -easyarProjection.data[11];
+		// PerspectiveMatrix.M[3][2] = -easyarProjection.data[11];
 	
 		
-		SceneCaptureA->CustomProjectionMatrix = PerspectiveMatrix;
-		SceneCaptureB->CustomProjectionMatrix = PerspectiveMatrix;
+		// SceneCaptureA->CustomProjectionMatrix = PerspectiveMatrix;
+		// SceneCaptureB->CustomProjectionMatrix = PerspectiveMatrix;
 
 		GEngine->AddOnScreenDebugMessage(
 			0, 1.0f, FColor::Green,
-			FString::Printf(TEXT("%s\n"), *FString(PerspectiveMatrix.ToString())));
+			FString::Printf(TEXT("%s\n"), *FString(MatrixConverter(easyarImageProjection).ToString())));
 
 		GEngine->AddOnScreenDebugMessage(
 			1, 1.0f, FColor::Green,
 			FString::Printf(TEXT("%s\n"), *FString(MatrixConverter(easyarProjection).ToString())));
+
+		FMatrix ImageProjection = FMatrix::Identity;
+		ImageProjection.M[1][1] = -easyarImageProjection.data[4];
 		
 		CameraRenderer->Render(Buffer->data());
 	
@@ -108,7 +115,7 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 					// GEngine->AddOnScreenDebugMessage(
 					// 	0, 1.0f, FColor::Green,
 					// 	FString::Printf(TEXT("Found Target (%s): %d\n"), *FString(target.second->name().c_str()), target.second->runtimeID()));
-					
+					StaticMeshComponent->SetStaticMesh(ImageTargetsCollection[FString(target.second->name().c_str())].Mesh);
 					float ImageTargetSize = target.second->scale() * 100.;
 					float targetScale = ImageTargetSize / 18.;
 					FTransform TmpMeshTransform = FTransform(GetTransformFromMat44F(
@@ -116,7 +123,6 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 						FVector(targetScale)
 						// ImageTargetsCollection[FString(target.second->name().c_str())].MeshTransform.GetScale3D()
 						));
-					StaticMeshComponent->SetStaticMesh(ImageTargetsCollection[FString(target.second->name().c_str())].Mesh);
 					SceneCaptureA->SetWorldTransform(TmpMeshTransform.Inverse());
 					SceneCaptureB->SetWorldTransform(TmpMeshTransform.Inverse());
 				}
@@ -131,8 +137,8 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void UImageTrackers::Initialize()
 {
-	SceneCaptureA->bUseCustomProjectionMatrix = true;
-	SceneCaptureB->bUseCustomProjectionMatrix = true;
+	SceneCaptureA->bUseCustomProjectionMatrix = false;
+	SceneCaptureB->bUseCustomProjectionMatrix = false;
 	StaticMeshComponent->AddLocalRotation(FRotator(90, 0, 0));
 	CameraRenderer = new FCameraRenderer(Width, Height, OutRT);
 	
