@@ -9,14 +9,14 @@ UImageTrackers::UImageTrackers()
 	PrimaryComponentTick.bCanEverTick = true;
 	// PrimaryComponentTick.TickGroup = TG_PostPhysics;
 	// _imageTracker = std::make_unique<ImageTrackerWrapper>();
-	//_motionTracker = std::make_unique<MotionTrakerWrapper>();
+	// _motionTracker = std::make_unique<MotionTrakerWrapper>();
 	_motionFusionTracker = std::make_unique<ImageTrackerMotionFusionWrapper>();
 }
 
 UImageTrackers::~UImageTrackers()
 {
 	// _imageTracker.release();
-	//_motionTracker.release();
+	// _motionTracker.release();
 	_motionFusionTracker.release();
 	delete CameraRenderer;
 }
@@ -37,26 +37,26 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	Timer += DeltaTime;
 
-	//if (Timer >= 1. / FrameRate)
-	//{
-	//	Timer -= 1. / FrameRate;
-	//	_motionTracker->render();
-	//	auto CurrentFrame = _motionTracker->cameraFrame;
-	//	auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
-	//	CameraRenderer->Render(Buffer->data());
-	//	
-	//	auto easyarCamTrans = _motionTracker->cameraTransform;
+	// if (Timer >= 1. / FrameRate)
+	// {
+	// 	Timer -= 1. / FrameRate;
+	// 	_motionTracker->render();
+	// 	auto CurrentFrame = _motionTracker->cameraFrame;
+	// 	auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
+	// 	CameraRenderer->Render(Buffer->data());
+	// 	
+	// 	auto easyarCamTrans = _motionTracker->cameraTransform;
 	//
-	//	StaticMeshComponent->SetStaticMesh(ImageTargetsCollection[FString("namecard.jpg")].Mesh);
+	// 	StaticMeshComponent->SetStaticMesh(ImageTargetsCollection[FString("namecard.jpg")].Mesh);
 	//
-	//	FTransform TmpMeshTransform = FTransform(GetTransformFromMat44F(
-	//		easyarCamTrans,
-	//		FVector(1)));
-	//	StaticMeshComponent->SetWorldTransform(FTransform(FRotator(0, 0, 0), FVector(30, 0, -20), FVector(2)));
-	//	
-	//	SceneCaptureA->SetWorldTransform(TmpMeshTransform);
-	//	SceneCaptureB->SetWorldTransform(TmpMeshTransform);
-	//}
+	// 	FTransform TmpMeshTransform = FTransform(GetTransformFromMat44F(
+	// 		easyarCamTrans,
+	// 		FVector(1)));
+	// 	StaticMeshComponent->SetWorldTransform(FTransform(FRotator(0, 0, 0), FVector(30, 0, -20), FVector(2)));
+	// 	
+	// 	SceneCaptureA->SetWorldTransform(TmpMeshTransform);
+	// 	SceneCaptureB->SetWorldTransform(TmpMeshTransform);
+	// }
 	
 	// if (Timer >= 1. / FrameRate)
 	// {
@@ -109,7 +109,7 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	 	auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
 	 	
 	 	CameraRenderer->Render(Buffer->data());
-
+	 
 		//float FOVX = FMath::DegreesToRadians(45.0f);
 		//float FOVY = FMath::DegreesToRadians(30.0f);
 		//auto easyarProjection = CurrentFrame->inputFrame()->cameraParameters()->projection(0.01, 1000., 1280 / 720., 0, true, false);
@@ -118,28 +118,29 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		//	easyarProjection.data[1] * FMath::Tan(FOVX),
 		//	-easyarProjection.data[4] * FMath::Tan(FOVY),
 		//	0.01, 10000);
-
+	 
 		//PerspectiveMatrix.M[0][0] = easyarProjection.data[1];
 		//PerspectiveMatrix.M[0][1] = easyarProjection.data[0];
 		//PerspectiveMatrix.M[1][0] = easyarProjection.data[5];
 		//PerspectiveMatrix.M[1][1] = -easyarProjection.data[4];
 		//PerspectiveMatrix.M[3][2] = -easyarProjection.data[11];
-
-
+	 
+	 
 		//SceneCaptureA->CustomProjectionMatrix = PerspectiveMatrix;
 		//SceneCaptureB->CustomProjectionMatrix = PerspectiveMatrix;
-
+	 
 		FTransform CameraLocalTransform = FTransform(GetTransformFromMat44F(
 			_motionFusionTracker->cameraLocalTransform,
 			FVector(1)));
 
+	 
 		SceneCaptureA->SetWorldTransform(CameraLocalTransform);
 		SceneCaptureB->SetWorldTransform(CameraLocalTransform);
-
+	 
 		GEngine->AddOnScreenDebugMessage(
 			0, 1.0f, FColor::Red,
 			*FString::Printf(TEXT("%s\n"), *FString(CameraLocalTransform.ToString())));
-
+	 
 		// 如果追踪到了目标
 	 	if (_motionFusionTracker->TrackTargets.size() != 0)
 	 	{
@@ -154,17 +155,17 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	 				StaticMeshComponent->SetStaticMesh(ImageTargetsCollection[FString(target.second->name().c_str())].Mesh);
 	 				float ImageTargetSize = target.second->scale() * 100.;
 					float targetScale = 2 * ImageTargetSize / (StaticMeshComponent->GetStaticMesh()->GetBoundingBox().GetSize().GetAbsMin() + StaticMeshComponent->GetStaticMesh()->GetBoundingBox().GetSize().GetAbsMax());
-
+	 
 	 				FTransform TargetViewTransform = FTransform(GetTransformFromMat44F(
 	 					_motionFusionTracker->targetPose,
 	 					FVector(targetScale)));
-
+	 
 					TargetTransform = TargetViewTransform * CameraLocalTransform;
-	
+
 	 				GEngine->AddOnScreenDebugMessage(
 	 					1, 1.0f, FColor::Yellow,
 	 					*FString::Printf(TEXT("%s\n"), *FString(TargetTransform.ToString())));
-
+	 
 					StaticMeshComponent->SetWorldTransform(TargetTransform);
 					StaticMeshComponent->AddLocalRotation(FRotator(90, 0, 0));
 	 			}
@@ -178,7 +179,6 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 				2, 1.0f, FColor::Green,
 				*FString::Printf(TEXT("%s\n"), *FString(TargetTransform.ToString())));
 		}
-		
 	 }
 }
 
@@ -195,21 +195,21 @@ void UImageTrackers::Initialize()
 
 	for (auto target : ImageTargetsCollection) 
 	{
-		_motionFusionTracker->loadFromImage(TCHAR_TO_UTF8(*GetImagePath(target.Key)), TCHAR_TO_UTF8(*target.Key), 0.02);
+		_motionFusionTracker->loadFromImage(TCHAR_TO_UTF8(*GetImagePath(target.Key)), TCHAR_TO_UTF8(*target.Key), 0.15);
 	}
 }
 
 void UImageTrackers::Start()
 {
 	// _imageTracker->start();
-	//_motionTracker->start();
+	// _motionTracker->start();
 	_motionFusionTracker->start();
 }
 
 void UImageTrackers::Stop()
 {
 	// _imageTracker->stop();
-	//_motionTracker->stop();
+	// _motionTracker->stop();
 	_motionFusionTracker->stop();
 }
 

@@ -222,14 +222,14 @@ void ImageTrackerMotionFusionWrapper::initialize()
 	I2FrameAdapter = easyar::InputFrameToFeedbackFrameAdapter::create();
 	OutputFrameFork = easyar::OutputFrameFork::create(2);
 	OutputFrameBuffer = easyar::OutputFrameBuffer::create();
+	
 	RealTimeWorldTransform = std::make_shared<easyar::RealTimeCoordinateTransform>();
 	RealTimeWorldTransform->setBufferSize(15);
 	
-	
 	MotionTrackerCamera = std::make_shared<easyar::MotionTrackerCameraDevice>();
-	MotionTrackerCamera->setFrameRateType(easyar::MotionTrackerCameraDeviceFPS::Camera_FPS_60);
+	MotionTrackerCamera->setFrameRateType(easyar::MotionTrackerCameraDeviceFPS::Camera_FPS_30);
 	MotionTrackerCamera->setFocusMode(easyar::MotionTrackerCameraDeviceFocusMode::Continousauto);
-	//MotionTrackerCamera->setFrameResolutionType(easyar::MotionTrackerCameraDeviceResolution::Resolution_1280);
+	MotionTrackerCamera->setFrameResolutionType(easyar::MotionTrackerCameraDeviceResolution::Resolution_1280);
 	MotionTrackerCamera->setTrackingMode(easyar::MotionTrackerCameraDeviceTrackingMode::Anchor);
 	
 	Tracker = easyar::ImageTracker::create();
@@ -247,7 +247,7 @@ void ImageTrackerMotionFusionWrapper::initialize()
 		Throttler->bufferRequirement() +
 		I2FrameAdapter->bufferRequirement() +
 		OutputFrameBuffer->bufferRequirement() +
-		Tracker->bufferRequirement() + 2);
+		Tracker->bufferRequirement() + 8);
 }
 
 bool ImageTrackerMotionFusionWrapper::start()
@@ -311,9 +311,6 @@ void ImageTrackerMotionFusionWrapper::render()
 					}
 					lostCandidates.erase(imageTarget->runtimeID());
 					targetPose = targetInstance->pose();
-					
-					cameraWorldTransform = RealTimeWorldTransform->getPoseInMap(iFrame->timestamp(), iFrame->trackingStatus(), cameraLocalTransform);
-					RealTimeWorldTransform->insertData(iFrame->timestamp(), cameraLocalTransform, cameraWorldTransform);
 				}
 			}
 		}
