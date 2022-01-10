@@ -40,7 +40,7 @@ void FCameraRenderer::Render(void* BufferData)
 		// CameraBackground_RenderThread(
 		// 	RHICmdList, ImageProjection, RenderTargetResource);
 		CustomCameraBackground_RenderThread(
-        	RHICmdList, RenderTargetResource);
+			RHICmdList, RenderTargetResource);
 	});
 }
 
@@ -52,8 +52,8 @@ void FCameraRenderer::InitRHI()
 		CurrentImageSize.X, CurrentImageSize.Y * 1.5,
 		PF_G8, 1, 1, TexCreate_ShaderResource | TexCreate_UAV,
 		CreateInfo);
-    BackTexture_UAV = RHICreateUnorderedAccessView(BackTexture);
-    BackTexture_SRV = RHICreateShaderResourceView(BackTexture, 0);
+	BackTexture_UAV = RHICreateUnorderedAccessView(BackTexture);
+	BackTexture_SRV = RHICreateShaderResourceView(BackTexture, 0);
 }
 
 void FCameraRenderer::CameraBackground_RenderThread(
@@ -114,8 +114,8 @@ void FCameraRenderer::CameraBackground_RenderThread(
 }
 
 void FCameraRenderer::CustomCameraBackground_RenderThread(
-    FRHICommandListImmediate& RHICmdList,
-    FTextureRenderTargetResource* RenderTargetResource)
+	FRHICommandListImmediate& RHICmdList,
+	FTextureRenderTargetResource* RenderTargetResource)
 {
 	check(IsInRenderingThread())
 	SCOPED_DRAW_EVENT(RHICmdList, CameraBack);

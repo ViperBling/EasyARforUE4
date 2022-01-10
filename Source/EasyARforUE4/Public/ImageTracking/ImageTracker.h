@@ -70,10 +70,12 @@ private:
 	FString GetImagePath(FString& ImageName);
 
 private:
-	std::unique_ptr<ImageTrackerWrapper> _imageTracker;
-	std::unique_ptr<MotionTrakerWrapper> _motionTracker;
+	// std::unique_ptr<ImageTrackerWrapper> _imageTracker;
+	//std::unique_ptr<MotionTrakerWrapper> _motionTracker;
+	std::unique_ptr<ImageTrackerMotionFusionWrapper> _motionFusionTracker;
+	FTransform TargetTransform;
 	FCameraRenderer* CameraRenderer;
 	float Timer = 0;
-	const float FrameRate = 30.f;
+	const float FrameRate = 60.f;
 };
 
