@@ -130,7 +130,7 @@ void FCameraRenderer::CustomCameraBackground_RenderThread(
 	RHICmdList.BeginRenderPass(RenderPassInfo, TEXT("CameraBackgroundRendering"));
 	{
 		RHICmdList.ApplyCachedRenderTargets(GraphicsPSOInit);
-		RHICmdList.SetViewport(0, 0, 0.0f, OutputDim.X, 720, 1.0f);
+		RHICmdList.SetViewport(0, 0, 0.0f, OutputDim.X, OutputDim.Y, 1.0f);
 		auto ShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
 		TShaderMapRef<FCameraBackgroundVS> VertexShader(ShaderMap);
 		TShaderMapRef<FCameraBackgroundPS> PixelShader(ShaderMap);
@@ -146,7 +146,7 @@ void FCameraRenderer::CustomCameraBackground_RenderThread(
 
 		FCameraBackgroundPS::FParameters PassParameters;
 		PassParameters.BackTexture = BackTexture_SRV;
-		PassParameters.UVScale = FVector2D((float)OutputDim.X / (float)BackTexture->GetSizeX(), (float)720. / (float)BackTexture->GetSizeY());
+		PassParameters.UVScale = FVector2D((float)OutputDim.X / (float)BackTexture->GetSizeX(), (float)OutputDim.Y / (float)BackTexture->GetSizeY());
 		PassParameters.OutWidth = OutputDim.X;
 		PassParameters.SRGBToLinear = true;
 		PassParameters.BaseSampler = TStaticSamplerState<SF_Bilinear>::GetRHI();

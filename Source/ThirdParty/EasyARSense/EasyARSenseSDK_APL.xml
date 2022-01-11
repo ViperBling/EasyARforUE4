@@ -36,6 +36,7 @@
     <gameActivityImportAdditions>
         <insert>
             import android.Manifest;
+            import android.hardware.Camera;
             import android.annotation.TargetApi;
             import android.content.pm.PackageManager;
             import android.os.Build;
