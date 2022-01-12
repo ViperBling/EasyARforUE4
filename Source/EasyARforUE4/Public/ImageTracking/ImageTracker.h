@@ -55,6 +55,9 @@ public:
 	UStaticMeshComponent* StaticMeshComponent;
 
 	UPROPERTY(BlueprintReadWrite)
+	UStaticMeshComponent* WorldRoot;
+
+	UPROPERTY(BlueprintReadWrite)
 	USceneCaptureComponent2D* SceneCaptureA;
 
 	UPROPERTY(BlueprintReadWrite)

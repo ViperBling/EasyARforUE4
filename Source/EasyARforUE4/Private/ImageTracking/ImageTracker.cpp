@@ -4,6 +4,8 @@
 static FMatrix MatrixConverter(easyar::Matrix44F& MatEasyAR);
 static FTransform GetTransformFromMat44F(easyar::Matrix44F& MatEasyAR, FVector Scale);
 
+static FTransform TargetViewTransform;
+
 UImageTrackers::UImageTrackers()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -110,36 +112,19 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	 	
 	 	CameraRenderer->Render(Buffer->data());
 	 
-		//float FOVX = FMath::DegreesToRadians(45.0f);
-		//float FOVY = FMath::DegreesToRadians(30.0f);
-		//auto easyarProjection = CurrentFrame->inputFrame()->cameraParameters()->projection(0.01, 1000., 1280 / 720., 0, true, false);
-		//auto easyarImageProjection = CurrentFrame->inputFrame()->cameraParameters()->imageProjection(1280 / 720., 0, true, false);
-		//FReversedZPerspectiveMatrix PerspectiveMatrix = FReversedZPerspectiveMatrix(FOVX, FOVY,
-		//	easyarProjection.data[1] * FMath::Tan(FOVX),
-		//	-easyarProjection.data[4] * FMath::Tan(FOVY),
-		//	0.01, 10000);
-	 
-		//PerspectiveMatrix.M[0][0] = easyarProjection.data[1];
-		//PerspectiveMatrix.M[0][1] = easyarProjection.data[0];
-		//PerspectiveMatrix.M[1][0] = easyarProjection.data[5];
-		//PerspectiveMatrix.M[1][1] = -easyarProjection.data[4];
-		//PerspectiveMatrix.M[3][2] = -easyarProjection.data[11];
-	 
-	 
-		//SceneCaptureA->CustomProjectionMatrix = PerspectiveMatrix;
-		//SceneCaptureB->CustomProjectionMatrix = PerspectiveMatrix;
-	 
-		FTransform CameraLocalTransform = FTransform(GetTransformFromMat44F(
+		FTransform CameraLocalTransform = GetTransformFromMat44F(
 			_motionFusionTracker->cameraLocalTransform,
-			FVector(1)));
+			FVector(1));
 
-	 
 		SceneCaptureA->SetWorldTransform(CameraLocalTransform);
 		SceneCaptureB->SetWorldTransform(CameraLocalTransform);
+		FVector CameraTranslation = CameraLocalTransform.GetLocation();
+
+		WorldRoot->SetWorldLocation(CameraLocalTransform.InverseTransformPosition(CameraTranslation));
 	 
 		GEngine->AddOnScreenDebugMessage(
-			0, 1.0f, FColor::Red,
-			*FString::Printf(TEXT("%s\n"), *FString(CameraLocalTransform.ToString())));
+			0, 10.0f, FColor::Purple,
+			*FString::Printf(TEXT("%s\n"), *FString(WorldRoot->GetComponentTransform().ToString())));
 	 
 		// 如果追踪到了目标
 	 	if (_motionFusionTracker->TrackTargets.size() != 0)
@@ -156,15 +141,15 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	 				float ImageTargetSize = target.second->scale() * 100.;
 					float targetScale = 2 * ImageTargetSize / (StaticMeshComponent->GetStaticMesh()->GetBoundingBox().GetSize().GetAbsMin() + StaticMeshComponent->GetStaticMesh()->GetBoundingBox().GetSize().GetAbsMax());
 	 
-	 				FTransform TargetViewTransform = FTransform(GetTransformFromMat44F(
+	 				TargetViewTransform = GetTransformFromMat44F(
 	 					_motionFusionTracker->targetPose,
-	 					FVector(targetScale)));
+	 					FVector(targetScale));
 	 
 					TargetTransform = TargetViewTransform * CameraLocalTransform;
 
-	 				GEngine->AddOnScreenDebugMessage(
-	 					1, 1.0f, FColor::Yellow,
-	 					*FString::Printf(TEXT("%s\n"), *FString(TargetTransform.ToString())));
+	 				//GEngine->AddOnScreenDebugMessage(
+	 				//	1, 10.0f, FColor::Yellow,
+	 				//	*FString::Printf(TEXT("%s\n"), *FString(TargetTransform.ToString())));
 	 
 					StaticMeshComponent->SetWorldTransform(TargetTransform);
 					StaticMeshComponent->AddLocalRotation(FRotator(90, 0, 0));
@@ -173,11 +158,16 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	 	}
 		else 
 		{
-			StaticMeshComponent->SetWorldTransform(TargetTransform); 
-			StaticMeshComponent->AddLocalRotation(FRotator(90, 0, 0));
-			GEngine->AddOnScreenDebugMessage(
-				2, 1.0f, FColor::Green,
-				*FString::Printf(TEXT("%s\n"), *FString(TargetTransform.ToString())));
+
+			StaticMeshComponent->SetWorldLocation(TargetTransform.GetLocation());
+			//StaticMeshComponent->AddLocalRotation(FRotator(90, 0, 0));
+
+			//GEngine->AddOnScreenDebugMessage(
+			//	2, 10.0f, FColor::Red,
+			//	*FString::Printf(TEXT("%s\n"), *FString(TargetViewTransform.ToString())));
+			//GEngine->AddOnScreenDebugMessage(
+			//	3, 10.0f, FColor::Green,
+			//	*FString::Printf(TEXT("%s\n"), *FString(TargetTransform.ToString())));
 		}
 	 }
 }
@@ -195,7 +185,7 @@ void UImageTrackers::Initialize()
 
 	for (auto target : ImageTargetsCollection) 
 	{
-		_motionFusionTracker->loadFromImage(TCHAR_TO_UTF8(*GetImagePath(target.Key)), TCHAR_TO_UTF8(*target.Key), 0.15);
+		_motionFusionTracker->loadFromImage(TCHAR_TO_UTF8(*GetImagePath(target.Key)), TCHAR_TO_UTF8(*target.Key), 0.0709);
 	}
 }
 

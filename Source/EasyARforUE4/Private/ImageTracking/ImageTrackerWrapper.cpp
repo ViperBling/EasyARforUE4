@@ -220,6 +220,7 @@ void ImageTrackerMotionFusionWrapper::initialize()
 	Scheduler = std::make_shared<easyar::DelayedCallbackScheduler>();
 	Throttler = easyar::InputFrameThrottler::create();
 	I2FrameAdapter = easyar::InputFrameToFeedbackFrameAdapter::create();
+	// 两个分支输出，一个输出到OutFrameBuffer，一个到InputFrameThrottler
 	OutputFrameFork = easyar::OutputFrameFork::create(2);
 	OutputFrameBuffer = easyar::OutputFrameBuffer::create();
 	
@@ -227,10 +228,10 @@ void ImageTrackerMotionFusionWrapper::initialize()
 	RealTimeWorldTransform->setBufferSize(15);
 	
 	MotionTrackerCamera = std::make_shared<easyar::MotionTrackerCameraDevice>();
-	MotionTrackerCamera->setFrameRateType(easyar::MotionTrackerCameraDeviceFPS::Camera_FPS_30);
+	MotionTrackerCamera->setFrameRateType(easyar::MotionTrackerCameraDeviceFPS::Camera_FPS_60);
 	MotionTrackerCamera->setFocusMode(easyar::MotionTrackerCameraDeviceFocusMode::Continousauto);
 	MotionTrackerCamera->setFrameResolutionType(easyar::MotionTrackerCameraDeviceResolution::Resolution_1280);
-	MotionTrackerCamera->setTrackingMode(easyar::MotionTrackerCameraDeviceTrackingMode::Anchor);
+	MotionTrackerCamera->setTrackingMode(easyar::MotionTrackerCameraDeviceTrackingMode::VIO);
 	
 	Tracker = easyar::ImageTracker::create();
 	
