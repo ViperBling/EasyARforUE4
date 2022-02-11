@@ -38,71 +38,7 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	Timer += DeltaTime;
-
-	// if (Timer >= 1. / FrameRate)
-	// {
-	// 	Timer -= 1. / FrameRate;
-	// 	_motionTracker->render();
-	// 	auto CurrentFrame = _motionTracker->cameraFrame;
-	// 	auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
-	// 	CameraRenderer->Render(Buffer->data());
-	// 	
-	// 	auto easyarCamTrans = _motionTracker->cameraTransform;
-	//
-	// 	StaticMeshComponent->SetStaticMesh(ImageTargetsCollection[FString("namecard.jpg")].Mesh);
-	//
-	// 	FTransform TmpMeshTransform = FTransform(GetTransformFromMat44F(
-	// 		easyarCamTrans,
-	// 		FVector(1)));
-	// 	StaticMeshComponent->SetWorldTransform(FTransform(FRotator(0, 0, 0), FVector(30, 0, -20), FVector(2)));
-	// 	
-	// 	SceneCaptureA->SetWorldTransform(TmpMeshTransform);
-	// 	SceneCaptureB->SetWorldTransform(TmpMeshTransform);
-	// }
 	
-	// if (Timer >= 1. / FrameRate)
-	// {
-	// 	Timer -= 1. / FrameRate;
-	// 	_imageTracker->perFrame();
-	// 	auto CurrentFrame = _imageTracker->cameraFrame;
-	// 	auto Buffer = CurrentFrame->inputFrame()->image()->buffer();
-	// 	
-	// 	CameraRenderer->Render(Buffer->data());
-	// 	
-	// 	if (_imageTracker->TrackTargets.size() != 0)
-	// 	{
-	// 		for (auto target : _imageTracker->TrackTargets)
-	// 		{
-	// 			if (ImageTargetsCollection.Contains(FString(target.second->name().c_str())))
-	// 			{
-	// 				// GEngine->AddOnScreenDebugMessage(
-	// 				// 	0, 1.0f, FColor::Green,
-	// 				// 	FString::Printf(TEXT("Found Target (%s): %d\n"), *FString(target.second->name().c_str()), target.second->runtimeID()));
-	// 				StaticMeshComponent->SetStaticMesh(ImageTargetsCollection[FString(target.second->name().c_str())].Mesh);
-	// 				float ImageTargetSize = target.second->scale() * 100.;
-	// 				float targetScale = ImageTargetSize / StaticMeshComponent->GetStaticMesh()->GetBoundingBox().GetSize().GetAbsMax();
-	// 				
-	// 				FTransform TargetViewTransform = FTransform(GetTransformFromMat44F(
-	// 					_imageTracker->targetPose,
-	// 					FVector(targetScale)));
-	// 					
-	// 				GEngine->AddOnScreenDebugMessage(
-	// 					0, 1.0f, FColor::Green,
-	// 					FString::Printf(TEXT("%s\n"), *FString(TargetViewTransform.ToString())));
-	//
-	// 				StaticMeshComponent->SetWorldTransform(TargetViewTransform);
-	// 				StaticMeshComponent->AddLocalRotation(FRotator(90, 0, 0));
-	// 				// SceneCaptureA->SetWorldTransform(TmpMeshTransform.Inverse());
-	// 				// SceneCaptureB->SetWorldTransform(TmpMeshTransform.Inverse());
-	// 			}
-	// 		}
-	// 	}
-	// 	// else 
-	// 	// {
-	// 	// 	StaticMeshComponent->SetStaticMesh(nullptr);
-	// 	// }
-	// }
-
 	 if (Timer >= 1. / FrameRate)
 	 {
 	 	Timer -= 1. / FrameRate;
@@ -120,11 +56,11 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		SceneCaptureB->SetWorldTransform(CameraLocalTransform);
 		FVector CameraTranslation = CameraLocalTransform.GetLocation();
 
-		WorldRoot->SetWorldLocation(CameraLocalTransform.InverseTransformPosition(CameraTranslation));
+		// WorldRoot->SetWorldLocation(CameraLocalTransform.InverseTransformPosition(CameraTranslation));
 	 
-		GEngine->AddOnScreenDebugMessage(
-			0, 10.0f, FColor::Purple,
-			*FString::Printf(TEXT("%s\n"), *FString(WorldRoot->GetComponentTransform().ToString())));
+		// GEngine->AddOnScreenDebugMessage(
+		// 	0, 10.0f, FColor::Purple,
+		// 	*FString::Printf(TEXT("%s\n"), *FString(WorldRoot->GetComponentTransform().ToString())));
 	 
 		// 如果追踪到了目标
 	 	if (_motionFusionTracker->TrackTargets.size() != 0)
@@ -160,14 +96,6 @@ void UImageTrackers::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		{
 
 			StaticMeshComponent->SetWorldLocation(TargetTransform.GetLocation());
-			//StaticMeshComponent->AddLocalRotation(FRotator(90, 0, 0));
-
-			//GEngine->AddOnScreenDebugMessage(
-			//	2, 10.0f, FColor::Red,
-			//	*FString::Printf(TEXT("%s\n"), *FString(TargetViewTransform.ToString())));
-			//GEngine->AddOnScreenDebugMessage(
-			//	3, 10.0f, FColor::Green,
-			//	*FString::Printf(TEXT("%s\n"), *FString(TargetTransform.ToString())));
 		}
 	 }
 }

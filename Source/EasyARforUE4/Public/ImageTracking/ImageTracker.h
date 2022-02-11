@@ -44,9 +44,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, FEasyARMesh> ImageTargetsCollection;
-
-	// UPROPERTY(BlueprintReadWrite)
-	// TMap<FString, UStaticMesh*> ImageTargets;
 	
 	UPROPERTY(BlueprintReadWrite)
 	UTextureRenderTarget2D* OutRT;
@@ -54,8 +51,8 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	UStaticMeshComponent* StaticMeshComponent;
 
-	UPROPERTY(BlueprintReadWrite)
-	UStaticMeshComponent* WorldRoot;
+	// UPROPERTY(BlueprintReadWrite)
+	// UStaticMeshComponent* WorldRoot;
 
 	UPROPERTY(BlueprintReadWrite)
 	USceneCaptureComponent2D* SceneCaptureA;
